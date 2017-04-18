@@ -1,8 +1,8 @@
-module To exposing (..)
+module Main exposing (..)
 
 import Html exposing (..)
 import Html.Events exposing (..)
-import Html.Attributes exposing (style)
+import Html.Attributes exposing (class)
 import Navigation as Nav
 import UrlParser exposing (..)
 
@@ -90,24 +90,13 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div [ style [ ( "font-family", "monospace" ) ] ]
+    div []
         [ div
-            [ style
-                [ ( "display", "flex" )
-                , ( "justify-content", "space-around" )
-                , ( "padding", "10px" )
-                , ( "border-bottom", "2px solid black" )
-                ]
-            ]
-            [ button [ buttonStyle, onClick (NewUrl "/") ] [ text "home" ]
-            , button [ buttonStyle, onClick (NewUrl "/patients/") ] [ text "patients" ]
+            [ class "menu" ]
+            [ button [ class "menu__button", onClick (NewUrl "/") ] [ text "home" ]
+            , button [ class "menu__button", onClick (NewUrl "/patients/") ] [ text "patients" ]
             ]
         ]
-
-
-buttonStyle : Attribute msg
-buttonStyle =
-    style [ ( "border", "2px solid black" ), ( "background", "white" ), ( "padding", "4px" ) ]
 
 
 viewRoute : Maybe Route -> Html msg
