@@ -5,6 +5,8 @@ import Html.Events exposing (..)
 import Html.Attributes exposing (class)
 import Navigation as Nav
 import UrlParser exposing (..)
+import Home.Main as Home
+import Patients.Main as Patients
 
 
 main : Program Never Model Msg
@@ -95,15 +97,33 @@ view model =
             [ class "menu" ]
             [ button [ class "menu__button", onClick (NewUrl "/") ] [ text "home" ]
             , button [ class "menu__button", onClick (NewUrl "/patients/") ] [ text "patients" ]
+            , button [ class "menu__button", onClick (NewUrl "/patients/1") ] [ text "patient nr. 1" ]
+            , button [ class "menu__button", onClick (NewUrl "/404/") ] [ text "404" ]
+            ]
+        , main_ [ class "main" ]
+            [ model.history
+                |> List.head
+                |> Maybe.withDefault (Just Home)
+                |> toRouteView
             ]
         ]
 
 
-viewRoute : Maybe Route -> Html msg
-viewRoute maybeRoute =
+toRouteView : Maybe Route -> Html msg
+toRouteView maybeRoute =
     case maybeRoute of
         Nothing ->
-            li [] [ text "no route matched" ]
+            div [] [ text "no route matched" ]
 
         Just route ->
-            li [] [ code [] [ text (toString route) ] ]
+            div []
+                [ case route of
+                    Patients ->
+                        text Patients.hello
+
+                    Home ->
+                        text Home.hello
+
+                    PatientId id ->
+                        text <| toString id
+                ]

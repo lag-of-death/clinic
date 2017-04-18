@@ -9876,11 +9876,15 @@ var _evancz$url_parser$UrlParser$intParam = function (name) {
 	return A2(_evancz$url_parser$UrlParser$customParam, name, _evancz$url_parser$UrlParser$intParamHelp);
 };
 
-var _user$project$Main$viewRoute = function (maybeRoute) {
+var _user$project$Home_Main$hello = 'home';
+
+var _user$project$Patients_Main$hello = 'hello';
+
+var _user$project$Main$toRouteView = function (maybeRoute) {
 	var _p0 = maybeRoute;
 	if (_p0.ctor === 'Nothing') {
 		return A2(
-			_elm_lang$html$Html$li,
+			_elm_lang$html$Html$div,
 			{ctor: '[]'},
 			{
 				ctor: '::',
@@ -9889,19 +9893,22 @@ var _user$project$Main$viewRoute = function (maybeRoute) {
 			});
 	} else {
 		return A2(
-			_elm_lang$html$Html$li,
+			_elm_lang$html$Html$div,
 			{ctor: '[]'},
 			{
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$code,
-					{ctor: '[]'},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(
-							_elm_lang$core$Basics$toString(_p0._0)),
-						_1: {ctor: '[]'}
-					}),
+				_0: function () {
+					var _p1 = _p0._0;
+					switch (_p1.ctor) {
+						case 'Patients':
+							return _elm_lang$html$Html$text(_user$project$Patients_Main$hello);
+						case 'Home':
+							return _elm_lang$html$Html$text(_user$project$Home_Main$hello);
+						default:
+							return _elm_lang$html$Html$text(
+								_elm_lang$core$Basics$toString(_p1._0));
+					}
+				}(),
 				_1: {ctor: '[]'}
 			});
 	}
@@ -9955,12 +9962,12 @@ var _user$project$Main$init = function (location) {
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p1 = msg;
-		if (_p1.ctor === 'NewUrl') {
+		var _p2 = msg;
+		if (_p2.ctor === 'NewUrl') {
 			return {
 				ctor: '_Tuple2',
 				_0: model,
-				_1: _elm_lang$navigation$Navigation$newUrl(_p1._0)
+				_1: _elm_lang$navigation$Navigation$newUrl(_p2._0)
 			};
 		} else {
 			return {
@@ -9970,7 +9977,7 @@ var _user$project$Main$update = F2(
 					{
 						history: {
 							ctor: '::',
-							_0: A2(_evancz$url_parser$UrlParser$parsePath, _user$project$Main$routeParser, _p1._0),
+							_0: A2(_evancz$url_parser$UrlParser$parsePath, _user$project$Main$routeParser, _p2._0),
 							_1: model.history
 						}
 					}),
@@ -10035,10 +10042,69 @@ var _user$project$Main$view = function (model) {
 								_0: _elm_lang$html$Html$text('patients'),
 								_1: {ctor: '[]'}
 							}),
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$button,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('menu__button'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(
+											_user$project$Main$NewUrl('/patients/1')),
+										_1: {ctor: '[]'}
+									}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('patient nr. 1'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$button,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('menu__button'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onClick(
+												_user$project$Main$NewUrl('/404/')),
+											_1: {ctor: '[]'}
+										}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('404'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}
 					}
 				}),
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$main_,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('main'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _user$project$Main$toRouteView(
+							A2(
+								_elm_lang$core$Maybe$withDefault,
+								_elm_lang$core$Maybe$Just(_user$project$Main$Home),
+								_elm_lang$core$List$head(model.history))),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
 		});
 };
 var _user$project$Main$main = A2(
