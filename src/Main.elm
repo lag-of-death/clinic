@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.Events exposing (..)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (style)
 import Navigation as Nav
 import UrlParser exposing (..)
 import Home.Main as Home
@@ -10,6 +10,7 @@ import Patients.View as PatientsView
 import Patients.Update as PatientsUpdate
 import Patients.Types as PatientsTypes
 import Patients.Http as PatientsHttp
+import Styles exposing (app, body, menu, menuButton)
 
 
 main : Program Never Model Msg
@@ -43,10 +44,10 @@ type alias Model =
 
 init : Nav.Location -> ( Model, Cmd Msg )
 init location =
-    ( { history = [ UrlParser.parsePath routeParser location ]
+    ( { history = []
       , patients = []
       }
-    , Cmd.none
+    , Nav.newUrl location.pathname
     )
 
 
@@ -120,14 +121,14 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div []
+    Html.body [ style Styles.body ]
         [ div
-            [ class "menu" ]
-            [ button [ class "menu__button", onClick (NewUrl "/") ] [ text "home" ]
-            , button [ class "menu__button", onClick (NewUrl "/patients/") ] [ text "patients" ]
-            , button [ class "menu__button", onClick (NewUrl "/404/") ] [ text "404" ]
+            [ style Styles.menu ]
+            [ button [ style menuButton, onClick (NewUrl "/") ] [ text "home" ]
+            , button [ style menuButton, onClick (NewUrl "/patients/") ] [ text "patients" ]
+            , button [ style menuButton, onClick (NewUrl "/404/") ] [ text "404" ]
             ]
-        , main_ [ class "main" ]
+        , main_ [ style Styles.app ]
             [ model.history
                 |> List.head
                 |> Maybe.withDefault (Just Home)
