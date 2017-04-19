@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/lag-of-death/clinic#readme",
   "dependencies": {
-    "express": "^4.15.2"
+    "express": "^4.15.2",
+    "express-spa": "0.0.2"
   }
 }
