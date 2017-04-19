@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "make": "cd src && elm-make Main.elm --output=../public/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
