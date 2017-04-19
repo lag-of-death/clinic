@@ -6,7 +6,10 @@ import Html.Attributes exposing (class)
 import Navigation as Nav
 import UrlParser exposing (..)
 import Home.Main as Home
-import Patients.Main as Patients
+import Patients.View as PatientsView
+import Patients.Update as PatientsUpdate
+import Patients.Types as PatientsTypes
+import Patients.Http as PatientsHttp
 
 
 main : Program Never Model Msg
@@ -34,12 +37,15 @@ subscriptions model =
 
 type alias Model =
     { history : List (Maybe Route)
+    , patients : List PatientsTypes.Patient
     }
 
 
 init : Nav.Location -> ( Model, Cmd Msg )
 init location =
-    ( { history = [ UrlParser.parsePath routeParser location ] }
+    ( { history = [ UrlParser.parsePath routeParser location ]
+      , patients = []
+      }
     , Cmd.none
     )
 
@@ -58,8 +64,8 @@ routeParser : UrlParser.Parser (Route -> a) a
 routeParser =
     UrlParser.oneOf
         [ UrlParser.map Home top
-        , UrlParser.map Patients ((UrlParser.s "patients"))
-        , UrlParser.map PatientId ((UrlParser.s "patients") </> int)
+        , UrlParser.map Patients (UrlParser.s "patients")
+        , UrlParser.map PatientId (UrlParser.s "patients" </> int)
         ]
 
 
@@ -69,6 +75,7 @@ routeParser =
 
 type Msg
     = NewUrl String
+    | PatientsMsg PatientsTypes.Msg
     | UrlChange Nav.Location
 
 
@@ -80,10 +87,31 @@ update msg model =
             , Nav.newUrl url
             )
 
+        PatientsMsg patientsMsg ->
+            let
+                ( patientsModel, patientsCmd ) =
+                    PatientsUpdate.update patientsMsg model.patients
+            in
+                ( { model | patients = patientsModel }
+                , Cmd.map PatientsMsg patientsCmd
+                )
+
         UrlChange location ->
-            ( { model | history = (UrlParser.parsePath routeParser location) :: model.history }
-            , Cmd.none
-            )
+            let
+                maybeRoute =
+                    UrlParser.parsePath routeParser location
+
+                route =
+                    Maybe.withDefault Home maybeRoute
+            in
+                ( { model | history = maybeRoute :: model.history }
+                , case route of
+                    Patients ->
+                        Cmd.map PatientsMsg PatientsHttp.getPatients
+
+                    _ ->
+                        Cmd.none
+                )
 
 
 
@@ -97,20 +125,19 @@ view model =
             [ class "menu" ]
             [ button [ class "menu__button", onClick (NewUrl "/") ] [ text "home" ]
             , button [ class "menu__button", onClick (NewUrl "/patients/") ] [ text "patients" ]
-            , button [ class "menu__button", onClick (NewUrl "/patients/1") ] [ text "patient nr. 1" ]
             , button [ class "menu__button", onClick (NewUrl "/404/") ] [ text "404" ]
             ]
         , main_ [ class "main" ]
             [ model.history
                 |> List.head
                 |> Maybe.withDefault (Just Home)
-                |> toRouteView
+                |> toRouteView model
             ]
         ]
 
 
-toRouteView : Maybe Route -> Html msg
-toRouteView maybeRoute =
+toRouteView : Model -> Maybe Route -> Html Msg
+toRouteView model maybeRoute =
     case maybeRoute of
         Nothing ->
             div [] [ text "no route matched" ]
@@ -119,7 +146,7 @@ toRouteView maybeRoute =
             div []
                 [ case route of
                     Patients ->
-                        text Patients.hello
+                        Html.map PatientsMsg (PatientsView.view model.patients)
 
                     Home ->
                         text Home.hello

@@ -9878,47 +9878,102 @@ var _evancz$url_parser$UrlParser$intParam = function (name) {
 
 var _user$project$Home_Main$hello = 'home';
 
-var _user$project$Patients_Main$hello = 'hello';
-
-var _user$project$Main$toRouteView = function (maybeRoute) {
-	var _p0 = maybeRoute;
-	if (_p0.ctor === 'Nothing') {
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text('no route matched'),
-				_1: {ctor: '[]'}
-			});
-	} else {
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: function () {
-					var _p1 = _p0._0;
-					switch (_p1.ctor) {
-						case 'Patients':
-							return _elm_lang$html$Html$text(_user$project$Patients_Main$hello);
-						case 'Home':
-							return _elm_lang$html$Html$text(_user$project$Home_Main$hello);
-						default:
-							return _elm_lang$html$Html$text(
-								_elm_lang$core$Basics$toString(_p1._0));
-					}
-				}(),
-				_1: {ctor: '[]'}
-			});
-	}
+var _user$project$Patients_Types$Patient = F2(
+	function (a, b) {
+		return {name: a, id: b};
+	});
+var _user$project$Patients_Types$NewUrl = function (a) {
+	return {ctor: 'NewUrl', _0: a};
 };
+var _user$project$Patients_Types$PatientsData = function (a) {
+	return {ctor: 'PatientsData', _0: a};
+};
+var _user$project$Patients_Types$GetPatients = {ctor: 'GetPatients'};
+
+var _user$project$Patients_View$view = function (patients) {
+	return _elm_lang$core$List$isEmpty(patients) ? _elm_lang$html$Html$text('wait a sec...') : A2(
+		_elm_lang$html$Html$ul,
+		{ctor: '[]'},
+		A2(
+			_elm_lang$core$List$map,
+			function (patient) {
+				return A2(
+					_elm_lang$html$Html$li,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(patient.name),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$button,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('menu__button'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(
+											_user$project$Patients_Types$NewUrl(
+												A2(
+													_elm_lang$core$Basics_ops['++'],
+													'/patients/',
+													_elm_lang$core$Basics$toString(patient.id)))),
+										_1: {ctor: '[]'}
+									}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(
+										_elm_lang$core$Basics$toString(patient.id)),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					});
+			},
+			patients));
+};
+
+var _user$project$Patients_Http$decodePatients = _elm_lang$core$Json_Decode$list(
+	A3(
+		_elm_lang$core$Json_Decode$map2,
+		_user$project$Patients_Types$Patient,
+		A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
+		A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int)));
+var _user$project$Patients_Http$getPatients = A2(
+	_elm_lang$http$Http$send,
+	_user$project$Patients_Types$PatientsData,
+	A2(_elm_lang$http$Http$get, '/patients-data', _user$project$Patients_Http$decodePatients));
+
+var _user$project$Patients_Update$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'NewUrl':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _elm_lang$navigation$Navigation$newUrl(_p0._0)
+				};
+			case 'GetPatients':
+				return {ctor: '_Tuple2', _0: model, _1: _user$project$Patients_Http$getPatients};
+			default:
+				if (_p0._0.ctor === 'Ok') {
+					return {ctor: '_Tuple2', _0: _p0._0._0, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					var error = A2(_elm_lang$core$Debug$log, 'PatientsData error: ', _p0._0._0);
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+		}
+	});
+
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$Main$Model = function (a) {
-	return {history: a};
-};
+var _user$project$Main$Model = F2(
+	function (a, b) {
+		return {history: a, patients: b};
+	});
 var _user$project$Main$Patients = {ctor: 'Patients'};
 var _user$project$Main$PatientId = function (a) {
 	return {ctor: 'PatientId', _0: a};
@@ -9955,39 +10010,97 @@ var _user$project$Main$init = function (location) {
 				ctor: '::',
 				_0: A2(_evancz$url_parser$UrlParser$parsePath, _user$project$Main$routeParser, location),
 				_1: {ctor: '[]'}
-			}
+			},
+			patients: {ctor: '[]'}
 		},
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p2 = msg;
-		if (_p2.ctor === 'NewUrl') {
-			return {
-				ctor: '_Tuple2',
-				_0: model,
-				_1: _elm_lang$navigation$Navigation$newUrl(_p2._0)
-			};
-		} else {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{
-						history: {
-							ctor: '::',
-							_0: A2(_evancz$url_parser$UrlParser$parsePath, _user$project$Main$routeParser, _p2._0),
-							_1: model.history
-						}
-					}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		}
-	});
 var _user$project$Main$UrlChange = function (a) {
 	return {ctor: 'UrlChange', _0: a};
 };
+var _user$project$Main$PatientsMsg = function (a) {
+	return {ctor: 'PatientsMsg', _0: a};
+};
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'NewUrl':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _elm_lang$navigation$Navigation$newUrl(_p0._0)
+				};
+			case 'PatientsMsg':
+				var _p1 = A2(_user$project$Patients_Update$update, _p0._0, model.patients);
+				var patientsModel = _p1._0;
+				var patientsCmd = _p1._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{patients: patientsModel}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PatientsMsg, patientsCmd)
+				};
+			default:
+				var maybeRoute = A2(_evancz$url_parser$UrlParser$parsePath, _user$project$Main$routeParser, _p0._0);
+				var route = A2(_elm_lang$core$Maybe$withDefault, _user$project$Main$Home, maybeRoute);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							history: {ctor: '::', _0: maybeRoute, _1: model.history}
+						}),
+					_1: function () {
+						var _p2 = route;
+						if (_p2.ctor === 'Patients') {
+							return A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PatientsMsg, _user$project$Patients_Http$getPatients);
+						} else {
+							return _elm_lang$core$Platform_Cmd$none;
+						}
+					}()
+				};
+		}
+	});
+var _user$project$Main$toRouteView = F2(
+	function (model, maybeRoute) {
+		var _p3 = maybeRoute;
+		if (_p3.ctor === 'Nothing') {
+			return A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('no route matched'),
+					_1: {ctor: '[]'}
+				});
+		} else {
+			return A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: function () {
+						var _p4 = _p3._0;
+						switch (_p4.ctor) {
+							case 'Patients':
+								return A2(
+									_elm_lang$html$Html$map,
+									_user$project$Main$PatientsMsg,
+									_user$project$Patients_View$view(model.patients));
+							case 'Home':
+								return _elm_lang$html$Html$text(_user$project$Home_Main$hello);
+							default:
+								return _elm_lang$html$Html$text(
+									_elm_lang$core$Basics$toString(_p4._0));
+						}
+					}(),
+					_1: {ctor: '[]'}
+				});
+		}
+	});
 var _user$project$Main$NewUrl = function (a) {
 	return {ctor: 'NewUrl', _0: a};
 };
@@ -10052,36 +10165,16 @@ var _user$project$Main$view = function (model) {
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html_Events$onClick(
-											_user$project$Main$NewUrl('/patients/1')),
+											_user$project$Main$NewUrl('/404/')),
 										_1: {ctor: '[]'}
 									}
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text('patient nr. 1'),
+									_0: _elm_lang$html$Html$text('404'),
 									_1: {ctor: '[]'}
 								}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$button,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('menu__button'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(
-												_user$project$Main$NewUrl('/404/')),
-											_1: {ctor: '[]'}
-										}
-									},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text('404'),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}
+							_1: {ctor: '[]'}
 						}
 					}
 				}),
@@ -10096,7 +10189,9 @@ var _user$project$Main$view = function (model) {
 					},
 					{
 						ctor: '::',
-						_0: _user$project$Main$toRouteView(
+						_0: A2(
+							_user$project$Main$toRouteView,
+							model,
 							A2(
 								_elm_lang$core$Maybe$withDefault,
 								_elm_lang$core$Maybe$Just(_user$project$Main$Home),
