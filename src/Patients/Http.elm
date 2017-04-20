@@ -7,7 +7,7 @@ import Patients.Types exposing (..)
 
 getPatients : Cmd Msg
 getPatients =
-    Http.send PatientsData (Http.get "/patients-data" decodePatients)
+    Http.send PatientsData (Http.get "/api/patients" decodePatients)
 
 
 decodePatients : Decode.Decoder (List Patient)

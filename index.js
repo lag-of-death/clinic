@@ -6,7 +6,7 @@ app.set('port', process.env.PORT || 5000);
 
 app.use('/', express.static(__dirname + '/public'));
 
-app.get('/patients-data', function (req, res) {
+app.get('/api/patients', function (req, res) {
     res.json([
         { name: 'Jan Nowak', id: 1 },
         { name: 'Bat Man', id: 2 },

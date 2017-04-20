@@ -10016,7 +10016,7 @@ var _user$project$Patients_Http$decodePatients = _elm_lang$core$Json_Decode$list
 var _user$project$Patients_Http$getPatients = A2(
 	_elm_lang$http$Http$send,
 	_user$project$Patients_Types$PatientsData,
-	A2(_elm_lang$http$Http$get, '/patients-data', _user$project$Patients_Http$decodePatients));
+	A2(_elm_lang$http$Http$get, '/api/patients', _user$project$Patients_Http$decodePatients));
 var _user$project$Patients_Update$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
