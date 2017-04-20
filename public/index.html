@@ -9899,6 +9899,71 @@ var _user$project$Styles$menuButton = {
 		}
 	}
 };
+var _user$project$Patients_View$patientView = function (patient) {
+	return A2(
+		_elm_lang$html$Html$table,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$tr,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$td,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Nazwisko i imię:'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$td,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(patient.name),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$tr,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$td,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('ID:'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$td,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(
+										_elm_lang$core$Basics$toString(patient.id)),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$Patients_View$view = function (patients) {
 	return _elm_lang$core$List$isEmpty(patients) ? _elm_lang$html$Html$text('wait a sec...') : A2(
 		_elm_lang$html$Html$ul,
@@ -9972,6 +10037,20 @@ var _user$project$Patients_Update$update = F2(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}
+	});
+var _user$project$Patients_Helpers$getPatient = F2(
+	function (id, patients) {
+		var defaultPatient = {name: 'Jan Kowalski', id: -9999};
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			defaultPatient,
+			_elm_lang$core$List$head(
+				A2(
+					_elm_lang$core$List$filter,
+					function (patient) {
+						return _elm_lang$core$Native_Utils.eq(patient.id, id);
+					},
+					patients)));
 	});
 var _user$project$Main$init = function (location) {
 	return {
@@ -10057,10 +10136,13 @@ var _user$project$Main$update = F2(
 						}),
 					_1: function () {
 						var _p2 = route;
-						if (_p2.ctor === 'Patients') {
-							return A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PatientsMsg, _user$project$Patients_Http$getPatients);
-						} else {
-							return _elm_lang$core$Platform_Cmd$none;
+						switch (_p2.ctor) {
+							case 'Patients':
+								return A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PatientsMsg, _user$project$Patients_Http$getPatients);
+							case 'PatientId':
+								return A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PatientsMsg, _user$project$Patients_Http$getPatients);
+							default:
+								return _elm_lang$core$Platform_Cmd$none;
 						}
 					}()
 				};
@@ -10095,8 +10177,11 @@ var _user$project$Main$toRouteView = F2(
 							case 'Home':
 								return _elm_lang$html$Html$text(_user$project$Home_Main$hello);
 							default:
-								return _elm_lang$html$Html$text(
-									_elm_lang$core$Basics$toString(_p4._0));
+								return A2(
+									_elm_lang$html$Html$map,
+									_user$project$Main$PatientsMsg,
+									_user$project$Patients_View$patientView(
+										A2(_user$project$Patients_Helpers$getPatient, _p4._0, model.patients)));
 						}
 					}(),
 					_1: {ctor: '[]'}

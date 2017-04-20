@@ -10,6 +10,7 @@ import Patients.View as PatientsView
 import Patients.Update as PatientsUpdate
 import Patients.Types as PatientsTypes
 import Patients.Http as PatientsHttp
+import Patients.Helpers exposing (getPatient)
 import Styles exposing (app, body, menu, menuButton)
 
 
@@ -110,6 +111,9 @@ update msg model =
                     Patients ->
                         Cmd.map PatientsMsg PatientsHttp.getPatients
 
+                    PatientId _ ->
+                        Cmd.map PatientsMsg PatientsHttp.getPatients
+
                     _ ->
                         Cmd.none
                 )
@@ -153,5 +157,5 @@ toRouteView model maybeRoute =
                         text Home.hello
 
                     PatientId id ->
-                        text <| toString id
+                        Html.map PatientsMsg (PatientsView.patientView (getPatient id model.patients))
                 ]
