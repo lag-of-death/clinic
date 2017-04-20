@@ -19,3 +19,18 @@ decodePatients =
             (Decode.field "email" Decode.string)
             (Decode.field "id" Decode.int)
         )
+
+
+deletePatient : Int -> Cmd Msg
+deletePatient id =
+    Http.send PatientDeleted
+        (Http.request
+            { method = "DELETE"
+            , headers = []
+            , url = "/api/patients/" ++ (toString id)
+            , body = Http.emptyBody
+            , expect = Http.expectStringResponse (\_ -> Ok ())
+            , timeout = Nothing
+            , withCredentials = False
+            }
+        )

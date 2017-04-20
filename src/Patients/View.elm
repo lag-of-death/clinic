@@ -18,11 +18,19 @@ view patients =
                     (\patient ->
                         li [ style block, style blockCentered, style blockStreteched ]
                             [ text <| patient.surname ++ " " ++ patient.name
-                            , Html.button
-                                [ style Styles.button
-                                , onClick (NewUrl <| "/patients/" ++ (toString patient.id))
+                            , div []
+                                [ Html.button
+                                    [ style Styles.button
+                                    , onClick (NewUrl <| "/patients/" ++ (toString patient.id))
+                                    ]
+                                    [ text "Details" ]
+                                , Html.button
+                                    [ style Styles.button
+                                    , style [ ( "margin-left", "4px" ) ]
+                                    , onClick (DelPatient patient.id)
+                                    ]
+                                    [ text "Delete" ]
                                 ]
-                                [ text "Details" ]
                             ]
                     )
                     patients

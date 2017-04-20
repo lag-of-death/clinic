@@ -9840,6 +9840,12 @@ var _user$project$Patients_Types$Patient = F4(
 	function (a, b, c, d) {
 		return {name: a, surname: b, email: c, id: d};
 	});
+var _user$project$Patients_Types$PatientDeleted = function (a) {
+	return {ctor: 'PatientDeleted', _0: a};
+};
+var _user$project$Patients_Types$DelPatient = function (a) {
+	return {ctor: 'DelPatient', _0: a};
+};
 var _user$project$Patients_Types$NewUrl = function (a) {
 	return {ctor: 'NewUrl', _0: a};
 };
@@ -10295,25 +10301,61 @@ var _user$project$Patients_View$view = function (patients) {
 								_1: {
 									ctor: '::',
 									_0: A2(
-										_elm_lang$html$Html$button,
+										_elm_lang$html$Html$div,
+										{ctor: '[]'},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$style(_user$project$Styles$button),
+											_0: A2(
+												_elm_lang$html$Html$button,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$style(_user$project$Styles$button),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Events$onClick(
+															_user$project$Patients_Types$NewUrl(
+																A2(
+																	_elm_lang$core$Basics_ops['++'],
+																	'/patients/',
+																	_elm_lang$core$Basics$toString(patient.id)))),
+														_1: {ctor: '[]'}
+													}
+												},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('Details'),
+													_1: {ctor: '[]'}
+												}),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(
-													_user$project$Patients_Types$NewUrl(
-														A2(
-															_elm_lang$core$Basics_ops['++'],
-															'/patients/',
-															_elm_lang$core$Basics$toString(patient.id)))),
+												_0: A2(
+													_elm_lang$html$Html$button,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$style(_user$project$Styles$button),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$style(
+																{
+																	ctor: '::',
+																	_0: {ctor: '_Tuple2', _0: 'margin-left', _1: '4px'},
+																	_1: {ctor: '[]'}
+																}),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Events$onClick(
+																	_user$project$Patients_Types$DelPatient(patient.id)),
+																_1: {ctor: '[]'}
+															}
+														}
+													},
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html$text('Delete'),
+														_1: {ctor: '[]'}
+													}),
 												_1: {ctor: '[]'}
 											}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('Details'),
-											_1: {ctor: '[]'}
 										}),
 									_1: {ctor: '[]'}
 								}
@@ -10350,6 +10392,28 @@ var _user$project$Patients_View$view = function (patients) {
 			}
 		});
 };
+var _user$project$Patients_Http$deletePatient = function (id) {
+	return A2(
+		_elm_lang$http$Http$send,
+		_user$project$Patients_Types$PatientDeleted,
+		_elm_lang$http$Http$request(
+			{
+				method: 'DELETE',
+				headers: {ctor: '[]'},
+				url: A2(
+					_elm_lang$core$Basics_ops['++'],
+					'/api/patients/',
+					_elm_lang$core$Basics$toString(id)),
+				body: _elm_lang$http$Http$emptyBody,
+				expect: _elm_lang$http$Http$expectStringResponse(
+					function (_p0) {
+						return _elm_lang$core$Result$Ok(
+							{ctor: '_Tuple0'});
+					}),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			}));
+};
 var _user$project$Patients_Http$decodePatients = _elm_lang$core$Json_Decode$list(
 	A5(
 		_elm_lang$core$Json_Decode$map4,
@@ -10373,6 +10437,14 @@ var _user$project$Patients_Update$update = F2(
 					_1: _elm_lang$navigation$Navigation$newUrl(_p0._0)
 				};
 			case 'GetPatients':
+				return {ctor: '_Tuple2', _0: model, _1: _user$project$Patients_Http$getPatients};
+			case 'DelPatient':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Patients_Http$deletePatient(_p0._0)
+				};
+			case 'PatientDeleted':
 				return {ctor: '_Tuple2', _0: model, _1: _user$project$Patients_Http$getPatients};
 			default:
 				if (_p0._0.ctor === 'Ok') {

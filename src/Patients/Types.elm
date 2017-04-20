@@ -19,3 +19,5 @@ type Msg
     = GetPatients
     | PatientsData (Result Http.Error (List Patient))
     | NewUrl String
+    | DelPatient Int
+    | PatientDeleted (Result Http.Error ())
