@@ -11,6 +11,9 @@
     "type": "git",
     "url": "git+https://github.com/lag-of-death/clinic.git"
   },
+   "engines": {
+    "node": "7.4.0"
+  },
   "author": "",
   "license": "ISC",
   "bugs": {
