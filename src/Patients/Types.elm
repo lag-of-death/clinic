@@ -9,6 +9,8 @@ type alias Model =
 
 type alias Patient =
     { name : String
+    , surname : String
+    , email : String
     , id : Int
     }
 

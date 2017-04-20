@@ -13,7 +13,9 @@ getPatients =
 decodePatients : Decode.Decoder (List Patient)
 decodePatients =
     Decode.list
-        (Decode.map2 Patient
+        (Decode.map4 Patient
             (Decode.field "name" Decode.string)
+            (Decode.field "surname" Decode.string)
+            (Decode.field "email" Decode.string)
             (Decode.field "id" Decode.int)
         )

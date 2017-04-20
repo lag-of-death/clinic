@@ -7,7 +7,9 @@ getPatient : Int -> List Patient -> Patient
 getPatient id patients =
     let
         defaultPatient =
-            { name = "Jan Kowalski"
+            { name = "Jan"
+            , surname = "Kowalski"
+            , email = "abc@xyz.pl"
             , id = -9999
             }
     in

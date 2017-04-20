@@ -9836,9 +9836,9 @@ var _evancz$url_parser$UrlParser$intParam = function (name) {
 	return A2(_evancz$url_parser$UrlParser$customParam, name, _evancz$url_parser$UrlParser$intParamHelp);
 };
 var _user$project$Home_Main$hello = 'home';
-var _user$project$Patients_Types$Patient = F2(
-	function (a, b) {
-		return {name: a, id: b};
+var _user$project$Patients_Types$Patient = F4(
+	function (a, b, c, d) {
+		return {name: a, surname: b, email: c, id: d};
 	});
 var _user$project$Patients_Types$NewUrl = function (a) {
 	return {ctor: 'NewUrl', _0: a};
@@ -9952,7 +9952,7 @@ var _user$project$Patients_View$patientView = function (patient) {
 						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Nazwisko i imię:'),
+							_0: _elm_lang$html$Html$text('Surname:'),
 							_1: {ctor: '[]'}
 						}),
 					_1: {
@@ -9962,7 +9962,7 @@ var _user$project$Patients_View$patientView = function (patient) {
 							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(patient.name),
+								_0: _elm_lang$html$Html$text(patient.surname),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
@@ -9980,7 +9980,7 @@ var _user$project$Patients_View$patientView = function (patient) {
 							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text('ID:'),
+								_0: _elm_lang$html$Html$text('Name:'),
 								_1: {ctor: '[]'}
 							}),
 						_1: {
@@ -9990,14 +9990,72 @@ var _user$project$Patients_View$patientView = function (patient) {
 								{ctor: '[]'},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(
-										_elm_lang$core$Basics$toString(patient.id)),
+									_0: _elm_lang$html$Html$text(patient.name),
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}
 						}
 					}),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$tr,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$td,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('E-mail:'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$td,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(patient.email),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$tr,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$td,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('ID:'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$td,
+										{ctor: '[]'},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text(
+												_elm_lang$core$Basics$toString(patient.id)),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
 			}
 		});
 };
@@ -10040,7 +10098,7 @@ var _user$project$Patients_View$newPatientView = A2(
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('Nazwisko'),
+						_0: _elm_lang$html$Html$text('Surname'),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
@@ -10088,7 +10146,7 @@ var _user$project$Patients_View$newPatientView = A2(
 						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Imię'),
+							_0: _elm_lang$html$Html$text('Name'),
 							_1: {ctor: '[]'}
 						}),
 					_1: {
@@ -10179,7 +10237,7 @@ var _user$project$Patients_View$newPatientView = A2(
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Dodaj'),
+							_0: _elm_lang$html$Html$text('Add'),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
@@ -10204,7 +10262,7 @@ var _user$project$Patients_View$view = function (patients) {
 					_0: _elm_lang$html$Html_Attributes$style(
 						{
 							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'width', _1: '80%'},
+							_0: {ctor: '_Tuple2', _0: 'width', _1: '70%'},
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
@@ -10214,10 +10272,26 @@ var _user$project$Patients_View$view = function (patients) {
 					function (patient) {
 						return A2(
 							_elm_lang$html$Html$li,
-							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(patient.name),
+								_0: _elm_lang$html$Html_Attributes$style(_user$project$Styles$block),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$style(_user$project$Styles$blockCentered),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$style(_user$project$Styles$blockStreteched),
+										_1: {ctor: '[]'}
+									}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										patient.surname,
+										A2(_elm_lang$core$Basics_ops['++'], ' ', patient.name))),
 								_1: {
 									ctor: '::',
 									_0: A2(
@@ -10238,8 +10312,7 @@ var _user$project$Patients_View$view = function (patients) {
 										},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text(
-												_elm_lang$core$Basics$toString(patient.id)),
+											_0: _elm_lang$html$Html$text('Details'),
 											_1: {ctor: '[]'}
 										}),
 									_1: {ctor: '[]'}
@@ -10268,7 +10341,7 @@ var _user$project$Patients_View$view = function (patients) {
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text('Dodaj pacjenta'),
+								_0: _elm_lang$html$Html$text('New patient'),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
@@ -10278,10 +10351,12 @@ var _user$project$Patients_View$view = function (patients) {
 		});
 };
 var _user$project$Patients_Http$decodePatients = _elm_lang$core$Json_Decode$list(
-	A3(
-		_elm_lang$core$Json_Decode$map2,
+	A5(
+		_elm_lang$core$Json_Decode$map4,
 		_user$project$Patients_Types$Patient,
 		A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
+		A2(_elm_lang$core$Json_Decode$field, 'surname', _elm_lang$core$Json_Decode$string),
+		A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
 		A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int)));
 var _user$project$Patients_Http$getPatients = A2(
 	_elm_lang$http$Http$send,
@@ -10310,7 +10385,7 @@ var _user$project$Patients_Update$update = F2(
 	});
 var _user$project$Patients_Helpers$getPatient = F2(
 	function (id, patients) {
-		var defaultPatient = {name: 'Jan Kowalski', id: -9999};
+		var defaultPatient = {name: 'Jan', surname: 'Kowalski', email: 'abc@xyz.pl', id: -9999};
 		return A2(
 			_elm_lang$core$Maybe$withDefault,
 			defaultPatient,

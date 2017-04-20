@@ -13,16 +13,16 @@ view patients =
         text "Processing..."
     else
         div [ style block ]
-            [ ul [ style [ ( "width", "80%" ) ] ]
+            [ ul [ style [ ( "width", "70%" ) ] ]
                 (List.map
                     (\patient ->
-                        li []
-                            [ text patient.name
+                        li [ style block, style blockCentered, style blockStreteched ]
+                            [ text <| patient.surname ++ " " ++ patient.name
                             , Html.button
                                 [ style Styles.button
                                 , onClick (NewUrl <| "/patients/" ++ (toString patient.id))
                                 ]
-                                [ text <| toString patient.id ]
+                                [ text "Details" ]
                             ]
                     )
                     patients
@@ -32,7 +32,7 @@ view patients =
                     [ style Styles.button
                     , onClick (NewUrl <| "/patients/new")
                     ]
-                    [ text "Dodaj pacjenta" ]
+                    [ text "New patient" ]
                 ]
             ]
 
@@ -45,12 +45,12 @@ newPatientView =
         , Html.Attributes.method "POST"
         ]
         [ div [ style block, style blockCentered, style blockStreteched ]
-            [ label [] [ text "Nazwisko" ]
+            [ label [] [ text "Surname" ]
             , input [ required True, name "surname", style Styles.button ]
                 []
             ]
         , div [ style block, style blockCentered, style blockStreteched ]
-            [ label [] [ text "Imię" ]
+            [ label [] [ text "Name" ]
             , input [ required True, name "name", style Styles.button ]
                 []
             ]
@@ -68,7 +68,7 @@ newPatientView =
             [ Html.Attributes.type_ "submit"
             , style Styles.button
             ]
-            [ text "Dodaj" ]
+            [ text "Add" ]
         ]
 
 
@@ -77,9 +77,21 @@ patientView patient =
     table []
         [ tr []
             [ td []
-                [ text "Nazwisko i imię:" ]
+                [ text "Surname:" ]
+            , td []
+                [ text patient.surname ]
+            ]
+        , tr []
+            [ td []
+                [ text "Name:" ]
             , td []
                 [ text patient.name ]
+            ]
+        , tr []
+            [ td []
+                [ text "E-mail:" ]
+            , td []
+                [ text patient.email ]
             ]
         , tr []
             [ td []
