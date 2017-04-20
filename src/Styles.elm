@@ -1,8 +1,8 @@
 module Styles exposing (..)
 
 
-menuButton : List ( String, String )
-menuButton =
+button : List ( String, String )
+button =
     [ ( "border", "2px solid black" )
     , ( "background", "white" )
     , ( "padding", "4px" )
@@ -10,13 +10,28 @@ menuButton =
     ]
 
 
+blockCentered : List ( String, String )
+blockCentered =
+    [ ( "align-items", "center" ) ]
+
+
+blockStreteched : List ( String, String )
+blockStreteched =
+    [ ( "justify-content", "space-between" )
+    ]
+
+
+block : List ( String, String )
+block =
+    [ ( "display", "flex" )
+    , ( "justify-content", "space-around" )
+    , ( "padding", "10px" )
+    ]
+
+
 menu : List ( String, String )
 menu =
-    [ ( "display", " flex" )
-    , ( "justify-content", " space-around" )
-    , ( "padding", " 10px" )
-    , ( "border-bottom", " 2px solid black" )
-    ]
+    List.concat [ block, [ ( "border-bottom", "2px solid black" ) ] ]
 
 
 app : List ( String, String )
@@ -29,4 +44,13 @@ body =
     [ ( "margin", "0" )
     , ( "padding", "0" )
     , ( "font-family", "monospace" )
+    ]
+
+
+newPatientForm : List ( String, String )
+newPatientForm =
+    [ ( "width", "60%" )
+    , ( "display", "flex" )
+    , ( "flex-direction", "column" )
+    , ( "justify-content", "center" )
     ]

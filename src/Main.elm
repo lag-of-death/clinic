@@ -11,7 +11,7 @@ import Patients.Update as PatientsUpdate
 import Patients.Types as PatientsTypes
 import Patients.Http as PatientsHttp
 import Patients.Helpers exposing (getPatient)
-import Styles exposing (app, body, menu, menuButton)
+import Styles exposing (app, body, menu, button)
 
 
 main : Program Never Model Msg
@@ -60,6 +60,7 @@ type Route
     = Home
     | PatientId Int
     | Patients
+    | NewPatient
 
 
 routeParser : UrlParser.Parser (Route -> a) a
@@ -68,6 +69,7 @@ routeParser =
         [ UrlParser.map Home top
         , UrlParser.map Patients (UrlParser.s "patients")
         , UrlParser.map PatientId (UrlParser.s "patients" </> int)
+        , UrlParser.map NewPatient (UrlParser.s "patients" </> UrlParser.s "new")
         ]
 
 
@@ -128,9 +130,9 @@ view model =
     Html.body [ style Styles.body ]
         [ div
             [ style Styles.menu ]
-            [ button [ style menuButton, onClick (NewUrl "/") ] [ text "home" ]
-            , button [ style menuButton, onClick (NewUrl "/patients/") ] [ text "patients" ]
-            , button [ style menuButton, onClick (NewUrl "/404/") ] [ text "404" ]
+            [ Html.button [ style Styles.button, onClick (NewUrl "/") ] [ text "home" ]
+            , Html.button [ style Styles.button, onClick (NewUrl "/patients/") ] [ text "patients" ]
+            , Html.button [ style Styles.button, onClick (NewUrl "/404/") ] [ text "404" ]
             ]
         , main_ [ style Styles.app ]
             [ model.history
@@ -155,6 +157,9 @@ toRouteView model maybeRoute =
 
                     Home ->
                         text Home.hello
+
+                    NewPatient ->
+                        Html.map PatientsMsg PatientsView.newPatientView
 
                     PatientId id ->
                         Html.map PatientsMsg (PatientsView.patientView (getPatient id model.patients))
