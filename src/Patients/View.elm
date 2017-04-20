@@ -59,7 +59,7 @@ newPatientView =
             , input
                 [ Html.Attributes.type_ "email"
                 , required True
-                , name "mail"
+                , name "email"
                 , style Styles.button
                 ]
                 []
