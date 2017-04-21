@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/lag-of-death/clinic.git"
   },
-   "engines": {
+  "engines": {
     "node": "7.4.0"
   },
   "author": "",
@@ -23,6 +23,8 @@
   "dependencies": {
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
-    "express-spa": "0.0.2"
+    "express-spa": "0.0.2",
+    "request": "^2.81.0",
+    "request-promise": "^4.2.0"
   }
 }

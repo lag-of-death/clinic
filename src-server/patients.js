@@ -1,35 +1,51 @@
-var mutablePatients = [
-    { name: 'Jan', surname: 'Nowak', email: 'xd@b.pl', id: 0 },
-    { name: 'Bat', surname: 'Man', email: 'xg@b.pl', id: 1 },
-    { name: 'X', surname: 'Man', email: 'xe@b.pl', id: 2 },
-    { name: 'Janusz', surname: 'Kowalsky', email: 'xb@b.pl', id: 3 },
-];
+const rp = require('request-promise');
+
+const location = 'https://outpatient-hospital-api.herokuapp.com';
 
 module.exports = require('express').Router()
-    .get('/api/patients', getPatientsHandler)
-    .delete('/api/patients/:id', (req, res) => {
-        const rest = mutablePatients.filter(patient => patient.id != req.params.id);
+    .get('/api/patients', getPatientsHandler.bind(null, location))
+    .delete('/api/patients/:id', delPatientHandler.bind(null, location))
+    .post('/api/patients', newPatientHandler.bind(null, location));
 
-        mutablePatients = rest;
+function getPatientsHandler(location, req, res) {
+    const options = {
+        method: 'GET',
+        uri: `${location}/patient`,
+        resolveWithFullResponse: false
+    };
 
-        res.send('okejka');
-    })
-    .post('/api/patients', newPatientHandler);
-
-function getPatientsHandler(req, res) {
-    res.json(mutablePatients);
+    return rp(options)
+        .then(patients => res.send(patients))
+        .catch(err => res.redirect('/'));
 }
 
-function newPatientHandler(req, res) {
-    mutablePatients.push(Object.assign(
-        {},
-        { id: mutablePatients.length + 1 },
-        req.body)
-    );
+function delPatientHandler(location, req, res) {
+    const options = {
+        method: 'DELETE',
+        uri: `${location}/patient/${req.params.id}`,
+        resolveWithFullResponse: true
+    };
 
-    if (0) {
-        res.send('Validation error.');
-    } else {
-        res.redirect('/patients');
-    }
+    return rp(options)
+        .then(() => res.send('OK'))
+        .catch((err) => res.send('ERR'));
+}
+
+function newPatientHandler(location, req, res) {
+    const options = {
+        method: 'POST',
+        uri: `${location}/patient`,
+        body: JSON.stringify(Object.assign({}, req.body, { id: null })),
+        headers: {
+            'content-type': 'application/json'
+        }
+    };
+
+    return rp(options)
+        .then(() => res.redirect('/patients'))
+        .catch(err => {
+            console.log(err);
+
+            res.redirect('/patients')
+        });
 }
