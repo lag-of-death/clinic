@@ -6,11 +6,11 @@ import Html.Attributes exposing (style)
 import Navigation as Nav
 import UrlParser exposing (..)
 import Home.Main as Home
-import Patients.View as PatientsView
-import Patients.Update as PatientsUpdate
-import Patients.Types as PatientsTypes
-import Patients.Http as PatientsHttp
-import Patients.Helpers exposing (getPatient)
+import People.View as PeopleView
+import People.Update as PeopleUpdate
+import People.Types as PeopleTypes
+import People.Http as PeopleHttp
+import People.Helpers exposing (getPerson)
 import Styles exposing (app, body, menu, button)
 
 
@@ -39,14 +39,14 @@ subscriptions model =
 
 type alias Model =
     { history : List (Maybe Route)
-    , patients : List PatientsTypes.Patient
+    , people : List PeopleTypes.Person
     }
 
 
 init : Nav.Location -> ( Model, Cmd Msg )
 init location =
     ( { history = []
-      , patients = []
+      , people = []
       }
     , Nav.newUrl location.pathname
     )
@@ -58,18 +58,18 @@ init location =
 
 type Route
     = Home
-    | PatientId Int
-    | Patients
-    | NewPatient
+    | PersonId Int
+    | People
+    | NewPerson
 
 
 routeParser : UrlParser.Parser (Route -> a) a
 routeParser =
     UrlParser.oneOf
         [ UrlParser.map Home top
-        , UrlParser.map Patients (UrlParser.s "patients")
-        , UrlParser.map PatientId (UrlParser.s "patients" </> int)
-        , UrlParser.map NewPatient (UrlParser.s "patients" </> UrlParser.s "new")
+        , UrlParser.map People (UrlParser.s "patients")
+        , UrlParser.map PersonId (UrlParser.s "patients" </> int)
+        , UrlParser.map NewPerson (UrlParser.s "patients" </> UrlParser.s "new")
         ]
 
 
@@ -79,7 +79,7 @@ routeParser =
 
 type Msg
     = NewUrl String
-    | PatientsMsg PatientsTypes.Msg
+    | PeopleMsg PeopleTypes.Msg
     | UrlChange Nav.Location
 
 
@@ -91,13 +91,13 @@ update msg model =
             , Nav.newUrl url
             )
 
-        PatientsMsg patientsMsg ->
+        PeopleMsg peopleMsg ->
             let
-                ( patientsModel, patientsCmd ) =
-                    PatientsUpdate.update patientsMsg model.patients
+                ( peopleModel, peopleCmd ) =
+                    PeopleUpdate.update "patients" peopleMsg model.people
             in
-                ( { model | patients = patientsModel }
-                , Cmd.map PatientsMsg patientsCmd
+                ( { model | people = peopleModel }
+                , Cmd.map PeopleMsg peopleCmd
                 )
 
         UrlChange location ->
@@ -110,11 +110,11 @@ update msg model =
             in
                 ( { model | history = maybeRoute :: model.history }
                 , case route of
-                    Patients ->
-                        Cmd.map PatientsMsg PatientsHttp.getPatients
+                    People ->
+                        Cmd.map PeopleMsg (PeopleHttp.getPeople "patients")
 
-                    PatientId _ ->
-                        Cmd.map PatientsMsg PatientsHttp.getPatients
+                    PersonId _ ->
+                        Cmd.map PeopleMsg (PeopleHttp.getPeople "patients")
 
                     _ ->
                         Cmd.none
@@ -152,15 +152,15 @@ toRouteView model maybeRoute =
         Just route ->
             div []
                 [ case route of
-                    Patients ->
-                        Html.map PatientsMsg (PatientsView.view model.patients)
+                    People ->
+                        Html.map PeopleMsg (PeopleView.view model.people)
 
                     Home ->
                         text Home.hello
 
-                    NewPatient ->
-                        Html.map PatientsMsg PatientsView.newPatientView
+                    NewPerson ->
+                        Html.map PeopleMsg PeopleView.newPersonView
 
-                    PatientId id ->
-                        Html.map PatientsMsg (PatientsView.patientView (getPatient id model.patients))
+                    PersonId id ->
+                        Html.map PeopleMsg (PeopleView.personView (getPerson id model.people))
                 ]

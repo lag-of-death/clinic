@@ -1,39 +1,39 @@
-module Patients.View exposing (..)
+module People.View exposing (..)
 
 import Html.Attributes exposing (name, style, required)
 import Html exposing (text, Html, div, button, ul, label, li, table, td, tr, form, input)
 import Html.Events exposing (onClick)
-import Patients.Types exposing (..)
+import People.Types exposing (..)
 import Styles exposing (button, block, blockStreteched, blockCentered)
 
 
-view : List Patient -> Html Msg
-view patients =
-    if (List.isEmpty patients) then
+view : List Person -> Html Msg
+view people =
+    if (List.isEmpty people) then
         text "Processing..."
     else
         div [ style block ]
             [ ul [ style [ ( "width", "70%" ) ] ]
                 (List.map
-                    (\patient ->
+                    (\person ->
                         li [ style block, style blockCentered, style blockStreteched ]
-                            [ text <| patient.surname ++ " " ++ patient.name
+                            [ text <| person.surname ++ " " ++ person.name
                             , div []
                                 [ Html.button
                                     [ style Styles.button
-                                    , onClick (NewUrl <| "/patients/" ++ (toString patient.id))
+                                    , onClick (NewUrl <| "/patients/" ++ (toString person.id))
                                     ]
                                     [ text "Details" ]
                                 , Html.button
                                     [ style Styles.button
                                     , style [ ( "margin-left", "4px" ) ]
-                                    , onClick (DelPatient patient.id)
+                                    , onClick (DelPerson person.id)
                                     ]
                                     [ text "Delete" ]
                                 ]
                             ]
                     )
-                    patients
+                    people
                 )
             , div []
                 [ Html.button
@@ -45,10 +45,10 @@ view patients =
             ]
 
 
-newPatientView : Html a
-newPatientView =
+newPersonView : Html a
+newPersonView =
     form
-        [ style Styles.newPatientForm
+        [ style Styles.newPersonForm
         , Html.Attributes.action "/api/patients/"
         , Html.Attributes.method "POST"
         ]
@@ -80,31 +80,31 @@ newPatientView =
         ]
 
 
-patientView : Patient -> Html a
-patientView patient =
+personView : Person -> Html a
+personView person =
     table []
         [ tr []
             [ td []
                 [ text "Surname:" ]
             , td []
-                [ text patient.surname ]
+                [ text person.surname ]
             ]
         , tr []
             [ td []
                 [ text "Name:" ]
             , td []
-                [ text patient.name ]
+                [ text person.name ]
             ]
         , tr []
             [ td []
                 [ text "E-mail:" ]
             , td []
-                [ text patient.email ]
+                [ text person.email ]
             ]
         , tr []
             [ td []
                 [ text "ID:" ]
             , td []
-                [ text <| toString <| patient.id ]
+                [ text <| toString <| person.id ]
             ]
         ]

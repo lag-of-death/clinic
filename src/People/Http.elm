@@ -1,19 +1,19 @@
-module Patients.Http exposing (..)
+module People.Http exposing (..)
 
 import Http
 import Json.Decode as Decode
-import Patients.Types exposing (..)
+import People.Types exposing (..)
 
 
-getPatients : Cmd Msg
-getPatients =
-    Http.send PatientsData (Http.get "/api/patients" decodePatients)
+getPeople : String -> Cmd Msg
+getPeople whatPeople =
+    Http.send PeopleData (Http.get ("/api/" ++ whatPeople) decodePeople)
 
 
-decodePatients : Decode.Decoder (List Patient)
-decodePatients =
+decodePeople : Decode.Decoder (List Person)
+decodePeople =
     Decode.list
-        (Decode.map4 Patient
+        (Decode.map4 Person
             (Decode.field "name" Decode.string)
             (Decode.field "surname" Decode.string)
             (Decode.field "email" Decode.string)
@@ -21,13 +21,13 @@ decodePatients =
         )
 
 
-deletePatient : Int -> Cmd Msg
-deletePatient id =
-    Http.send PatientDeleted
+deletePerson : String -> Int -> Cmd Msg
+deletePerson whatPeople id =
+    Http.send PersonDeleted
         (Http.request
             { method = "DELETE"
             , headers = []
-            , url = "/api/patients/" ++ (toString id)
+            , url = "/api/" ++ whatPeople ++ "/" ++ (toString id)
             , body = Http.emptyBody
             , expect = Http.expectStringResponse (\_ -> Ok ())
             , timeout = Nothing
