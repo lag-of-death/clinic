@@ -39,14 +39,16 @@ subscriptions model =
 
 type alias Model =
     { history : List (Maybe Route)
-    , people : List PeopleTypes.Person
+    , patients : List PeopleTypes.Person
+    , doctors : List PeopleTypes.Person
     }
 
 
 init : Nav.Location -> ( Model, Cmd Msg )
 init location =
     ( { history = []
-      , people = []
+      , patients = []
+      , doctors = []
       }
     , Nav.newUrl location.pathname
     )
@@ -61,6 +63,8 @@ type Route
     | PersonId Int
     | People
     | NewPerson
+    | Doctors
+    | DoctorId Int
 
 
 routeParser : UrlParser.Parser (Route -> a) a
@@ -68,6 +72,8 @@ routeParser =
     UrlParser.oneOf
         [ UrlParser.map Home top
         , UrlParser.map People (UrlParser.s "patients")
+        , UrlParser.map Doctors (UrlParser.s "doctors")
+        , UrlParser.map DoctorId (UrlParser.s "doctors" </> int)
         , UrlParser.map PersonId (UrlParser.s "patients" </> int)
         , UrlParser.map NewPerson (UrlParser.s "patients" </> UrlParser.s "new")
         ]
@@ -79,7 +85,7 @@ routeParser =
 
 type Msg
     = NewUrl String
-    | PeopleMsg PeopleTypes.Msg
+    | PeopleMsg ( String, PeopleTypes.Msg )
     | UrlChange Nav.Location
 
 
@@ -91,14 +97,24 @@ update msg model =
             , Nav.newUrl url
             )
 
-        PeopleMsg peopleMsg ->
+        PeopleMsg ( whatPeople, peopleMsg ) ->
             let
                 ( peopleModel, peopleCmd ) =
-                    PeopleUpdate.update "patients" peopleMsg model.people
+                    PeopleUpdate.update whatPeople peopleMsg model.patients
             in
-                ( { model | people = peopleModel }
-                , Cmd.map PeopleMsg peopleCmd
-                )
+                case whatPeople of
+                    "patients" ->
+                        ( { model | patients = peopleModel }
+                        , Cmd.map PeopleMsg (Cmd.map (\msg -> ( whatPeople, msg )) peopleCmd)
+                        )
+
+                    "doctors" ->
+                        ( { model | doctors = peopleModel }
+                        , Cmd.map PeopleMsg (Cmd.map (\msg -> ( whatPeople, msg )) peopleCmd)
+                        )
+
+                    _ ->
+                        ( model, Cmd.none )
 
         UrlChange location ->
             let
@@ -111,10 +127,16 @@ update msg model =
                 ( { model | history = maybeRoute :: model.history }
                 , case route of
                     People ->
-                        Cmd.map PeopleMsg (PeopleHttp.getPeople "patients")
+                        Cmd.map PeopleMsg (Cmd.map (\x -> ( "patients", x )) (PeopleHttp.getPeople "patients"))
 
                     PersonId _ ->
-                        Cmd.map PeopleMsg (PeopleHttp.getPeople "patients")
+                        Cmd.map PeopleMsg (Cmd.map (\x -> ( "patients", x )) (PeopleHttp.getPeople "patients"))
+
+                    DoctorId _ ->
+                        Cmd.map PeopleMsg (Cmd.map (\x -> ( "doctors", x )) (PeopleHttp.getPeople "doctors"))
+
+                    Doctors ->
+                        Cmd.map PeopleMsg (Cmd.map (\x -> ( "doctors", x )) (PeopleHttp.getPeople "doctors"))
 
                     _ ->
                         Cmd.none
@@ -132,6 +154,7 @@ view model =
             [ style Styles.menu ]
             [ Html.button [ style Styles.button, onClick (NewUrl "/") ] [ text "home" ]
             , Html.button [ style Styles.button, onClick (NewUrl "/patients/") ] [ text "patients" ]
+            , Html.button [ style Styles.button, onClick (NewUrl "/doctors/") ] [ text "doctors" ]
             , Html.button [ style Styles.button, onClick (NewUrl "/404/") ] [ text "404" ]
             ]
         , main_ [ style Styles.app ]
@@ -153,14 +176,20 @@ toRouteView model maybeRoute =
             div []
                 [ case route of
                     People ->
-                        Html.map PeopleMsg (PeopleView.view model.people)
+                        Html.map PeopleMsg (Html.map (\msg -> ( "patients", msg )) (PeopleView.patientsView model.patients))
+
+                    Doctors ->
+                        Html.map PeopleMsg (Html.map (\msg -> ( "doctors", msg )) (PeopleView.peopleList "doctors" model.doctors))
+
+                    DoctorId id ->
+                        Html.map PeopleMsg (Html.map (\a -> ( "doctors", a )) (PeopleView.personView (getPerson id model.doctors)))
 
                     Home ->
                         text Home.hello
 
                     NewPerson ->
-                        Html.map PeopleMsg PeopleView.newPersonView
+                        Html.map PeopleMsg (Html.map (\a -> ( "patients", a )) PeopleView.newPersonView)
 
                     PersonId id ->
-                        Html.map PeopleMsg (PeopleView.personView (getPerson id model.people))
+                        Html.map PeopleMsg (Html.map (\a -> ( "patients", a )) (PeopleView.personView (getPerson id model.patients)))
                 ]

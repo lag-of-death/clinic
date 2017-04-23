@@ -7,42 +7,62 @@ import People.Types exposing (..)
 import Styles exposing (button, block, blockStreteched, blockCentered)
 
 
-view : List Person -> Html Msg
-view people =
+peopleList : String -> List Person -> Html Msg
+peopleList whatPeople people =
+    ul [ style [ ( "width", "70%" ) ] ]
+        (List.map
+            (\person ->
+                li [ style block, style blockCentered, style blockStreteched ]
+                    [ text <| person.surname ++ " " ++ person.name
+                    , div []
+                        [ Html.button
+                            [ style Styles.button
+                            , onClick (NewUrl <| "/" ++ whatPeople ++ "/" ++ (toString person.id))
+                            ]
+                            [ text "Details" ]
+                        , Html.button
+                            [ style Styles.button
+                            , style [ ( "margin-left", "4px" ) ]
+                            , onClick (DelPerson person.id)
+                            ]
+                            [ text "Delete" ]
+                        ]
+                    ]
+            )
+            people
+        )
+
+
+peopleView : String -> List Person -> Html Msg
+peopleView whatPeople people =
+    view whatPeople newPatient people
+
+
+patientsView : List Person -> Html Msg
+patientsView people =
+    peopleView "patients" people
+
+
+view : String -> Html Msg -> List Person -> Html Msg
+view whatPeople newPerson people =
     if (List.isEmpty people) then
         text "Processing..."
     else
         div [ style block ]
-            [ ul [ style [ ( "width", "70%" ) ] ]
-                (List.map
-                    (\person ->
-                        li [ style block, style blockCentered, style blockStreteched ]
-                            [ text <| person.surname ++ " " ++ person.name
-                            , div []
-                                [ Html.button
-                                    [ style Styles.button
-                                    , onClick (NewUrl <| "/patients/" ++ (toString person.id))
-                                    ]
-                                    [ text "Details" ]
-                                , Html.button
-                                    [ style Styles.button
-                                    , style [ ( "margin-left", "4px" ) ]
-                                    , onClick (DelPerson person.id)
-                                    ]
-                                    [ text "Delete" ]
-                                ]
-                            ]
-                    )
-                    people
-                )
-            , div []
-                [ Html.button
-                    [ style Styles.button
-                    , onClick (NewUrl <| "/patients/new")
-                    ]
-                    [ text "New patient" ]
-                ]
+            [ peopleList whatPeople people
+            , newPerson
             ]
+
+
+newPatient : Html Msg
+newPatient =
+    div []
+        [ Html.button
+            [ style Styles.button
+            , onClick (NewUrl <| "/patients/new")
+            ]
+            [ text "New patient" ]
+        ]
 
 
 newPersonView : Html a
