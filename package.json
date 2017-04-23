@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "make": "cd src && elm-make Main.elm --output=../public/index.html",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "run": "node index.js"
   },
   "repository": {
     "type": "git",
