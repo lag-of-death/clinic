@@ -9843,6 +9843,9 @@ var _user$project$People_Types$Person = F4(
 var _user$project$People_Types$DoctorDeleted = function (a) {
 	return {ctor: 'DoctorDeleted', _0: a};
 };
+var _user$project$People_Types$NursesData = function (a) {
+	return {ctor: 'NursesData', _0: a};
+};
 var _user$project$People_Types$DoctorsData = function (a) {
 	return {ctor: 'DoctorsData', _0: a};
 };
@@ -10634,6 +10637,24 @@ var _user$project$People_Http$getDoctors = A2(
 	_elm_lang$http$Http$send,
 	_user$project$People_Types$DoctorsData,
 	A2(_elm_lang$http$Http$get, '/api/doctors', _user$project$People_Http$decodeDoctors));
+var _user$project$People_Http$Assistant = F6(
+	function (a, b, c, d, e, f) {
+		return {name: a, surname: b, email: c, id: d, speciality: e, isDistrictNurse: f};
+	});
+var _user$project$People_Http$decodeNurses = _elm_lang$core$Json_Decode$list(
+	A7(
+		_elm_lang$core$Json_Decode$map6,
+		_user$project$People_Http$Assistant,
+		A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
+		A2(_elm_lang$core$Json_Decode$field, 'surname', _elm_lang$core$Json_Decode$string),
+		A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
+		A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
+		A2(_elm_lang$core$Json_Decode$field, 'speciality', _elm_lang$core$Json_Decode$string),
+		A2(_elm_lang$core$Json_Decode$field, 'isDistrictNurse', _elm_lang$core$Json_Decode$bool)));
+var _user$project$People_Http$getNurses = A2(
+	_elm_lang$http$Http$send,
+	_user$project$People_Types$NursesData,
+	A2(_elm_lang$http$Http$get, '/api/nurses', _user$project$People_Http$decodeNurses));
 var _user$project$People_Update$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
@@ -10699,6 +10720,20 @@ var _user$project$People_Update$updateDoctors = F2(
 		} while(false);
 		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 	});
+var _user$project$People_Update$updateNurses = F2(
+	function (msg, model) {
+		var _p2 = msg;
+		if (_p2.ctor === 'NursesData') {
+			if (_p2._0.ctor === 'Ok') {
+				return {ctor: '_Tuple2', _0: _p2._0._0, _1: _elm_lang$core$Platform_Cmd$none};
+			} else {
+				var error = A2(_elm_lang$core$Debug$log, 'NursesData error: ', _p2._0._0);
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			}
+		} else {
+			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		}
+	});
 var _user$project$People_Helpers$getPerson = F3(
 	function (id, people, $default) {
 		return A2(
@@ -10720,7 +10755,8 @@ var _user$project$Main$init = function (location) {
 		_0: {
 			history: {ctor: '[]'},
 			patients: {ctor: '[]'},
-			doctors: {ctor: '[]'}
+			doctors: {ctor: '[]'},
+			nurses: {ctor: '[]'}
 		},
 		_1: _elm_lang$navigation$Navigation$newUrl(location.pathname)
 	};
@@ -10728,10 +10764,11 @@ var _user$project$Main$init = function (location) {
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$Main$Model = F3(
-	function (a, b, c) {
-		return {history: a, patients: b, doctors: c};
+var _user$project$Main$Model = F4(
+	function (a, b, c, d) {
+		return {history: a, patients: b, doctors: c, nurses: d};
 	});
+var _user$project$Main$Nurses = {ctor: 'Nurses'};
 var _user$project$Main$DoctorId = function (a) {
 	return {ctor: 'DoctorId', _0: a};
 };
@@ -10750,42 +10787,49 @@ var _user$project$Main$routeParser = _evancz$url_parser$UrlParser$oneOf(
 			ctor: '::',
 			_0: A2(
 				_evancz$url_parser$UrlParser$map,
-				_user$project$Main$People,
-				_evancz$url_parser$UrlParser$s('patients')),
+				_user$project$Main$Nurses,
+				_evancz$url_parser$UrlParser$s('nurses')),
 			_1: {
 				ctor: '::',
 				_0: A2(
 					_evancz$url_parser$UrlParser$map,
-					_user$project$Main$Doctors,
-					_evancz$url_parser$UrlParser$s('doctors')),
+					_user$project$Main$People,
+					_evancz$url_parser$UrlParser$s('patients')),
 				_1: {
 					ctor: '::',
 					_0: A2(
 						_evancz$url_parser$UrlParser$map,
-						_user$project$Main$DoctorId,
-						A2(
-							_evancz$url_parser$UrlParser_ops['</>'],
-							_evancz$url_parser$UrlParser$s('doctors'),
-							_evancz$url_parser$UrlParser$int)),
+						_user$project$Main$Doctors,
+						_evancz$url_parser$UrlParser$s('doctors')),
 					_1: {
 						ctor: '::',
 						_0: A2(
 							_evancz$url_parser$UrlParser$map,
-							_user$project$Main$PersonId,
+							_user$project$Main$DoctorId,
 							A2(
 								_evancz$url_parser$UrlParser_ops['</>'],
-								_evancz$url_parser$UrlParser$s('patients'),
+								_evancz$url_parser$UrlParser$s('doctors'),
 								_evancz$url_parser$UrlParser$int)),
 						_1: {
 							ctor: '::',
 							_0: A2(
 								_evancz$url_parser$UrlParser$map,
-								_user$project$Main$NewPerson,
+								_user$project$Main$PersonId,
 								A2(
 									_evancz$url_parser$UrlParser_ops['</>'],
 									_evancz$url_parser$UrlParser$s('patients'),
-									_evancz$url_parser$UrlParser$s('new'))),
-							_1: {ctor: '[]'}
+									_evancz$url_parser$UrlParser$int)),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_evancz$url_parser$UrlParser$map,
+									_user$project$Main$NewPerson,
+									A2(
+										_evancz$url_parser$UrlParser_ops['</>'],
+										_evancz$url_parser$UrlParser$s('patients'),
+										_evancz$url_parser$UrlParser$s('new'))),
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				}
@@ -10809,12 +10853,12 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$navigation$Navigation$newUrl(_p0._0)
 				};
 			case 'PeopleMsg':
-				var _p5 = _p0._0._0;
-				var _p4 = _p0._0._1;
-				var _p1 = _p5;
+				var _p6 = _p0._0._0;
+				var _p5 = _p0._0._1;
+				var _p1 = _p6;
 				switch (_p1) {
 					case 'patients':
-						var _p2 = A2(_user$project$People_Update$update, _p4, model.patients);
+						var _p2 = A2(_user$project$People_Update$update, _p5, model.patients);
 						var peopleModel = _p2._0;
 						var peopleCmd = _p2._1;
 						return {
@@ -10826,12 +10870,12 @@ var _user$project$Main$update = F2(
 								_elm_lang$core$Platform_Cmd$map,
 								function (msg) {
 									return _user$project$Main$PeopleMsg(
-										{ctor: '_Tuple2', _0: _p5, _1: msg});
+										{ctor: '_Tuple2', _0: _p6, _1: msg});
 								},
 								peopleCmd)
 						};
 					case 'doctors':
-						var _p3 = A2(_user$project$People_Update$updateDoctors, _p4, model.doctors);
+						var _p3 = A2(_user$project$People_Update$updateDoctors, _p5, model.doctors);
 						var peopleModel = _p3._0;
 						var peopleCmd = _p3._1;
 						return {
@@ -10843,7 +10887,24 @@ var _user$project$Main$update = F2(
 								_elm_lang$core$Platform_Cmd$map,
 								function (msg) {
 									return _user$project$Main$PeopleMsg(
-										{ctor: '_Tuple2', _0: _p5, _1: msg});
+										{ctor: '_Tuple2', _0: _p6, _1: msg});
+								},
+								peopleCmd)
+						};
+					case 'nurses':
+						var _p4 = A2(_user$project$People_Update$updateNurses, _p5, model.nurses);
+						var peopleModel = _p4._0;
+						var peopleCmd = _p4._1;
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{nurses: peopleModel}),
+							_1: A2(
+								_elm_lang$core$Platform_Cmd$map,
+								function (msg) {
+									return _user$project$Main$PeopleMsg(
+										{ctor: '_Tuple2', _0: _p6, _1: msg});
 								},
 								peopleCmd)
 						};
@@ -10861,8 +10922,8 @@ var _user$project$Main$update = F2(
 							history: {ctor: '::', _0: maybeRoute, _1: model.history}
 						}),
 					_1: function () {
-						var _p6 = route;
-						switch (_p6.ctor) {
+						var _p7 = route;
+						switch (_p7.ctor) {
 							case 'People':
 								return A2(
 									_elm_lang$core$Platform_Cmd$map,
@@ -10895,6 +10956,14 @@ var _user$project$Main$update = F2(
 											{ctor: '_Tuple2', _0: 'doctors', _1: x});
 									},
 									_user$project$People_Http$getDoctors);
+							case 'Nurses':
+								return A2(
+									_elm_lang$core$Platform_Cmd$map,
+									function (x) {
+										return _user$project$Main$PeopleMsg(
+											{ctor: '_Tuple2', _0: 'nurses', _1: x});
+									},
+									_user$project$People_Http$getNurses);
 							default:
 								return _elm_lang$core$Platform_Cmd$none;
 						}
@@ -10904,8 +10973,8 @@ var _user$project$Main$update = F2(
 	});
 var _user$project$Main$toRouteView = F2(
 	function (model, maybeRoute) {
-		var _p7 = maybeRoute;
-		if (_p7.ctor === 'Nothing') {
+		var _p8 = maybeRoute;
+		if (_p8.ctor === 'Nothing') {
 			return A2(
 				_elm_lang$html$Html$div,
 				{ctor: '[]'},
@@ -10921,8 +10990,8 @@ var _user$project$Main$toRouteView = F2(
 				{
 					ctor: '::',
 					_0: function () {
-						var _p8 = _p7._0;
-						switch (_p8.ctor) {
+						var _p9 = _p8._0;
+						switch (_p9.ctor) {
 							case 'Home':
 								return _elm_lang$html$Html$text(_user$project$Home_Main$hello);
 							case 'People':
@@ -10949,7 +11018,7 @@ var _user$project$Main$toRouteView = F2(
 											{ctor: '_Tuple2', _0: 'patients', _1: a});
 									},
 									_user$project$People_View$personView(
-										A3(_user$project$People_Helpers$getPerson, _p8._0, model.patients, _user$project$People_Helpers$defaultPerson)));
+										A3(_user$project$People_Helpers$getPerson, _p9._0, model.patients, _user$project$People_Helpers$defaultPerson)));
 							case 'Doctors':
 								return A2(
 									_elm_lang$html$Html$map,
@@ -10958,7 +11027,7 @@ var _user$project$Main$toRouteView = F2(
 											{ctor: '_Tuple2', _0: 'doctors', _1: a});
 									},
 									_user$project$People_View$doctorsView(model.doctors));
-							default:
+							case 'DoctorId':
 								return A2(
 									_elm_lang$html$Html$map,
 									function (a) {
@@ -10966,7 +11035,10 @@ var _user$project$Main$toRouteView = F2(
 											{ctor: '_Tuple2', _0: 'doctors', _1: a});
 									},
 									_user$project$People_View$doctorView(
-										A3(_user$project$People_Helpers$getPerson, _p8._0, model.doctors, _user$project$People_Helpers$defaultDoctor)));
+										A3(_user$project$People_Helpers$getPerson, _p9._0, model.doctors, _user$project$People_Helpers$defaultDoctor)));
+							default:
+								return _elm_lang$html$Html$text(
+									_elm_lang$core$Basics$toString(model.nurses));
 						}
 					}(),
 					_1: {ctor: '[]'}
@@ -11041,13 +11113,13 @@ var _user$project$Main$view = function (model) {
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html_Events$onClick(
-											_user$project$Main$NewUrl('/doctors/')),
+											_user$project$Main$NewUrl('/nurses/')),
 										_1: {ctor: '[]'}
 									}
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text('doctors'),
+									_0: _elm_lang$html$Html$text('nurses'),
 									_1: {ctor: '[]'}
 								}),
 							_1: {
@@ -11060,16 +11132,36 @@ var _user$project$Main$view = function (model) {
 										_1: {
 											ctor: '::',
 											_0: _elm_lang$html$Html_Events$onClick(
-												_user$project$Main$NewUrl('/404/')),
+												_user$project$Main$NewUrl('/doctors/')),
 											_1: {ctor: '[]'}
 										}
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('404'),
+										_0: _elm_lang$html$Html$text('doctors'),
 										_1: {ctor: '[]'}
 									}),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$button,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$style(_user$project$Styles$button),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onClick(
+													_user$project$Main$NewUrl('/404/')),
+												_1: {ctor: '[]'}
+											}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('404'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}

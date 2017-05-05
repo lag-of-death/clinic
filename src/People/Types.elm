@@ -11,6 +11,10 @@ type alias Doctor a =
     { a | speciality : String }
 
 
+type alias Nurse a =
+    { a | isDistrictNurse : Bool }
+
+
 type alias Person =
     { name : String
     , surname : String
@@ -25,4 +29,5 @@ type Msg
     | DelPerson Int
     | PersonDeleted (Result Http.Error ())
     | DoctorsData (Result Http.Error (List (Doctor Person)))
+    | NursesData (Result Http.Error (List (Nurse (Doctor Person))))
     | DoctorDeleted (Result Http.Error ())

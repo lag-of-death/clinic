@@ -14,6 +14,16 @@ type alias Doc =
     }
 
 
+type alias Assistant =
+    { name : String
+    , surname : String
+    , email : String
+    , id : Int
+    , speciality : String
+    , isDistrictNurse : Bool
+    }
+
+
 getPeople : String -> Cmd Msg
 getPeople whatPeople =
     Http.send PeopleData (Http.get ("/api/" ++ whatPeople) decodePeople)
@@ -27,6 +37,11 @@ getPatients =
 getDoctors : Cmd Msg
 getDoctors =
     Http.send DoctorsData (Http.get ("/api/doctors") decodeDoctors)
+
+
+getNurses : Cmd Msg
+getNurses =
+    Http.send NursesData (Http.get ("/api/nurses") decodeNurses)
 
 
 decodePeople : Decode.Decoder (List Person)
@@ -49,6 +64,19 @@ decodeDoctors =
             (Decode.field "email" Decode.string)
             (Decode.field "id" Decode.int)
             (Decode.field "speciality" Decode.string)
+        )
+
+
+decodeNurses : Decode.Decoder (List (Nurse (Doctor Person)))
+decodeNurses =
+    Decode.list
+        (Decode.map6 Assistant
+            (Decode.field "name" Decode.string)
+            (Decode.field "surname" Decode.string)
+            (Decode.field "email" Decode.string)
+            (Decode.field "id" Decode.int)
+            (Decode.field "speciality" Decode.string)
+            (Decode.field "isDistrictNurse" Decode.bool)
         )
 
 

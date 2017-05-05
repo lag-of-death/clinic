@@ -1,14 +1,17 @@
-const express = require('express');
-const spa = require('express-spa');
+const express    = require('express');
+const spa        = require('express-spa');
 const bodyParser = require('body-parser');
-const doctorsRouter = require('./src-server/doctors');
+
+const nursesRouter   = require('./src-server/nurses');
+const doctorsRouter  = require('./src-server/doctors');
 const patientsRouter = require('./src-server/patients');
 
-const port = process.env.PORT || 5000;
+const port      = process.env.PORT || 5000;
 const publicDir = `${__dirname}/public`;
 
 express()
-    .use(bodyParser.urlencoded({ extended: true }))
+    .use(bodyParser.urlencoded({extended: true}))
+    .use(nursesRouter)
     .use(doctorsRouter)
     .use(patientsRouter)
     .use(express.static(publicDir))

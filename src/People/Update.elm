@@ -5,6 +5,25 @@ import People.Types exposing (..)
 import Navigation as Nav
 
 
+updateNurses : Msg -> List (Nurse (Doctor Person)) -> ( List (Nurse (Doctor Person)), Cmd Msg )
+updateNurses msg model =
+    case msg of
+        NursesData (Ok nurses) ->
+            ( nurses
+            , Cmd.none
+            )
+
+        NursesData (Err err) ->
+            let
+                error =
+                    Debug.log "NursesData error: " err
+            in
+                ( model, Cmd.none )
+
+        _ ->
+            ( model, Cmd.none )
+
+
 updateDoctors : Msg -> List (Doctor Person) -> ( List (Doctor Person), Cmd Msg )
 updateDoctors msg model =
     case msg of

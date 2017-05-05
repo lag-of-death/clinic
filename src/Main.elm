@@ -41,6 +41,7 @@ type alias Model =
     { history : List (Maybe Route)
     , patients : List PeopleTypes.Person
     , doctors : List (PeopleTypes.Doctor PeopleTypes.Person)
+    , nurses : List (PeopleTypes.Nurse (PeopleTypes.Doctor PeopleTypes.Person))
     }
 
 
@@ -49,6 +50,7 @@ init location =
     ( { history = []
       , patients = []
       , doctors = []
+      , nurses = []
       }
     , Nav.newUrl location.pathname
     )
@@ -65,12 +67,14 @@ type Route
     | NewPerson
     | Doctors
     | DoctorId Int
+    | Nurses
 
 
 routeParser : UrlParser.Parser (Route -> a) a
 routeParser =
     UrlParser.oneOf
         [ UrlParser.map Home top
+        , UrlParser.map Nurses (UrlParser.s "nurses")
         , UrlParser.map People (UrlParser.s "patients")
         , UrlParser.map Doctors (UrlParser.s "doctors")
         , UrlParser.map DoctorId (UrlParser.s "doctors" </> int)
@@ -117,6 +121,15 @@ update msg model =
                         , Cmd.map (\msg -> PeopleMsg ( whatPeople, msg )) peopleCmd
                         )
 
+                "nurses" ->
+                    let
+                        ( peopleModel, peopleCmd ) =
+                            PeopleUpdate.updateNurses peopleMsg model.nurses
+                    in
+                        ( { model | nurses = peopleModel }
+                        , Cmd.map (\msg -> PeopleMsg ( whatPeople, msg )) peopleCmd
+                        )
+
                 _ ->
                     ( model, Cmd.none )
 
@@ -142,6 +155,9 @@ update msg model =
                     Doctors ->
                         Cmd.map (\x -> PeopleMsg ( "doctors", x )) PeopleHttp.getDoctors
 
+                    Nurses ->
+                        Cmd.map (\x -> PeopleMsg ( "nurses", x )) PeopleHttp.getNurses
+
                     _ ->
                         Cmd.none
                 )
@@ -158,6 +174,7 @@ view model =
             [ style Styles.menu ]
             [ Html.button [ style Styles.button, onClick (NewUrl "/") ] [ text "home" ]
             , Html.button [ style Styles.button, onClick (NewUrl "/patients/") ] [ text "patients" ]
+            , Html.button [ style Styles.button, onClick (NewUrl "/nurses/") ] [ text "nurses" ]
             , Html.button [ style Styles.button, onClick (NewUrl "/doctors/") ] [ text "doctors" ]
             , Html.button [ style Styles.button, onClick (NewUrl "/404/") ] [ text "404" ]
             ]
@@ -196,4 +213,7 @@ toRouteView model maybeRoute =
 
                     DoctorId id ->
                         Html.map (\a -> PeopleMsg ( "doctors", a )) (PeopleView.doctorView (getPerson id model.doctors defaultDoctor))
+
+                    Nurses ->
+                        Html.text <| toString model.nurses
                 ]

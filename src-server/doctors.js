@@ -25,9 +25,6 @@ function getDoctorsHandler(req, res) {
 }
 
 function delDoctorHandler(req, res) {
-    console.log(req.params);
-
-
     doctors = doctors.filter(doctor => doctor.id !== parseInt(req.params.id));
 
     res.send('OK');
