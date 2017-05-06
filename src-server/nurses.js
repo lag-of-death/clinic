@@ -29,7 +29,7 @@ function getNursesHandler(req, res) {
 }
 
 function delNurseHandler(req, res) {
-    nurses = Nurses.filter(doctor => doctor.id !== parseInt(req.params.id));
+    nurses = nurses.filter(nurse => nurse.personalData.id !== parseInt(req.params.id));
 
     res.send('OK');
 }

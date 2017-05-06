@@ -223,5 +223,5 @@ toRouteView model maybeRoute =
                         Html.map (\a -> PeopleMsg ( "nurses", a )) (PeopleView.nurseView (getPerson id model.nurses defaultNurse))
 
                     Nurses ->
-                        Html.text <| toString model.nurses
+                        Html.map (\a -> PeopleMsg ( "nurses", a )) (PeopleView.nursesView model.nurses)
                 ]

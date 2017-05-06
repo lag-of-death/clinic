@@ -35,4 +35,5 @@ type Msg
     | PersonDeleted (Result Http.Error ())
     | DoctorsData (Result Http.Error (List Doctor))
     | NursesData (Result Http.Error (List Nurse))
+    | NurseDeleted (Result Http.Error ())
     | DoctorDeleted (Result Http.Error ())

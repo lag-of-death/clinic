@@ -12,6 +12,20 @@ withSpeciality doctor entryData =
     List.append entryData [ div [ style [ ( "width", "100px" ) ] ] [ text doctor.speciality ] ]
 
 
+withIsDistrictInfo : Nurse -> List (Html Msg) -> List (Html Msg)
+withIsDistrictInfo nurse entryData =
+    List.append
+        entryData
+        [ div [ style [ ( "width", "100px" ) ] ]
+            [ text <|
+                if nurse.isDistrictNurse then
+                    "district nurse"
+                else
+                    ""
+            ]
+        ]
+
+
 listSingleEntry : { b | personalData : { a | id : Int, name : String, surname : String } } -> String -> List (Html Msg)
 listSingleEntry a whatPeople =
     let
@@ -44,6 +58,18 @@ doctorsList whatPeople doctors =
                     (withSpeciality doctor (listSingleEntry doctor whatPeople))
             )
             doctors
+        )
+
+
+nursesList : String -> List Nurse -> Html Msg
+nursesList whatPeople nurses =
+    ul [ style [ ( "width", "70%" ) ] ]
+        (List.map
+            (\nurse ->
+                li [ style block, style blockCentered, style blockStreteched ]
+                    (withIsDistrictInfo nurse (listSingleEntry nurse whatPeople))
+            )
+            nurses
         )
 
 
@@ -190,3 +216,8 @@ doctorView person =
 nurseView : Nurse -> Html a
 nurseView person =
     table [] (List.concat [ (restTr person), [ districtNurseTr person.isDistrictNurse ] ])
+
+
+nursesView : List Nurse -> Html Msg
+nursesView people =
+    view (div [] []) (nursesList "nurses" people)

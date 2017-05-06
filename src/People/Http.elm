@@ -67,6 +67,12 @@ deleteDoctor id =
         (delete "doctors" id)
 
 
+deleteNurse : Int -> Cmd Msg
+deleteNurse id =
+    Http.send NurseDeleted
+        (delete "nurses" id)
+
+
 deletePerson : String -> Int -> Cmd Msg
 deletePerson whatPeople id =
     Http.send PersonDeleted

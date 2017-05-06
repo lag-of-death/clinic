@@ -8,10 +8,19 @@ import Navigation as Nav
 updateNurses : Msg -> List Nurse -> ( List Nurse, Cmd Msg )
 updateNurses msg model =
     case msg of
+        NewUrl url ->
+            ( model, Nav.newUrl url )
+
         NursesData (Ok nurses) ->
             ( nurses
             , Cmd.none
             )
+
+        DelPerson id ->
+            ( model, deleteNurse id )
+
+        NurseDeleted _ ->
+            ( model, getNurses )
 
         NursesData (Err err) ->
             let
