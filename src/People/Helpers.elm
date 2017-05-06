@@ -25,6 +25,13 @@ defaultDoctor =
     }
 
 
+defaultNurse : Nurse
+defaultNurse =
+    { personalData = defaultPerson
+    , isDistrictNurse = False
+    }
+
+
 getPerson id people default =
     List.filter (\person -> person.personalData.id == id) people
         |> List.head

@@ -68,6 +68,7 @@ type Route
     | Doctors
     | DoctorId Int
     | Nurses
+    | NurseId Int
 
 
 routeParser : UrlParser.Parser (Route -> a) a
@@ -75,6 +76,7 @@ routeParser =
     UrlParser.oneOf
         [ UrlParser.map Home top
         , UrlParser.map Nurses (UrlParser.s "nurses")
+        , UrlParser.map NurseId (UrlParser.s "nurses" </> int)
         , UrlParser.map People (UrlParser.s "patients")
         , UrlParser.map Doctors (UrlParser.s "doctors")
         , UrlParser.map DoctorId (UrlParser.s "doctors" </> int)
@@ -158,6 +160,9 @@ update msg model =
                     Nurses ->
                         Cmd.map (\x -> PeopleMsg ( "nurses", x )) PeopleHttp.getNurses
 
+                    NurseId _ ->
+                        Cmd.map (\x -> PeopleMsg ( "nurses", x )) PeopleHttp.getNurses
+
                     _ ->
                         Cmd.none
                 )
@@ -213,6 +218,9 @@ toRouteView model maybeRoute =
 
                     DoctorId id ->
                         Html.map (\a -> PeopleMsg ( "doctors", a )) (PeopleView.doctorView (getPerson id model.doctors defaultDoctor))
+
+                    NurseId id ->
+                        Html.map (\a -> PeopleMsg ( "nurses", a )) (PeopleView.nurseView (getPerson id model.nurses defaultNurse))
 
                     Nurses ->
                         Html.text <| toString model.nurses

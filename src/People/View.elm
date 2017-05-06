@@ -167,6 +167,26 @@ specialityTr speciality =
         ]
 
 
+districtNurseTr : Bool -> Html msg
+districtNurseTr isDistrict =
+    tr []
+        [ td []
+            [ text "District nurse:" ]
+        , td []
+            [ text <|
+                if isDistrict then
+                    "yes"
+                else
+                    "no"
+            ]
+        ]
+
+
 doctorView : Doctor -> Html a
 doctorView person =
     table [] (List.concat [ (restTr person), [ specialityTr person.speciality ] ])
+
+
+nurseView : Nurse -> Html a
+nurseView person =
+    table [] (List.concat [ (restTr person), [ districtNurseTr person.isDistrictNurse ] ])

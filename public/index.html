@@ -9961,6 +9961,35 @@ var _user$project$Styles$button = {
 		}
 	}
 };
+var _user$project$People_View$districtNurseTr = function (isDistrict) {
+	return A2(
+		_elm_lang$html$Html$tr,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$td,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('District nurse:'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$td,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							isDistrict ? 'yes' : 'no'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$People_View$specialityTr = function (speciality) {
 	return A2(
 		_elm_lang$html$Html$tr,
@@ -10122,6 +10151,25 @@ var _user$project$People_View$doctorView = function (person) {
 					_0: {
 						ctor: '::',
 						_0: _user$project$People_View$specialityTr(person.speciality),
+						_1: {ctor: '[]'}
+					},
+					_1: {ctor: '[]'}
+				}
+			}));
+};
+var _user$project$People_View$nurseView = function (person) {
+	return A2(
+		_elm_lang$html$Html$table,
+		{ctor: '[]'},
+		_elm_lang$core$List$concat(
+			{
+				ctor: '::',
+				_0: _user$project$People_View$restTr(person),
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '::',
+						_0: _user$project$People_View$districtNurseTr(person.isDistrictNurse),
 						_1: {ctor: '[]'}
 					},
 					_1: {ctor: '[]'}
@@ -10742,6 +10790,7 @@ var _user$project$People_Helpers$getPerson = F3(
 var _user$project$People_Helpers$defaultPerson = {name: 'Jan', surname: 'Kowalski', email: 'abc@xyz.pl', id: -9999};
 var _user$project$People_Helpers$defaultPatient = {personalData: _user$project$People_Helpers$defaultPerson};
 var _user$project$People_Helpers$defaultDoctor = {personalData: _user$project$People_Helpers$defaultPerson, speciality: 'surgeon'};
+var _user$project$People_Helpers$defaultNurse = {personalData: _user$project$People_Helpers$defaultPerson, isDistrictNurse: false};
 var _user$project$Main$init = function (location) {
 	return {
 		ctor: '_Tuple2',
@@ -10761,6 +10810,9 @@ var _user$project$Main$Model = F4(
 	function (a, b, c, d) {
 		return {history: a, patients: b, doctors: c, nurses: d};
 	});
+var _user$project$Main$NurseId = function (a) {
+	return {ctor: 'NurseId', _0: a};
+};
 var _user$project$Main$Nurses = {ctor: 'Nurses'};
 var _user$project$Main$DoctorId = function (a) {
 	return {ctor: 'DoctorId', _0: a};
@@ -10786,42 +10838,52 @@ var _user$project$Main$routeParser = _evancz$url_parser$UrlParser$oneOf(
 				ctor: '::',
 				_0: A2(
 					_evancz$url_parser$UrlParser$map,
-					_user$project$Main$People,
-					_evancz$url_parser$UrlParser$s('patients')),
+					_user$project$Main$NurseId,
+					A2(
+						_evancz$url_parser$UrlParser_ops['</>'],
+						_evancz$url_parser$UrlParser$s('nurses'),
+						_evancz$url_parser$UrlParser$int)),
 				_1: {
 					ctor: '::',
 					_0: A2(
 						_evancz$url_parser$UrlParser$map,
-						_user$project$Main$Doctors,
-						_evancz$url_parser$UrlParser$s('doctors')),
+						_user$project$Main$People,
+						_evancz$url_parser$UrlParser$s('patients')),
 					_1: {
 						ctor: '::',
 						_0: A2(
 							_evancz$url_parser$UrlParser$map,
-							_user$project$Main$DoctorId,
-							A2(
-								_evancz$url_parser$UrlParser_ops['</>'],
-								_evancz$url_parser$UrlParser$s('doctors'),
-								_evancz$url_parser$UrlParser$int)),
+							_user$project$Main$Doctors,
+							_evancz$url_parser$UrlParser$s('doctors')),
 						_1: {
 							ctor: '::',
 							_0: A2(
 								_evancz$url_parser$UrlParser$map,
-								_user$project$Main$PersonId,
+								_user$project$Main$DoctorId,
 								A2(
 									_evancz$url_parser$UrlParser_ops['</>'],
-									_evancz$url_parser$UrlParser$s('patients'),
+									_evancz$url_parser$UrlParser$s('doctors'),
 									_evancz$url_parser$UrlParser$int)),
 							_1: {
 								ctor: '::',
 								_0: A2(
 									_evancz$url_parser$UrlParser$map,
-									_user$project$Main$NewPerson,
+									_user$project$Main$PersonId,
 									A2(
 										_evancz$url_parser$UrlParser_ops['</>'],
 										_evancz$url_parser$UrlParser$s('patients'),
-										_evancz$url_parser$UrlParser$s('new'))),
-								_1: {ctor: '[]'}
+										_evancz$url_parser$UrlParser$int)),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_evancz$url_parser$UrlParser$map,
+										_user$project$Main$NewPerson,
+										A2(
+											_evancz$url_parser$UrlParser_ops['</>'],
+											_evancz$url_parser$UrlParser$s('patients'),
+											_evancz$url_parser$UrlParser$s('new'))),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}
@@ -10957,6 +11019,14 @@ var _user$project$Main$update = F2(
 											{ctor: '_Tuple2', _0: 'nurses', _1: x});
 									},
 									_user$project$People_Http$getNurses);
+							case 'NurseId':
+								return A2(
+									_elm_lang$core$Platform_Cmd$map,
+									function (x) {
+										return _user$project$Main$PeopleMsg(
+											{ctor: '_Tuple2', _0: 'nurses', _1: x});
+									},
+									_user$project$People_Http$getNurses);
 							default:
 								return _elm_lang$core$Platform_Cmd$none;
 						}
@@ -11029,6 +11099,15 @@ var _user$project$Main$toRouteView = F2(
 									},
 									_user$project$People_View$doctorView(
 										A3(_user$project$People_Helpers$getPerson, _p9._0, model.doctors, _user$project$People_Helpers$defaultDoctor)));
+							case 'NurseId':
+								return A2(
+									_elm_lang$html$Html$map,
+									function (a) {
+										return _user$project$Main$PeopleMsg(
+											{ctor: '_Tuple2', _0: 'nurses', _1: a});
+									},
+									_user$project$People_View$nurseView(
+										A3(_user$project$People_Helpers$getPerson, _p9._0, model.nurses, _user$project$People_Helpers$defaultNurse)));
 							default:
 								return _elm_lang$html$Html$text(
 									_elm_lang$core$Basics$toString(model.nurses));
