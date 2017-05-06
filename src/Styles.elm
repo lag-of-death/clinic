@@ -15,8 +15,8 @@ blockCentered =
     [ ( "align-items", "center" ) ]
 
 
-blockStreteched : List ( String, String )
-blockStreteched =
+blockStretched : List ( String, String )
+blockStretched =
     [ ( "justify-content", "space-between" )
     ]
 

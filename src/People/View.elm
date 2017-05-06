@@ -4,7 +4,7 @@ import Html.Attributes exposing (name, style, required)
 import Html exposing (text, Html, div, button, ul, label, li, table, td, tr, form, input)
 import Html.Events exposing (onClick)
 import People.Types exposing (..)
-import Styles exposing (button, block, blockStreteched, blockCentered)
+import Styles exposing (button, block, blockStretched, blockCentered)
 
 
 withSpeciality : Doctor -> List (Html Msg) -> List (Html Msg)
@@ -54,7 +54,7 @@ doctorsList whatPeople doctors =
     ul [ style [ ( "width", "70%" ) ] ]
         (List.map
             (\doctor ->
-                li [ style block, style blockCentered, style blockStreteched ]
+                li [ style block, style blockCentered, style blockStretched ]
                     (withSpeciality doctor (listSingleEntry doctor whatPeople))
             )
             doctors
@@ -66,7 +66,7 @@ nursesList whatPeople nurses =
     ul [ style [ ( "width", "70%" ) ] ]
         (List.map
             (\nurse ->
-                li [ style block, style blockCentered, style blockStreteched ]
+                li [ style block, style blockCentered, style blockStretched ]
                     (withIsDistrictInfo nurse (listSingleEntry nurse whatPeople))
             )
             nurses
@@ -78,7 +78,7 @@ peopleList whatPeople people =
     ul [ style [ ( "width", "70%" ) ] ]
         (List.map
             (\person ->
-                li [ style block, style blockCentered, style blockStreteched ]
+                li [ style block, style blockCentered, style blockStretched ]
                     (listSingleEntry person whatPeople)
             )
             people
@@ -121,17 +121,17 @@ newPersonView =
         , Html.Attributes.action "/api/patients/"
         , Html.Attributes.method "POST"
         ]
-        [ div [ style block, style blockCentered, style blockStreteched ]
+        [ div [ style block, style blockCentered, style blockStretched ]
             [ label [] [ text "Surname" ]
             , input [ required True, name "surname", style Styles.button ]
                 []
             ]
-        , div [ style block, style blockCentered, style blockStreteched ]
+        , div [ style block, style blockCentered, style blockStretched ]
             [ label [] [ text "Name" ]
             , input [ required True, name "name", style Styles.button ]
                 []
             ]
-        , div [ style block, style blockCentered, style blockStreteched ]
+        , div [ style block, style blockCentered, style blockStretched ]
             [ label [] [ text "E-mail" ]
             , input
                 [ Html.Attributes.type_ "email"
