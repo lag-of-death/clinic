@@ -1,18 +1,20 @@
 var nurses = [
     {
-        speciality: "dialysis",
-        name: "Anna",
-        surname: "Novak",
-        email: "anna@novak.com",
-        id: 0,
+        personalData: {
+            name: "Anna",
+            surname: "Novak",
+            email: "anna@novak.com",
+            id: 0,
+        },
         isDistrictNurse: false,
     },
     {
-        speciality: "cardiac",
-        name: "Marry",
-        surname: "Lou",
-        email: "marry@lou.de",
-        id: 1,
+        personalData: {
+            name: "Marry",
+            surname: "Lou",
+            email: "marry@lou.de",
+            id: 1,
+        },
         isDistrictNurse: true,
     }
 ];

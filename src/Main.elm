@@ -39,9 +39,9 @@ subscriptions model =
 
 type alias Model =
     { history : List (Maybe Route)
-    , patients : List PeopleTypes.Person
-    , doctors : List (PeopleTypes.Doctor PeopleTypes.Person)
-    , nurses : List (PeopleTypes.Nurse (PeopleTypes.Doctor PeopleTypes.Person))
+    , patients : List PeopleTypes.Patient
+    , doctors : List PeopleTypes.Doctor
+    , nurses : List PeopleTypes.Nurse
     }
 
 
@@ -206,7 +206,7 @@ toRouteView model maybeRoute =
                         Html.map (\a -> PeopleMsg ( "patients", a )) PeopleView.newPersonView
 
                     PersonId id ->
-                        Html.map (\a -> PeopleMsg ( "patients", a )) (PeopleView.personView (getPerson id model.patients defaultPerson))
+                        Html.map (\a -> PeopleMsg ( "patients", a )) (PeopleView.patientView (getPerson id model.patients defaultPatient))
 
                     Doctors ->
                         Html.map (\a -> PeopleMsg ( "doctors", a )) (PeopleView.doctorsView model.doctors)

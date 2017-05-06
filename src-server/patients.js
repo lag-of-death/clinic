@@ -15,7 +15,13 @@ function getPatientsHandler(location, req, res) {
     };
 
     return rp(options)
-        .then(patients => res.send(patients))
+        .then(patients => res.send(
+            JSON.parse(patients)
+                .map(patient => ({
+                    personalData: patient
+                }))
+            )
+        )
         .catch(err => res.redirect('/'));
 }
 
@@ -35,7 +41,7 @@ function newPatientHandler(location, req, res) {
     const options = {
         method: 'POST',
         uri: `${location}/patient`,
-        body: JSON.stringify(Object.assign({}, req.body, { id: null })),
+        body: JSON.stringify(Object.assign({}, req.body, {id: null})),
         headers: {
             'content-type': 'application/json'
         }

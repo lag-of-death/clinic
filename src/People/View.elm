@@ -7,34 +7,35 @@ import People.Types exposing (..)
 import Styles exposing (button, block, blockStreteched, blockCentered)
 
 
-withSpeciality : Doctor Person -> List (Html Msg) -> List (Html Msg)
+withSpeciality : Doctor -> List (Html Msg) -> List (Html Msg)
 withSpeciality doctor entryData =
     List.append entryData [ div [ style [ ( "width", "100px" ) ] ] [ text doctor.speciality ] ]
 
 
-listSingleEntry :
-    { a | name : String, surname : String, id : Int }
-    -> String
-    -> List (Html Msg)
-listSingleEntry person whatPeople =
-    [ div [ style [ ( "width", "100px" ) ] ] [ text <| person.surname ++ " " ++ person.name ]
-    , div []
-        [ Html.button
-            [ style Styles.button
-            , onClick (NewUrl <| "/" ++ whatPeople ++ "/" ++ (toString person.id))
+listSingleEntry : { b | personalData : { a | id : Int, name : String, surname : String } } -> String -> List (Html Msg)
+listSingleEntry a whatPeople =
+    let
+        person =
+            a.personalData
+    in
+        [ div [ style [ ( "width", "100px" ) ] ] [ text <| person.surname ++ " " ++ person.name ]
+        , div []
+            [ Html.button
+                [ style Styles.button
+                , onClick (NewUrl <| "/" ++ whatPeople ++ "/" ++ (toString person.id))
+                ]
+                [ text "Details" ]
+            , Html.button
+                [ style Styles.button
+                , style [ ( "margin-left", "4px" ) ]
+                , onClick (DelPerson person.id)
+                ]
+                [ text "Delete" ]
             ]
-            [ text "Details" ]
-        , Html.button
-            [ style Styles.button
-            , style [ ( "margin-left", "4px" ) ]
-            , onClick (DelPerson person.id)
-            ]
-            [ text "Delete" ]
         ]
-    ]
 
 
-doctorsList : String -> List (Doctor Person) -> Html Msg
+doctorsList : String -> List Doctor -> Html Msg
 doctorsList whatPeople doctors =
     ul [ style [ ( "width", "70%" ) ] ]
         (List.map
@@ -46,7 +47,7 @@ doctorsList whatPeople doctors =
         )
 
 
-peopleList : String -> List Person -> Html Msg
+peopleList : String -> List { b | personalData : { a | name : String, surname : String, id : Int } } -> Html Msg
 peopleList whatPeople people =
     ul [ style [ ( "width", "70%" ) ] ]
         (List.map
@@ -58,12 +59,12 @@ peopleList whatPeople people =
         )
 
 
-patientsView : List Person -> Html Msg
+patientsView : List { b | personalData : { a | id : Int, name : String, surname : String } } -> Html Msg
 patientsView people =
     view newPatient (peopleList "patients" people)
 
 
-doctorsView : List (Doctor Person) -> Html Msg
+doctorsView : List Doctor -> Html Msg
 doctorsView people =
     view (div [] []) (doctorsList "doctors" people)
 
@@ -122,36 +123,36 @@ newPersonView =
         ]
 
 
-personView : Person -> Html a
-personView person =
+patientView : Patient -> Html a
+patientView person =
     table [] (restTr person)
 
 
-restTr : { b | email : String, id : a, name : String, surname : String } -> List (Html msg)
+restTr : { b | personalData : { email : String, id : a, name : String, surname : String } } -> List (Html msg)
 restTr person =
     [ tr []
         [ td []
             [ text "Surname:" ]
         , td []
-            [ text person.surname ]
+            [ text person.personalData.surname ]
         ]
     , tr []
         [ td []
             [ text "Name:" ]
         , td []
-            [ text person.name ]
+            [ text person.personalData.name ]
         ]
     , tr []
         [ td []
             [ text "E-mail:" ]
         , td []
-            [ text person.email ]
+            [ text person.personalData.email ]
         ]
     , tr []
         [ td []
             [ text "ID:" ]
         , td []
-            [ text <| toString <| person.id ]
+            [ text <| toString <| person.personalData.id ]
         ]
     ]
 
@@ -166,6 +167,6 @@ specialityTr speciality =
         ]
 
 
-doctorView : Doctor Person -> Html a
+doctorView : Doctor -> Html a
 doctorView person =
     table [] (List.concat [ (restTr person), [ specialityTr person.speciality ] ])

@@ -4,15 +4,20 @@ import Http
 
 
 type alias Model =
-    List Person
+    List Patient
 
 
-type alias Doctor a =
-    { a | speciality : String }
+type alias Patient =
+    { personalData : Person
+    }
 
 
-type alias Nurse a =
-    { a | isDistrictNurse : Bool }
+type alias Doctor =
+    { personalData : Person, speciality : String }
+
+
+type alias Nurse =
+    { personalData : Person, isDistrictNurse : Bool }
 
 
 type alias Person =
@@ -25,9 +30,9 @@ type alias Person =
 
 type Msg
     = NewUrl String
-    | PeopleData (Result Http.Error (List Person))
+    | PatientsData (Result Http.Error (List Patient))
     | DelPerson Int
     | PersonDeleted (Result Http.Error ())
-    | DoctorsData (Result Http.Error (List (Doctor Person)))
-    | NursesData (Result Http.Error (List (Nurse (Doctor Person))))
+    | DoctorsData (Result Http.Error (List Doctor))
+    | NursesData (Result Http.Error (List Nurse))
     | DoctorDeleted (Result Http.Error ())

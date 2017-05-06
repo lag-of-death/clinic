@@ -5,7 +5,7 @@ import People.Types exposing (..)
 import Navigation as Nav
 
 
-updateNurses : Msg -> List (Nurse (Doctor Person)) -> ( List (Nurse (Doctor Person)), Cmd Msg )
+updateNurses : Msg -> List Nurse -> ( List Nurse, Cmd Msg )
 updateNurses msg model =
     case msg of
         NursesData (Ok nurses) ->
@@ -24,7 +24,7 @@ updateNurses msg model =
             ( model, Cmd.none )
 
 
-updateDoctors : Msg -> List (Doctor Person) -> ( List (Doctor Person), Cmd Msg )
+updateDoctors : Msg -> List Doctor -> ( List Doctor, Cmd Msg )
 updateDoctors msg model =
     case msg of
         NewUrl url ->
@@ -55,12 +55,12 @@ update msg model =
             ( model, deletePerson "patients" id )
 
         PersonDeleted _ ->
-            ( model, getPeople "patients" )
+            ( model, getPatients )
 
-        PeopleData (Ok people) ->
+        PatientsData (Ok people) ->
             ( people, Cmd.none )
 
-        PeopleData (Err err) ->
+        PatientsData (Err err) ->
             let
                 error =
                     Debug.log "PeopleData error: " err

@@ -1,17 +1,21 @@
 var doctors = [
     {
         speciality: "surgeon",
-        name: "Thomas",
-        surname: "Alban",
-        email: "a@b.com",
-        id: 0
+        personalData: {
+            name: "Thomas",
+            surname: "Alban",
+            email: "a@b.com",
+            id: 0
+        }
     },
     {
         speciality: "psychiatrist",
-        name: "Andrew",
-        surname: "Gringo",
-        email: "da@be.de",
-        id: 1
+        personalData: {
+            name: "Andrew",
+            surname: "Gringo",
+            email: "da@be.de",
+            id: 1
+        }
     }
 ];
 
@@ -25,7 +29,7 @@ function getDoctorsHandler(req, res) {
 }
 
 function delDoctorHandler(req, res) {
-    doctors = doctors.filter(doctor => doctor.id !== parseInt(req.params.id));
+    doctors = doctors.filter(doctor => doctor.personalData.id !== parseInt(req.params.id));
 
     res.send('OK');
 }

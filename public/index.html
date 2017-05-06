@@ -9836,6 +9836,17 @@ var _evancz$url_parser$UrlParser$intParam = function (name) {
 	return A2(_evancz$url_parser$UrlParser$customParam, name, _evancz$url_parser$UrlParser$intParamHelp);
 };
 var _user$project$Home_Main$hello = 'home';
+var _user$project$People_Types$Patient = function (a) {
+	return {personalData: a};
+};
+var _user$project$People_Types$Doctor = F2(
+	function (a, b) {
+		return {personalData: a, speciality: b};
+	});
+var _user$project$People_Types$Nurse = F2(
+	function (a, b) {
+		return {personalData: a, isDistrictNurse: b};
+	});
 var _user$project$People_Types$Person = F4(
 	function (a, b, c, d) {
 		return {name: a, surname: b, email: c, id: d};
@@ -9855,8 +9866,8 @@ var _user$project$People_Types$PersonDeleted = function (a) {
 var _user$project$People_Types$DelPerson = function (a) {
 	return {ctor: 'DelPerson', _0: a};
 };
-var _user$project$People_Types$PeopleData = function (a) {
-	return {ctor: 'PeopleData', _0: a};
+var _user$project$People_Types$PatientsData = function (a) {
+	return {ctor: 'PatientsData', _0: a};
 };
 var _user$project$People_Types$NewUrl = function (a) {
 	return {ctor: 'NewUrl', _0: a};
@@ -10001,7 +10012,7 @@ var _user$project$People_View$restTr = function (person) {
 						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(person.surname),
+							_0: _elm_lang$html$Html$text(person.personalData.surname),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
@@ -10029,7 +10040,7 @@ var _user$project$People_View$restTr = function (person) {
 							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(person.name),
+								_0: _elm_lang$html$Html$text(person.personalData.name),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
@@ -10057,7 +10068,7 @@ var _user$project$People_View$restTr = function (person) {
 								{ctor: '[]'},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(person.email),
+									_0: _elm_lang$html$Html$text(person.personalData.email),
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}
@@ -10086,7 +10097,7 @@ var _user$project$People_View$restTr = function (person) {
 									{
 										ctor: '::',
 										_0: _elm_lang$html$Html$text(
-											_elm_lang$core$Basics$toString(person.id)),
+											_elm_lang$core$Basics$toString(person.personalData.id)),
 										_1: {ctor: '[]'}
 									}),
 								_1: {ctor: '[]'}
@@ -10117,7 +10128,7 @@ var _user$project$People_View$doctorView = function (person) {
 				}
 			}));
 };
-var _user$project$People_View$personView = function (person) {
+var _user$project$People_View$patientView = function (person) {
 	return A2(
 		_elm_lang$html$Html$table,
 		{ctor: '[]'},
@@ -10353,7 +10364,8 @@ var _user$project$People_View$view = F2(
 			});
 	});
 var _user$project$People_View$listSingleEntry = F2(
-	function (person, whatPeople) {
+	function (a, whatPeople) {
+		var person = a.personalData;
 		return {
 			ctor: '::',
 			_0: A2(
@@ -10602,59 +10614,43 @@ var _user$project$People_Http$deleteDoctor = function (id) {
 		_user$project$People_Types$DoctorDeleted,
 		A2(_user$project$People_Http$delete, 'doctors', id));
 };
-var _user$project$People_Http$decodePeople = _elm_lang$core$Json_Decode$list(
-	A5(
-		_elm_lang$core$Json_Decode$map4,
-		_user$project$People_Types$Person,
-		A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
-		A2(_elm_lang$core$Json_Decode$field, 'surname', _elm_lang$core$Json_Decode$string),
-		A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
-		A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int)));
-var _user$project$People_Http$getPeople = function (whatPeople) {
-	return A2(
-		_elm_lang$http$Http$send,
-		_user$project$People_Types$PeopleData,
-		A2(
-			_elm_lang$http$Http$get,
-			A2(_elm_lang$core$Basics_ops['++'], '/api/', whatPeople),
-			_user$project$People_Http$decodePeople));
-};
-var _user$project$People_Http$getPatients = _user$project$People_Http$getPeople('patients');
-var _user$project$People_Http$Doc = F5(
-	function (a, b, c, d, e) {
-		return {name: a, surname: b, email: c, id: d, speciality: e};
-	});
-var _user$project$People_Http$decodeDoctors = _elm_lang$core$Json_Decode$list(
-	A6(
-		_elm_lang$core$Json_Decode$map5,
-		_user$project$People_Http$Doc,
-		A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
-		A2(_elm_lang$core$Json_Decode$field, 'surname', _elm_lang$core$Json_Decode$string),
-		A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
-		A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
-		A2(_elm_lang$core$Json_Decode$field, 'speciality', _elm_lang$core$Json_Decode$string)));
-var _user$project$People_Http$getDoctors = A2(
-	_elm_lang$http$Http$send,
-	_user$project$People_Types$DoctorsData,
-	A2(_elm_lang$http$Http$get, '/api/doctors', _user$project$People_Http$decodeDoctors));
-var _user$project$People_Http$Assistant = F6(
-	function (a, b, c, d, e, f) {
-		return {name: a, surname: b, email: c, id: d, speciality: e, isDistrictNurse: f};
-	});
+var _user$project$People_Http$decodePerson = A5(
+	_elm_lang$core$Json_Decode$map4,
+	_user$project$People_Types$Person,
+	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'surname', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int));
+var _user$project$People_Http$decodePatient = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$People_Types$Patient,
+	A2(_elm_lang$core$Json_Decode$field, 'personalData', _user$project$People_Http$decodePerson));
+var _user$project$People_Http$decodePatients = _elm_lang$core$Json_Decode$list(_user$project$People_Http$decodePatient);
+var _user$project$People_Http$decodePeople = _elm_lang$core$Json_Decode$list(_user$project$People_Http$decodePerson);
+var _user$project$People_Http$decodeDoctor = A3(
+	_elm_lang$core$Json_Decode$map2,
+	_user$project$People_Types$Doctor,
+	A2(_elm_lang$core$Json_Decode$field, 'personalData', _user$project$People_Http$decodePerson),
+	A2(_elm_lang$core$Json_Decode$field, 'speciality', _elm_lang$core$Json_Decode$string));
+var _user$project$People_Http$decodeDoctors = _elm_lang$core$Json_Decode$list(_user$project$People_Http$decodeDoctor);
 var _user$project$People_Http$decodeNurses = _elm_lang$core$Json_Decode$list(
-	A7(
-		_elm_lang$core$Json_Decode$map6,
-		_user$project$People_Http$Assistant,
-		A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
-		A2(_elm_lang$core$Json_Decode$field, 'surname', _elm_lang$core$Json_Decode$string),
-		A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
-		A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
-		A2(_elm_lang$core$Json_Decode$field, 'speciality', _elm_lang$core$Json_Decode$string),
+	A3(
+		_elm_lang$core$Json_Decode$map2,
+		_user$project$People_Types$Nurse,
+		A2(_elm_lang$core$Json_Decode$field, 'personalData', _user$project$People_Http$decodePerson),
 		A2(_elm_lang$core$Json_Decode$field, 'isDistrictNurse', _elm_lang$core$Json_Decode$bool)));
 var _user$project$People_Http$getNurses = A2(
 	_elm_lang$http$Http$send,
 	_user$project$People_Types$NursesData,
 	A2(_elm_lang$http$Http$get, '/api/nurses', _user$project$People_Http$decodeNurses));
+var _user$project$People_Http$getDoctors = A2(
+	_elm_lang$http$Http$send,
+	_user$project$People_Types$DoctorsData,
+	A2(_elm_lang$http$Http$get, '/api/doctors', _user$project$People_Http$decodeDoctors));
+var _user$project$People_Http$getPatients = A2(
+	_elm_lang$http$Http$send,
+	_user$project$People_Types$PatientsData,
+	A2(_elm_lang$http$Http$get, '/api/patients', _user$project$People_Http$decodePatients));
 var _user$project$People_Update$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
@@ -10672,12 +10668,8 @@ var _user$project$People_Update$update = F2(
 					_1: A2(_user$project$People_Http$deletePerson, 'patients', _p0._0)
 				};
 			case 'PersonDeleted':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$People_Http$getPeople('patients')
-				};
-			case 'PeopleData':
+				return {ctor: '_Tuple2', _0: model, _1: _user$project$People_Http$getPatients};
+			case 'PatientsData':
 				if (_p0._0.ctor === 'Ok') {
 					return {ctor: '_Tuple2', _0: _p0._0._0, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
@@ -10743,12 +10735,13 @@ var _user$project$People_Helpers$getPerson = F3(
 				A2(
 					_elm_lang$core$List$filter,
 					function (person) {
-						return _elm_lang$core$Native_Utils.eq(person.id, id);
+						return _elm_lang$core$Native_Utils.eq(person.personalData.id, id);
 					},
 					people)));
 	});
-var _user$project$People_Helpers$defaultDoctor = {name: 'Jan', surname: 'Kowalski', email: 'abc@xyz.pl', id: -9999, speciality: 'surgeon'};
 var _user$project$People_Helpers$defaultPerson = {name: 'Jan', surname: 'Kowalski', email: 'abc@xyz.pl', id: -9999};
+var _user$project$People_Helpers$defaultPatient = {personalData: _user$project$People_Helpers$defaultPerson};
+var _user$project$People_Helpers$defaultDoctor = {personalData: _user$project$People_Helpers$defaultPerson, speciality: 'surgeon'};
 var _user$project$Main$init = function (location) {
 	return {
 		ctor: '_Tuple2',
@@ -11017,8 +11010,8 @@ var _user$project$Main$toRouteView = F2(
 										return _user$project$Main$PeopleMsg(
 											{ctor: '_Tuple2', _0: 'patients', _1: a});
 									},
-									_user$project$People_View$personView(
-										A3(_user$project$People_Helpers$getPerson, _p9._0, model.patients, _user$project$People_Helpers$defaultPerson)));
+									_user$project$People_View$patientView(
+										A3(_user$project$People_Helpers$getPerson, _p9._0, model.patients, _user$project$People_Helpers$defaultPatient)));
 							case 'Doctors':
 								return A2(
 									_elm_lang$html$Html$map,

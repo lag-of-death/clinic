@@ -5,33 +5,9 @@ import Json.Decode as Decode
 import People.Types exposing (..)
 
 
-type alias Doc =
-    { name : String
-    , surname : String
-    , email : String
-    , id : Int
-    , speciality : String
-    }
-
-
-type alias Assistant =
-    { name : String
-    , surname : String
-    , email : String
-    , id : Int
-    , speciality : String
-    , isDistrictNurse : Bool
-    }
-
-
-getPeople : String -> Cmd Msg
-getPeople whatPeople =
-    Http.send PeopleData (Http.get ("/api/" ++ whatPeople) decodePeople)
-
-
 getPatients : Cmd Msg
 getPatients =
-    getPeople "patients"
+    Http.send PatientsData (Http.get "/api/patients" decodePatients)
 
 
 getDoctors : Cmd Msg
@@ -44,38 +20,43 @@ getNurses =
     Http.send NursesData (Http.get ("/api/nurses") decodeNurses)
 
 
+decodePerson =
+    Decode.map4 Person
+        (Decode.field "name" Decode.string)
+        (Decode.field "surname" Decode.string)
+        (Decode.field "email" Decode.string)
+        (Decode.field "id" Decode.int)
+
+
+decodePatient =
+    Decode.map Patient (Decode.field "personalData" decodePerson)
+
+
+decodePatients =
+    Decode.list decodePatient
+
+
 decodePeople : Decode.Decoder (List Person)
 decodePeople =
-    Decode.list
-        (Decode.map4 Person
-            (Decode.field "name" Decode.string)
-            (Decode.field "surname" Decode.string)
-            (Decode.field "email" Decode.string)
-            (Decode.field "id" Decode.int)
-        )
+    Decode.list decodePerson
 
 
-decodeDoctors : Decode.Decoder (List (Doctor Person))
+decodeDoctor =
+    Decode.map2 Doctor
+        (Decode.field "personalData" decodePerson)
+        (Decode.field "speciality" Decode.string)
+
+
+decodeDoctors : Decode.Decoder (List Doctor)
 decodeDoctors =
-    Decode.list
-        (Decode.map5 Doc
-            (Decode.field "name" Decode.string)
-            (Decode.field "surname" Decode.string)
-            (Decode.field "email" Decode.string)
-            (Decode.field "id" Decode.int)
-            (Decode.field "speciality" Decode.string)
-        )
+    Decode.list decodeDoctor
 
 
-decodeNurses : Decode.Decoder (List (Nurse (Doctor Person)))
+decodeNurses : Decode.Decoder (List Nurse)
 decodeNurses =
     Decode.list
-        (Decode.map6 Assistant
-            (Decode.field "name" Decode.string)
-            (Decode.field "surname" Decode.string)
-            (Decode.field "email" Decode.string)
-            (Decode.field "id" Decode.int)
-            (Decode.field "speciality" Decode.string)
+        (Decode.map2 Nurse
+            (Decode.field "personalData" decodePerson)
             (Decode.field "isDistrictNurse" Decode.bool)
         )
 
