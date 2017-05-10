@@ -47,8 +47,8 @@ body =
     ]
 
 
-newPersonForm : List ( String, String )
-newPersonForm =
+newPatientForm : List ( String, String )
+newPatientForm =
     [ ( "width", "60%" )
     , ( "display", "flex" )
     , ( "flex-direction", "column" )

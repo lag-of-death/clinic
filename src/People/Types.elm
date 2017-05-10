@@ -28,12 +28,22 @@ type alias Person =
     }
 
 
-type Msg
-    = NewUrl String
-    | PatientsData (Result Http.Error (List Patient))
-    | DelPerson Int
-    | PersonDeleted (Result Http.Error ())
-    | DoctorsData (Result Http.Error (List Doctor))
+type NursesMsg
+    = DelNurse Int
     | NursesData (Result Http.Error (List Nurse))
     | NurseDeleted (Result Http.Error ())
+    | NewNursesUrl String
+
+
+type DoctorsMsg
+    = NewDoctorsUrl String
+    | DelDoctor Int
+    | DoctorsData (Result Http.Error (List Doctor))
     | DoctorDeleted (Result Http.Error ())
+
+
+type PatientsMsg
+    = NewPatientsUrl String
+    | PatientsData (Result Http.Error (List Patient))
+    | DelPatient Int
+    | PatientDeleted (Result Http.Error ())

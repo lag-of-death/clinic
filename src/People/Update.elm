@@ -5,19 +5,16 @@ import People.Types exposing (..)
 import Navigation as Nav
 
 
-updateNurses : Msg -> List Nurse -> ( List Nurse, Cmd Msg )
+updateNurses : NursesMsg -> List Nurse -> ( List Nurse, Cmd NursesMsg )
 updateNurses msg model =
     case msg of
-        NewUrl url ->
+        NewNursesUrl url ->
             ( model, Nav.newUrl url )
 
         NursesData (Ok nurses) ->
             ( nurses
             , Cmd.none
             )
-
-        DelPerson id ->
-            ( model, deleteNurse id )
 
         NurseDeleted _ ->
             ( model, getNurses )
@@ -29,17 +26,17 @@ updateNurses msg model =
             in
                 ( model, Cmd.none )
 
-        _ ->
-            ( model, Cmd.none )
+        DelNurse id ->
+            ( model, deleteNurse id )
 
 
-updateDoctors : Msg -> List Doctor -> ( List Doctor, Cmd Msg )
+updateDoctors : DoctorsMsg -> List Doctor -> ( List Doctor, Cmd DoctorsMsg )
 updateDoctors msg model =
     case msg of
-        NewUrl url ->
+        NewDoctorsUrl url ->
             ( model, Nav.newUrl url )
 
-        DelPerson id ->
+        DelDoctor id ->
             ( model, deleteDoctor id )
 
         DoctorDeleted _ ->
@@ -50,20 +47,22 @@ updateDoctors msg model =
             , Cmd.none
             )
 
-        _ ->
-            ( model, Cmd.none )
+        DoctorsData (Err _) ->
+            ( model
+            , Cmd.none
+            )
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+updatePatients : PatientsMsg -> Model -> ( Model, Cmd PatientsMsg )
+updatePatients msg model =
     case msg of
-        NewUrl url ->
+        NewPatientsUrl url ->
             ( model, Nav.newUrl url )
 
-        DelPerson id ->
-            ( model, deletePerson "patients" id )
+        DelPatient id ->
+            ( model, deletePatient id )
 
-        PersonDeleted _ ->
+        PatientDeleted _ ->
             ( model, getPatients )
 
         PatientsData (Ok people) ->
@@ -75,6 +74,3 @@ update msg model =
                     Debug.log "PeopleData error: " err
             in
                 ( model, Cmd.none )
-
-        _ ->
-            ( model, Cmd.none )

@@ -7,12 +7,10 @@ import People.Types exposing (..)
 import Styles exposing (button, block, blockStretched, blockCentered)
 
 
-withSpeciality : Doctor -> List (Html Msg) -> List (Html Msg)
 withSpeciality doctor entryData =
     List.append entryData [ div [ style [ ( "width", "100px" ) ] ] [ text doctor.speciality ] ]
 
 
-withIsDistrictInfo : Nurse -> List (Html Msg) -> List (Html Msg)
 withIsDistrictInfo nurse entryData =
     List.append
         entryData
@@ -26,8 +24,7 @@ withIsDistrictInfo nurse entryData =
         ]
 
 
-listSingleEntry : { b | personalData : { a | id : Int, name : String, surname : String } } -> String -> List (Html Msg)
-listSingleEntry a whatPeople =
+listSingleEntryShell onClick1 onClick2 a whatPeople =
     let
         person =
             a.personalData
@@ -36,88 +33,101 @@ listSingleEntry a whatPeople =
         , div []
             [ Html.button
                 [ style Styles.button
-                , onClick (NewUrl <| "/" ++ whatPeople ++ "/" ++ (toString person.id))
+                , onClick1
                 ]
                 [ text "Details" ]
             , Html.button
                 [ style Styles.button
                 , style [ ( "margin-left", "4px" ) ]
-                , onClick (DelPerson person.id)
+                , onClick2
                 ]
                 [ text "Delete" ]
             ]
         ]
 
 
-doctorsList : String -> List Doctor -> Html Msg
-doctorsList whatPeople doctors =
+doctorsList doctors =
     ul [ style [ ( "width", "70%" ) ] ]
         (List.map
             (\doctor ->
                 li [ style block, style blockCentered, style blockStretched ]
-                    (withSpeciality doctor (listSingleEntry doctor whatPeople))
+                    (withSpeciality doctor
+                        (listSingleEntryShell
+                            (onClick (NewDoctorsUrl <| "/doctors/" ++ (toString doctor.personalData.id)))
+                            (onClick (DelDoctor doctor.personalData.id))
+                            doctor
+                            "doctors"
+                        )
+                    )
             )
             doctors
         )
 
 
-nursesList : String -> List Nurse -> Html Msg
-nursesList whatPeople nurses =
+nursesList nurses =
     ul [ style [ ( "width", "70%" ) ] ]
         (List.map
             (\nurse ->
                 li [ style block, style blockCentered, style blockStretched ]
-                    (withIsDistrictInfo nurse (listSingleEntry nurse whatPeople))
+                    (withIsDistrictInfo nurse
+                        (listSingleEntryShell
+                            (onClick
+                                (NewNursesUrl <| "/nurses/" ++ (toString nurse.personalData.id))
+                            )
+                            (onClick (DelNurse nurse.personalData.id))
+                            nurse
+                            "nurses"
+                        )
+                    )
             )
             nurses
         )
 
 
-peopleList : String -> List { b | personalData : { a | name : String, surname : String, id : Int } } -> Html Msg
-peopleList whatPeople people =
+patientsList patients =
     ul [ style [ ( "width", "70%" ) ] ]
         (List.map
-            (\person ->
+            (\patient ->
                 li [ style block, style blockCentered, style blockStretched ]
-                    (listSingleEntry person whatPeople)
+                    (listSingleEntryShell
+                        (onClick (NewPatientsUrl <| "/patients/" ++ (toString patient.personalData.id)))
+                        (onClick (DelPatient patient.personalData.id))
+                        patient
+                        "patients"
+                    )
             )
-            people
+            patients
         )
 
 
-patientsView : List { b | personalData : { a | id : Int, name : String, surname : String } } -> Html Msg
-patientsView people =
-    view newPatient (peopleList "patients" people)
+patientsView patients =
+    view newPatient (patientsList patients)
 
 
-doctorsView : List Doctor -> Html Msg
-doctorsView people =
-    view (div [] []) (doctorsList "doctors" people)
+doctorsView doctors =
+    view (div [] []) (doctorsList doctors)
 
 
-view : Html Msg -> Html Msg -> Html Msg
-view newPerson people =
+view newPatient people =
     div [ style block ]
         [ people
-        , newPerson
+        , newPatient
         ]
 
 
-newPatient : Html Msg
 newPatient =
     div []
         [ Html.button
             [ style Styles.button
-            , onClick (NewUrl <| "/patients/new")
+            , onClick (NewPatientsUrl <| "/patients/new")
             ]
             [ text "New patient" ]
         ]
 
 
-newPersonView : Html a
-newPersonView =
+newPatientView =
     form
-        [ style Styles.newPersonForm
+        [ style Styles.newPatientForm
         , Html.Attributes.action "/api/patients/"
         , Html.Attributes.method "POST"
         ]
@@ -149,12 +159,10 @@ newPersonView =
         ]
 
 
-patientView : Patient -> Html a
-patientView person =
-    table [] (restTr person)
+patientView patient =
+    table [] (restTr patient)
 
 
-restTr : { b | personalData : { email : String, id : a, name : String, surname : String } } -> List (Html msg)
 restTr person =
     [ tr []
         [ td []
@@ -183,7 +191,6 @@ restTr person =
     ]
 
 
-specialityTr : String -> Html msg
 specialityTr speciality =
     tr []
         [ td []
@@ -193,7 +200,6 @@ specialityTr speciality =
         ]
 
 
-districtNurseTr : Bool -> Html msg
 districtNurseTr isDistrict =
     tr []
         [ td []
@@ -208,16 +214,13 @@ districtNurseTr isDistrict =
         ]
 
 
-doctorView : Doctor -> Html a
-doctorView person =
-    table [] (List.concat [ (restTr person), [ specialityTr person.speciality ] ])
+doctorView doctor =
+    table [] (List.concat [ (restTr doctor), [ specialityTr doctor.speciality ] ])
 
 
-nurseView : Nurse -> Html a
-nurseView person =
-    table [] (List.concat [ (restTr person), [ districtNurseTr person.isDistrictNurse ] ])
+nurseView nurse =
+    table [] (List.concat [ (restTr nurse), [ districtNurseTr nurse.isDistrictNurse ] ])
 
 
-nursesView : List Nurse -> Html Msg
-nursesView people =
-    view (div [] []) (nursesList "nurses" people)
+nursesView nurses =
+    view (div [] []) (nursesList nurses)

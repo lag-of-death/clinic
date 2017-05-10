@@ -5,17 +5,17 @@ import Json.Decode as Decode
 import People.Types exposing (..)
 
 
-getPatients : Cmd Msg
+getPatients : Cmd PatientsMsg
 getPatients =
     Http.send PatientsData (Http.get "/api/patients" decodePatients)
 
 
-getDoctors : Cmd Msg
+getDoctors : Cmd DoctorsMsg
 getDoctors =
     Http.send DoctorsData (Http.get ("/api/doctors") decodeDoctors)
 
 
-getNurses : Cmd Msg
+getNurses : Cmd NursesMsg
 getNurses =
     Http.send NursesData (Http.get ("/api/nurses") decodeNurses)
 
@@ -61,22 +61,22 @@ decodeNurses =
         )
 
 
-deleteDoctor : Int -> Cmd Msg
+deleteDoctor : Int -> Cmd DoctorsMsg
 deleteDoctor id =
     Http.send DoctorDeleted
         (delete "doctors" id)
 
 
-deleteNurse : Int -> Cmd Msg
+deleteNurse : Int -> Cmd NursesMsg
 deleteNurse id =
     Http.send NurseDeleted
         (delete "nurses" id)
 
 
-deletePerson : String -> Int -> Cmd Msg
-deletePerson whatPeople id =
-    Http.send PersonDeleted
-        (delete whatPeople id)
+deletePatient : Int -> Cmd PatientsMsg
+deletePatient id =
+    Http.send PatientDeleted
+        (delete "patients" id)
 
 
 delete : String -> a -> Http.Request ()
