@@ -184,7 +184,6 @@ view model =
             , Html.button [ style Styles.button, onClick (NewUrl "/patients/") ] [ text "patients" ]
             , Html.button [ style Styles.button, onClick (NewUrl "/nurses/") ] [ text "nurses" ]
             , Html.button [ style Styles.button, onClick (NewUrl "/doctors/") ] [ text "doctors" ]
-            , Html.button [ style Styles.button, onClick (NewUrl "/404/") ] [ text "404" ]
             , Html.button [ style Styles.button, onClick (NewUrl "/visits/") ] [ text "visits" ]
             ]
         , main_ [ style Styles.app ]
