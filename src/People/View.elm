@@ -5,6 +5,7 @@ import Html exposing (text, Html, div, button, ul, label, li, table, td, tr, for
 import Html.Events exposing (onClick)
 import People.Types exposing (..)
 import Styles exposing (button, block, blockStretched, blockCentered)
+import Views exposing (..)
 
 
 withSpeciality doctor entryData =
@@ -31,70 +32,59 @@ listSingleEntryShell onClick1 onClick2 a whatPeople =
     in
         [ div [ style [ ( "width", "100px" ) ] ] [ text <| person.surname ++ " " ++ person.name ]
         , div []
-            [ Html.button
-                [ style Styles.button
-                , onClick1
-                ]
-                [ text "Details" ]
-            , Html.button
-                [ style Styles.button
-                , style [ ( "margin-left", "4px" ) ]
-                , onClick2
-                ]
-                [ text "Delete" ]
-            ]
+            (actions
+                onClick1
+                onClick2
+            )
         ]
 
 
 doctorsList doctors =
-    ul [ style [ ( "width", "70%" ) ] ]
+    list
         (List.map
             (\doctor ->
-                li [ style block, style blockCentered, style blockStretched ]
-                    (withSpeciality doctor
-                        (listSingleEntryShell
-                            (onClick (NewDoctorsUrl <| "/doctors/" ++ (toString doctor.personalData.id)))
-                            (onClick (DelDoctor doctor.personalData.id))
-                            doctor
-                            "doctors"
-                        )
+                (withSpeciality doctor
+                    (listSingleEntryShell
+                        (onClick (NewDoctorsUrl <| "/doctors/" ++ (toString doctor.personalData.id)))
+                        (onClick (DelDoctor doctor.personalData.id))
+                        doctor
+                        "doctors"
                     )
+                )
             )
             doctors
         )
 
 
 nursesList nurses =
-    ul [ style [ ( "width", "70%" ) ] ]
+    list
         (List.map
             (\nurse ->
-                li [ style block, style blockCentered, style blockStretched ]
-                    (withIsDistrictInfo nurse
-                        (listSingleEntryShell
-                            (onClick
-                                (NewNursesUrl <| "/nurses/" ++ (toString nurse.personalData.id))
-                            )
-                            (onClick (DelNurse nurse.personalData.id))
-                            nurse
-                            "nurses"
+                (withIsDistrictInfo nurse
+                    (listSingleEntryShell
+                        (onClick
+                            (NewNursesUrl <| "/nurses/" ++ (toString nurse.personalData.id))
                         )
+                        (onClick (DelNurse nurse.personalData.id))
+                        nurse
+                        "nurses"
                     )
+                )
             )
             nurses
         )
 
 
 patientsList patients =
-    ul [ style [ ( "width", "70%" ) ] ]
+    list
         (List.map
             (\patient ->
-                li [ style block, style blockCentered, style blockStretched ]
-                    (listSingleEntryShell
-                        (onClick (NewPatientsUrl <| "/patients/" ++ (toString patient.personalData.id)))
-                        (onClick (DelPatient patient.personalData.id))
-                        patient
-                        "patients"
-                    )
+                (listSingleEntryShell
+                    (onClick (NewPatientsUrl <| "/patients/" ++ (toString patient.personalData.id)))
+                    (onClick (DelPatient patient.personalData.id))
+                    patient
+                    "patients"
+                )
             )
             patients
         )
@@ -108,21 +98,15 @@ doctorsView doctors =
     view (div [] []) (doctorsList doctors)
 
 
-view newPatient people =
+view newEntity people =
     div [ style block ]
         [ people
-        , newPatient
+        , newEntity
         ]
 
 
 newPatient =
-    div []
-        [ Html.button
-            [ style Styles.button
-            , onClick (NewPatientsUrl <| "/patients/new")
-            ]
-            [ text "New patient" ]
-        ]
+    newEntity (onClick (NewPatientsUrl <| "/patients/new")) "New patient"
 
 
 newPatientView =

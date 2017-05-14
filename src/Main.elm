@@ -11,6 +11,8 @@ import People.Update as PeopleUpdate
 import People.Types as PeopleTypes
 import People.Http as PeopleHttp
 import People.Helpers exposing (..)
+import Visits.Types as VisitsTypes exposing (..)
+import Visits.View as VisitsView
 import Styles exposing (app, body, menu, button)
 
 
@@ -42,6 +44,7 @@ type alias Model =
     , patients : List PeopleTypes.Patient
     , doctors : List PeopleTypes.Doctor
     , nurses : List PeopleTypes.Nurse
+    , visits : List Visit
     }
 
 
@@ -51,6 +54,7 @@ init location =
       , patients = []
       , doctors = []
       , nurses = []
+      , visits = visits
       }
     , Nav.newUrl location.pathname
     )
@@ -69,12 +73,14 @@ type Route
     | DoctorId Int
     | Nurses
     | NurseId Int
+    | Visits
 
 
 routeParser : UrlParser.Parser (Route -> a) a
 routeParser =
     UrlParser.oneOf
         [ UrlParser.map Home top
+        , UrlParser.map Visits (UrlParser.s "visits")
         , UrlParser.map Nurses (UrlParser.s "nurses")
         , UrlParser.map NurseId (UrlParser.s "nurses" </> int)
         , UrlParser.map Patients (UrlParser.s "patients")
@@ -95,11 +101,15 @@ type Msg
     | NursesMsg PeopleTypes.NursesMsg
     | DoctorsMsg PeopleTypes.DoctorsMsg
     | UrlChange Nav.Location
+    | VisitsMsg VisitsTypes.VisitsMsg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        VisitsMsg visitsMsg ->
+            ( model, Cmd.none )
+
         NursesMsg nursesMsg ->
             let
                 ( nurses, cmd ) =
@@ -175,6 +185,7 @@ view model =
             , Html.button [ style Styles.button, onClick (NewUrl "/nurses/") ] [ text "nurses" ]
             , Html.button [ style Styles.button, onClick (NewUrl "/doctors/") ] [ text "doctors" ]
             , Html.button [ style Styles.button, onClick (NewUrl "/404/") ] [ text "404" ]
+            , Html.button [ style Styles.button, onClick (NewUrl "/visits/") ] [ text "visits" ]
             ]
         , main_ [ style Styles.app ]
             [ model.history
@@ -196,6 +207,9 @@ toRouteView model maybeRoute =
                 [ case route of
                     Home ->
                         text Home.hello
+
+                    Visits ->
+                        Html.map VisitsMsg (VisitsView.view (VisitsView.visitsWithPatientsSurnames model.visits model.patients))
 
                     Patients ->
                         Html.map PatientsMsg (PeopleView.patientsView model.patients)
