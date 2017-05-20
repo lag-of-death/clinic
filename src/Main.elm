@@ -13,6 +13,8 @@ import People.Http as PeopleHttp
 import People.Helpers exposing (..)
 import Visits.Types as VisitsTypes exposing (..)
 import Visits.View as VisitsView
+import Visits.Http as VisitsHttp
+import Visits.Update as VisitsUpdate
 import Styles exposing (app, body, menu, button)
 
 
@@ -108,7 +110,11 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         VisitsMsg visitsMsg ->
-            ( model, Cmd.none )
+            let
+                ( visits, cmd ) =
+                    VisitsUpdate.updateVisits visitsMsg model.visits
+            in
+                ( { model | visits = visits }, Cmd.map VisitsMsg cmd )
 
         NursesMsg nursesMsg ->
             let
@@ -165,6 +171,12 @@ update msg model =
 
                     NurseId _ ->
                         Cmd.map NursesMsg PeopleHttp.getNurses
+
+                    Visits ->
+                        Cmd.batch
+                            [ Cmd.map PatientsMsg PeopleHttp.getPatients
+                            , Cmd.map VisitsMsg VisitsHttp.getVisits
+                            ]
 
                     _ ->
                         Cmd.none

@@ -10874,7 +10874,7 @@ var _user$project$People_Helpers$getPerson = F3(
 					},
 					people)));
 	});
-var _user$project$People_Helpers$defaultPerson = {name: 'Jan', surname: 'Kowalski', email: 'abc@xyz.pl', id: -9999};
+var _user$project$People_Helpers$defaultPerson = {name: '', surname: '', email: '', id: -9999};
 var _user$project$People_Helpers$defaultPatient = {personalData: _user$project$People_Helpers$defaultPerson};
 var _user$project$People_Helpers$defaultDoctor = {personalData: _user$project$People_Helpers$defaultPerson, speciality: 'surgeon'};
 var _user$project$People_Helpers$defaultNurse = {personalData: _user$project$People_Helpers$defaultPerson, isDistrictNurse: false};
@@ -10986,6 +10986,48 @@ var _user$project$Visits_View$visitsWithPatientsSurnames = F2(
 					});
 			},
 			visits);
+	});
+var _user$project$Visits_Http$decodeVisits = _elm_lang$core$Json_Decode$list(
+	A6(
+		_elm_lang$core$Json_Decode$map5,
+		_user$project$Visits_Types$Visit,
+		A2(_elm_lang$core$Json_Decode$field, 'patient', _elm_lang$core$Json_Decode$int),
+		A2(
+			_elm_lang$core$Json_Decode$field,
+			'doctors',
+			_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$int)),
+		A2(
+			_elm_lang$core$Json_Decode$field,
+			'nurses',
+			_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$int)),
+		A2(_elm_lang$core$Json_Decode$field, 'date', _elm_lang$core$Json_Decode$string),
+		A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int)));
+var _user$project$Visits_Http$getVisits = A2(
+	_elm_lang$http$Http$send,
+	_user$project$Visits_Types$VisitsData,
+	A2(_elm_lang$http$Http$get, '/api/visits', _user$project$Visits_Http$decodeVisits));
+var _user$project$Visits_Update$updateVisits = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'NewVisitsUrl':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _elm_lang$navigation$Navigation$newUrl(_p0._0)
+				};
+			case 'VisitDeleted':
+				return {ctor: '_Tuple2', _0: model, _1: _user$project$Visits_Http$getVisits};
+			case 'VisitsData':
+				if (_p0._0.ctor === 'Ok') {
+					return {ctor: '_Tuple2', _0: _p0._0._0, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					var error = A2(_elm_lang$core$Debug$log, 'VisitsData error: ', _p0._0._0);
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			default:
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		}
 	});
 var _user$project$Main$init = function (location) {
 	return {
@@ -11116,11 +11158,20 @@ var _user$project$Main$update = F2(
 		var _p0 = msg;
 		switch (_p0.ctor) {
 			case 'VisitsMsg':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'NursesMsg':
-				var _p1 = A2(_user$project$People_Update$updateNurses, _p0._0, model.nurses);
-				var nurses = _p1._0;
+				var _p1 = A2(_user$project$Visits_Update$updateVisits, _p0._0, model.visits);
+				var visits = _p1._0;
 				var cmd = _p1._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{visits: visits}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$VisitsMsg, cmd)
+				};
+			case 'NursesMsg':
+				var _p2 = A2(_user$project$People_Update$updateNurses, _p0._0, model.nurses);
+				var nurses = _p2._0;
+				var cmd = _p2._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -11129,9 +11180,9 @@ var _user$project$Main$update = F2(
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$NursesMsg, cmd)
 				};
 			case 'DoctorsMsg':
-				var _p2 = A2(_user$project$People_Update$updateDoctors, _p0._0, model.doctors);
-				var doctors = _p2._0;
-				var cmd = _p2._1;
+				var _p3 = A2(_user$project$People_Update$updateDoctors, _p0._0, model.doctors);
+				var doctors = _p3._0;
+				var cmd = _p3._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -11140,9 +11191,9 @@ var _user$project$Main$update = F2(
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$DoctorsMsg, cmd)
 				};
 			case 'PatientsMsg':
-				var _p3 = A2(_user$project$People_Update$updatePatients, _p0._0, model.patients);
-				var patients = _p3._0;
-				var peopleCmd = _p3._1;
+				var _p4 = A2(_user$project$People_Update$updatePatients, _p0._0, model.patients);
+				var patients = _p4._0;
+				var peopleCmd = _p4._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -11167,8 +11218,8 @@ var _user$project$Main$update = F2(
 							history: {ctor: '::', _0: maybeRoute, _1: model.history}
 						}),
 					_1: function () {
-						var _p4 = route;
-						switch (_p4.ctor) {
+						var _p5 = route;
+						switch (_p5.ctor) {
 							case 'Patients':
 								return A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PatientsMsg, _user$project$People_Http$getPatients);
 							case 'PatientId':
@@ -11181,6 +11232,17 @@ var _user$project$Main$update = F2(
 								return A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$NursesMsg, _user$project$People_Http$getNurses);
 							case 'NurseId':
 								return A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$NursesMsg, _user$project$People_Http$getNurses);
+							case 'Visits':
+								return _elm_lang$core$Platform_Cmd$batch(
+									{
+										ctor: '::',
+										_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PatientsMsg, _user$project$People_Http$getPatients),
+										_1: {
+											ctor: '::',
+											_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$VisitsMsg, _user$project$Visits_Http$getVisits),
+											_1: {ctor: '[]'}
+										}
+									});
 							default:
 								return _elm_lang$core$Platform_Cmd$none;
 						}
@@ -11190,8 +11252,8 @@ var _user$project$Main$update = F2(
 	});
 var _user$project$Main$toRouteView = F2(
 	function (model, maybeRoute) {
-		var _p5 = maybeRoute;
-		if (_p5.ctor === 'Nothing') {
+		var _p6 = maybeRoute;
+		if (_p6.ctor === 'Nothing') {
 			return A2(
 				_elm_lang$html$Html$div,
 				{ctor: '[]'},
@@ -11207,8 +11269,8 @@ var _user$project$Main$toRouteView = F2(
 				{
 					ctor: '::',
 					_0: function () {
-						var _p6 = _p5._0;
-						switch (_p6.ctor) {
+						var _p7 = _p6._0;
+						switch (_p7.ctor) {
 							case 'Home':
 								return _elm_lang$html$Html$text(_user$project$Home_Main$hello);
 							case 'Visits':
@@ -11229,7 +11291,7 @@ var _user$project$Main$toRouteView = F2(
 									_elm_lang$html$Html$map,
 									_user$project$Main$PatientsMsg,
 									_user$project$People_View$patientView(
-										A3(_user$project$People_Helpers$getPerson, _p6._0, model.patients, _user$project$People_Helpers$defaultPatient)));
+										A3(_user$project$People_Helpers$getPerson, _p7._0, model.patients, _user$project$People_Helpers$defaultPatient)));
 							case 'Doctors':
 								return A2(
 									_elm_lang$html$Html$map,
@@ -11240,13 +11302,13 @@ var _user$project$Main$toRouteView = F2(
 									_elm_lang$html$Html$map,
 									_user$project$Main$DoctorsMsg,
 									_user$project$People_View$doctorView(
-										A3(_user$project$People_Helpers$getPerson, _p6._0, model.doctors, _user$project$People_Helpers$defaultDoctor)));
+										A3(_user$project$People_Helpers$getPerson, _p7._0, model.doctors, _user$project$People_Helpers$defaultDoctor)));
 							case 'NurseId':
 								return A2(
 									_elm_lang$html$Html$map,
 									_user$project$Main$NursesMsg,
 									_user$project$People_View$nurseView(
-										A3(_user$project$People_Helpers$getPerson, _p6._0, model.nurses, _user$project$People_Helpers$defaultNurse)));
+										A3(_user$project$People_Helpers$getPerson, _p7._0, model.nurses, _user$project$People_Helpers$defaultNurse)));
 							default:
 								return A2(
 									_elm_lang$html$Html$map,
