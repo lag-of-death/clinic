@@ -5,7 +5,6 @@ import Html.Events exposing (..)
 import Html.Attributes exposing (style)
 import Navigation as Nav
 import UrlParser exposing (..)
-import Home.Main as Home
 import People.View as PeopleView
 import People.Update as PeopleUpdate
 import People.Types as PeopleTypes
@@ -67,8 +66,7 @@ init location =
 
 
 type Route
-    = Home
-    | PatientId Int
+    = PatientId Int
     | Patients
     | NewPatient
     | Doctors
@@ -81,7 +79,7 @@ type Route
 routeParser : UrlParser.Parser (Route -> a) a
 routeParser =
     UrlParser.oneOf
-        [ UrlParser.map Home top
+        [ UrlParser.map Patients top
         , UrlParser.map Visits (UrlParser.s "visits")
         , UrlParser.map Nurses (UrlParser.s "nurses")
         , UrlParser.map NurseId (UrlParser.s "nurses" </> int)
@@ -150,7 +148,7 @@ update msg model =
                     UrlParser.parsePath routeParser location
 
                 route =
-                    Maybe.withDefault Home maybeRoute
+                    Maybe.withDefault Patients maybeRoute
             in
                 ( { model | history = maybeRoute :: model.history }
                 , case route of
@@ -192,8 +190,7 @@ view model =
     Html.body [ style Styles.body ]
         [ div
             [ style Styles.menu ]
-            [ Html.button [ style Styles.button, onClick (NewUrl "/") ] [ text "home" ]
-            , Html.button [ style Styles.button, onClick (NewUrl "/patients/") ] [ text "patients" ]
+            [ Html.button [ style Styles.button, onClick (NewUrl "/patients/") ] [ text "patients" ]
             , Html.button [ style Styles.button, onClick (NewUrl "/nurses/") ] [ text "nurses" ]
             , Html.button [ style Styles.button, onClick (NewUrl "/doctors/") ] [ text "doctors" ]
             , Html.button [ style Styles.button, onClick (NewUrl "/visits/") ] [ text "visits" ]
@@ -201,7 +198,7 @@ view model =
         , main_ [ style Styles.app ]
             [ model.history
                 |> List.head
-                |> Maybe.withDefault (Just Home)
+                |> Maybe.withDefault (Just Patients)
                 |> toRouteView model
             ]
         ]
@@ -216,9 +213,6 @@ toRouteView model maybeRoute =
         Just route ->
             div []
                 [ case route of
-                    Home ->
-                        text Home.hello
-
                     Visits ->
                         Html.map VisitsMsg (VisitsView.view (VisitsView.visitsWithPatientsSurnames model.visits model.patients))
 

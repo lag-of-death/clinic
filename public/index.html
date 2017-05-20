@@ -9835,7 +9835,6 @@ var _evancz$url_parser$UrlParser$stringParam = function (name) {
 var _evancz$url_parser$UrlParser$intParam = function (name) {
 	return A2(_evancz$url_parser$UrlParser$customParam, name, _evancz$url_parser$UrlParser$intParamHelp);
 };
-var _user$project$Home_Main$hello = 'home';
 var _user$project$People_Types$Patient = function (a) {
 	return {personalData: a};
 };
@@ -11063,11 +11062,10 @@ var _user$project$Main$Patients = {ctor: 'Patients'};
 var _user$project$Main$PatientId = function (a) {
 	return {ctor: 'PatientId', _0: a};
 };
-var _user$project$Main$Home = {ctor: 'Home'};
 var _user$project$Main$routeParser = _evancz$url_parser$UrlParser$oneOf(
 	{
 		ctor: '::',
-		_0: A2(_evancz$url_parser$UrlParser$map, _user$project$Main$Home, _evancz$url_parser$UrlParser$top),
+		_0: A2(_evancz$url_parser$UrlParser$map, _user$project$Main$Patients, _evancz$url_parser$UrlParser$top),
 		_1: {
 			ctor: '::',
 			_0: A2(
@@ -11209,7 +11207,7 @@ var _user$project$Main$update = F2(
 				};
 			default:
 				var maybeRoute = A2(_evancz$url_parser$UrlParser$parsePath, _user$project$Main$routeParser, _p0._0);
-				var route = A2(_elm_lang$core$Maybe$withDefault, _user$project$Main$Home, maybeRoute);
+				var route = A2(_elm_lang$core$Maybe$withDefault, _user$project$Main$Patients, maybeRoute);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -11271,8 +11269,6 @@ var _user$project$Main$toRouteView = F2(
 					_0: function () {
 						var _p7 = _p6._0;
 						switch (_p7.ctor) {
-							case 'Home':
-								return _elm_lang$html$Html$text(_user$project$Home_Main$hello);
 							case 'Visits':
 								return A2(
 									_elm_lang$html$Html$map,
@@ -11350,13 +11346,13 @@ var _user$project$Main$view = function (model) {
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$html$Html_Events$onClick(
-									_user$project$Main$NewUrl('/')),
+									_user$project$Main$NewUrl('/patients/')),
 								_1: {ctor: '[]'}
 							}
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('home'),
+							_0: _elm_lang$html$Html$text('patients'),
 							_1: {ctor: '[]'}
 						}),
 					_1: {
@@ -11369,13 +11365,13 @@ var _user$project$Main$view = function (model) {
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Events$onClick(
-										_user$project$Main$NewUrl('/patients/')),
+										_user$project$Main$NewUrl('/nurses/')),
 									_1: {ctor: '[]'}
 								}
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text('patients'),
+								_0: _elm_lang$html$Html$text('nurses'),
 								_1: {ctor: '[]'}
 							}),
 						_1: {
@@ -11388,13 +11384,13 @@ var _user$project$Main$view = function (model) {
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html_Events$onClick(
-											_user$project$Main$NewUrl('/nurses/')),
+											_user$project$Main$NewUrl('/doctors/')),
 										_1: {ctor: '[]'}
 									}
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text('nurses'),
+									_0: _elm_lang$html$Html$text('doctors'),
 									_1: {ctor: '[]'}
 								}),
 							_1: {
@@ -11407,36 +11403,16 @@ var _user$project$Main$view = function (model) {
 										_1: {
 											ctor: '::',
 											_0: _elm_lang$html$Html_Events$onClick(
-												_user$project$Main$NewUrl('/doctors/')),
+												_user$project$Main$NewUrl('/visits/')),
 											_1: {ctor: '[]'}
 										}
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('doctors'),
+										_0: _elm_lang$html$Html$text('visits'),
 										_1: {ctor: '[]'}
 									}),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$button,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$style(_user$project$Styles$button),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(
-													_user$project$Main$NewUrl('/visits/')),
-												_1: {ctor: '[]'}
-											}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('visits'),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}
+								_1: {ctor: '[]'}
 							}
 						}
 					}
@@ -11457,7 +11433,7 @@ var _user$project$Main$view = function (model) {
 							model,
 							A2(
 								_elm_lang$core$Maybe$withDefault,
-								_elm_lang$core$Maybe$Just(_user$project$Main$Home),
+								_elm_lang$core$Maybe$Just(_user$project$Main$Patients),
 								_elm_lang$core$List$head(model.history))),
 						_1: {ctor: '[]'}
 					}),
