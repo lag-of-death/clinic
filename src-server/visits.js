@@ -3,7 +3,7 @@ const {location} = require('./config');
 
 var visits = [
     {
-        patient: null,
+        patient: 1,
         doctors: [],
         nurses: [],
         date: new Date().toDateString(),
@@ -14,30 +14,31 @@ var visits = [
 module.exports = require('express').Router()
     .get('/api/visits', getVisitsHandler)
     .delete('/api/visits/:id', delVisitHandler)
+    .get('/api/visits/:id', getVisitHandler)
     .post('/api/visits', newVisitHandler);
 
+function getVisitHandler(req, res) {
+    const visit = visits.find(visit => visit.id === parseInt(req.params.id));
+
+    return getPatient(visit.patient)
+        .then(data => toVisitWithPatient(visit, data))
+        .then(visit => res.send(visit))
+        .catch(err => console.log(err));
+}
+
 function getVisitsHandler(req, res) {
-    const options = {
-        method: 'GET',
-        uri: `${location}/patient/1`,
-        resolveWithFullResponse: false
-    };
-
-    rp
-        .get(options)
-        .then(data => {
-
-            res.send(visits.map(visit => {
-                return Object.assign({}, visit, {
-                    patient: {
-                        personalData: JSON.parse(data)
-                    }
+    const visitsWithPatients = visits
+        .map(visit => {
+            return getPatient(visit.patient)
+                .then(patient => {
+                    return toVisitWithPatient(visit, patient);
                 })
-            }));
-        })
-        .catch(err => {
-            console.log(err);
         });
+
+    return Promise
+        .all(visitsWithPatients)
+        .then(res.send.bind(null, res))
+        .catch(err => console.log(err));
 }
 
 function delVisitHandler(req, res) {
@@ -48,4 +49,22 @@ function delVisitHandler(req, res) {
 
 function newVisitHandler(req, res) {
     res.send('OK');
+}
+
+function getPatient(id) {
+    const options = {
+        method: 'GET',
+        uri: `${location}/patient/${id}`,
+        resolveWithFullResponse: false
+    };
+
+    return rp.get(options);
+}
+
+function toVisitWithPatient(visit, data) {
+    return Object.assign({}, visit, {
+        patient: {
+            personalData: JSON.parse(data)
+        }
+    })
 }
