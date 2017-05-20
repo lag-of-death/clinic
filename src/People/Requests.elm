@@ -1,8 +1,9 @@
-module People.Http exposing (..)
+module People.Requests exposing (..)
 
 import Http
 import Json.Decode as Decode
 import People.Types exposing (..)
+import Requests exposing (..)
 
 
 getPatients : Cmd PatientsMsg
@@ -77,17 +78,3 @@ deletePatient : Int -> Cmd PatientsMsg
 deletePatient id =
     Http.send PatientDeleted
         (delete "patients" id)
-
-
-delete : String -> a -> Http.Request ()
-delete whatPeople id =
-    (Http.request
-        { method = "DELETE"
-        , headers = []
-        , url = "/api/" ++ whatPeople ++ "/" ++ (toString id)
-        , body = Http.emptyBody
-        , expect = Http.expectStringResponse (\_ -> Ok ())
-        , timeout = Nothing
-        , withCredentials = False
-        }
-    )

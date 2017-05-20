@@ -1,6 +1,6 @@
 module People.Update exposing (..)
 
-import People.Http exposing (..)
+import People.Requests exposing (..)
 import People.Types exposing (..)
 import Navigation as Nav
 

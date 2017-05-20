@@ -16,7 +16,7 @@ newEntity onClick label =
 
 
 list content =
-    ul [ style [ ( "width", "70%" ) ] ]
+    ul [ style [ ( "width", "70%" ), ( "padding", "0" ) ] ]
         (List.map
             (\element ->
                 li [ style block, style blockCentered, style blockStretched ]

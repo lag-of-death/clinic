@@ -8,11 +8,11 @@ import UrlParser exposing (..)
 import People.View as PeopleView
 import People.Update as PeopleUpdate
 import People.Types as PeopleTypes
-import People.Http as PeopleHttp
+import People.Requests as PeopleHttp
 import People.Helpers exposing (..)
 import Visits.Types as VisitsTypes exposing (..)
 import Visits.View as VisitsView
-import Visits.Http as VisitsHttp
+import Visits.Requests as VisitsHttp
 import Visits.Update as VisitsUpdate
 import Styles exposing (app, body, menu, button)
 

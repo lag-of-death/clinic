@@ -11,7 +11,7 @@ var visits = [
         doctors: [0],
         nurses: [0],
         date: new Date().toDateString(),
-        id: 0
+        id: 1
     }
 ];
 

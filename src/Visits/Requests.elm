@@ -1,8 +1,15 @@
-module Visits.Http exposing (..)
+module Visits.Requests exposing (..)
 
 import Visits.Types exposing (..)
 import Http exposing (..)
 import Json.Decode as Decode
+import Requests exposing (..)
+
+
+deleteVisit : Int -> Cmd VisitsMsg
+deleteVisit id =
+    Http.send VisitDeleted
+        (delete "visits" id)
 
 
 getVisits : Cmd VisitsMsg

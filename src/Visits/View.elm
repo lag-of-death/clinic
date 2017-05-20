@@ -6,6 +6,7 @@ import Html exposing (..)
 import Html.Events exposing (..)
 import Html.Attributes exposing (..)
 import People.Helpers exposing (..)
+import Styles exposing (..)
 
 
 visitsWithPatientsSurnames visits patients =
@@ -27,12 +28,15 @@ buttonActions visit =
 
 
 view visits =
-    Views.list
-        (List.map
-            (\visit ->
-                [ div [ style [ ( "width", "100px" ) ] ] [ text visit.patient ]
-                , div [] [ text visit.date ]
-                ]
+    div [ style block ]
+        [ Views.list
+            (List.map
+                (\visit ->
+                    [ div [ style [ ( "width", "100px" ) ] ] [ text visit.patient ]
+                    , div [] [ text visit.date ]
+                    , buttonActions visit
+                    ]
+                )
+                visits
             )
-            visits
-        )
+        ]

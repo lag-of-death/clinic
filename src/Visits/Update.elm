@@ -1,6 +1,6 @@
 module Visits.Update exposing (..)
 
-import Visits.Http exposing (..)
+import Visits.Requests exposing (..)
 import Visits.Types exposing (..)
 import Navigation as Nav
 
@@ -27,4 +27,4 @@ updateVisits msg model =
                 ( model, Cmd.none )
 
         DelVisit id ->
-            ( model, Cmd.none )
+            ( model, deleteVisit id )
