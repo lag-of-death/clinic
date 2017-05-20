@@ -9,16 +9,6 @@ import People.Helpers exposing (..)
 import Styles exposing (..)
 
 
-visitsWithPatientsSurnames visits patients =
-    List.map
-        (\visit ->
-            { visit
-                | patient = .surname <| .personalData (getPerson visit.patient patients defaultPatient)
-            }
-        )
-        visits
-
-
 buttonActions visit =
     div []
         (actions
@@ -32,7 +22,9 @@ view visits =
         [ Views.list
             (List.map
                 (\visit ->
-                    [ div [ style [ ( "width", "100px" ) ] ] [ text visit.patient ]
+                    [ div [ style [ ( "width", "100px" ) ] ]
+                        [ text <| visit.patient.personalData.surname ++ " " ++ visit.patient.personalData.name
+                        ]
                     , div [] [ text visit.date ]
                     , buttonActions visit
                     ]

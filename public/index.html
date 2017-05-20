@@ -10881,25 +10881,6 @@ var _user$project$People_Helpers$defaultPerson = {name: '', surname: '', email: 
 var _user$project$People_Helpers$defaultPatient = {personalData: _user$project$People_Helpers$defaultPerson};
 var _user$project$People_Helpers$defaultDoctor = {personalData: _user$project$People_Helpers$defaultPerson, speciality: 'surgeon'};
 var _user$project$People_Helpers$defaultNurse = {personalData: _user$project$People_Helpers$defaultPerson, isDistrictNurse: false};
-var _user$project$Visits_Types$visits = {
-	ctor: '::',
-	_0: {
-		patient: 0,
-		doctors: {
-			ctor: '::',
-			_0: 0,
-			_1: {ctor: '[]'}
-		},
-		nurses: {
-			ctor: '::',
-			_0: 0,
-			_1: {ctor: '[]'}
-		},
-		date: '12/08/2017',
-		id: 0
-	},
-	_1: {ctor: '[]'}
-};
 var _user$project$Visits_Types$Visit = F5(
 	function (a, b, c, d, e) {
 		return {patient: a, doctors: b, nurses: c, date: d, id: e};
@@ -10961,7 +10942,11 @@ var _user$project$Visits_View$view = function (visits) {
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(visit.patient),
+									_0: _elm_lang$html$Html$text(
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											visit.patient.personalData.surname,
+											A2(_elm_lang$core$Basics_ops['++'], ' ', visit.patient.personalData.name))),
 									_1: {ctor: '[]'}
 								}),
 							_1: {
@@ -10986,38 +10971,13 @@ var _user$project$Visits_View$view = function (visits) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Visits_View$visitsWithPatientsSurnames = F2(
-	function (visits, patients) {
-		return A2(
-			_elm_lang$core$List$map,
-			function (visit) {
-				return _elm_lang$core$Native_Utils.update(
-					visit,
-					{
-						patient: function (_) {
-							return _.surname;
-						}(
-							function (_) {
-								return _.personalData;
-							}(
-								A3(_user$project$People_Helpers$getPerson, visit.patient, patients, _user$project$People_Helpers$defaultPatient)))
-					});
-			},
-			visits);
-	});
 var _user$project$Visits_Requests$decodeVisits = _elm_lang$core$Json_Decode$list(
 	A6(
 		_elm_lang$core$Json_Decode$map5,
 		_user$project$Visits_Types$Visit,
-		A2(_elm_lang$core$Json_Decode$field, 'patient', _elm_lang$core$Json_Decode$int),
-		A2(
-			_elm_lang$core$Json_Decode$field,
-			'doctors',
-			_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$int)),
-		A2(
-			_elm_lang$core$Json_Decode$field,
-			'nurses',
-			_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$int)),
+		A2(_elm_lang$core$Json_Decode$field, 'patient', _user$project$People_Requests$decodePatient),
+		A2(_elm_lang$core$Json_Decode$field, 'doctors', _user$project$People_Requests$decodeDoctors),
+		A2(_elm_lang$core$Json_Decode$field, 'nurses', _user$project$People_Requests$decodeNurses),
 		A2(_elm_lang$core$Json_Decode$field, 'date', _elm_lang$core$Json_Decode$string),
 		A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int)));
 var _user$project$Visits_Requests$getVisits = A2(
@@ -11065,7 +11025,7 @@ var _user$project$Main$init = function (location) {
 			patients: {ctor: '[]'},
 			doctors: {ctor: '[]'},
 			nurses: {ctor: '[]'},
-			visits: _user$project$Visits_Types$visits
+			visits: {ctor: '[]'}
 		},
 		_1: _elm_lang$navigation$Navigation$newUrl(location.pathname)
 	};
@@ -11077,6 +11037,9 @@ var _user$project$Main$Model = F5(
 	function (a, b, c, d, e) {
 		return {history: a, patients: b, doctors: c, nurses: d, visits: e};
 	});
+var _user$project$Main$VisitId = function (a) {
+	return {ctor: 'VisitId', _0: a};
+};
 var _user$project$Main$Visits = {ctor: 'Visits'};
 var _user$project$Main$NurseId = function (a) {
 	return {ctor: 'NurseId', _0: a};
@@ -11141,21 +11104,31 @@ var _user$project$Main$routeParser = _evancz$url_parser$UrlParser$oneOf(
 									ctor: '::',
 									_0: A2(
 										_evancz$url_parser$UrlParser$map,
-										_user$project$Main$PatientId,
+										_user$project$Main$VisitId,
 										A2(
 											_evancz$url_parser$UrlParser_ops['</>'],
-											_evancz$url_parser$UrlParser$s('patients'),
+											_evancz$url_parser$UrlParser$s('visits'),
 											_evancz$url_parser$UrlParser$int)),
 									_1: {
 										ctor: '::',
 										_0: A2(
 											_evancz$url_parser$UrlParser$map,
-											_user$project$Main$NewPatient,
+											_user$project$Main$PatientId,
 											A2(
 												_evancz$url_parser$UrlParser_ops['</>'],
 												_evancz$url_parser$UrlParser$s('patients'),
-												_evancz$url_parser$UrlParser$s('new'))),
-										_1: {ctor: '[]'}
+												_evancz$url_parser$UrlParser$int)),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_evancz$url_parser$UrlParser$map,
+												_user$project$Main$NewPatient,
+												A2(
+													_evancz$url_parser$UrlParser_ops['</>'],
+													_evancz$url_parser$UrlParser$s('patients'),
+													_evancz$url_parser$UrlParser$s('new'))),
+											_1: {ctor: '[]'}
+										}
 									}
 								}
 							}
@@ -11260,16 +11233,9 @@ var _user$project$Main$update = F2(
 							case 'NurseId':
 								return A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$NursesMsg, _user$project$People_Requests$getNurses);
 							case 'Visits':
-								return _elm_lang$core$Platform_Cmd$batch(
-									{
-										ctor: '::',
-										_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PatientsMsg, _user$project$People_Requests$getPatients),
-										_1: {
-											ctor: '::',
-											_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$VisitsMsg, _user$project$Visits_Requests$getVisits),
-											_1: {ctor: '[]'}
-										}
-									});
+								return A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$VisitsMsg, _user$project$Visits_Requests$getVisits);
+							case 'VisitId':
+								return _elm_lang$core$Platform_Cmd$none;
 							default:
 								return _elm_lang$core$Platform_Cmd$none;
 						}
@@ -11302,8 +11268,10 @@ var _user$project$Main$toRouteView = F2(
 								return A2(
 									_elm_lang$html$Html$map,
 									_user$project$Main$VisitsMsg,
-									_user$project$Visits_View$view(
-										A2(_user$project$Visits_View$visitsWithPatientsSurnames, model.visits, model.patients)));
+									_user$project$Visits_View$view(model.visits));
+							case 'VisitId':
+								return _elm_lang$html$Html$text(
+									_elm_lang$core$Basics$toString(_p7._0));
 							case 'Patients':
 								return A2(
 									_elm_lang$html$Html$map,

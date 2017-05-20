@@ -1,6 +1,5 @@
-const rp = require('request-promise');
-
-const location = 'https://outpatient-hospital-api.herokuapp.com';
+const rp         = require('request-promise');
+const {location} = require('./config');
 
 module.exports = require('express').Router()
     .get('/api/patients', getPatientsHandler.bind(null, location))

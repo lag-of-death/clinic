@@ -1,6 +1,8 @@
 module Visits.Types exposing (..)
 
 import Http exposing (..)
+import People.Types exposing (..)
+import People.Helpers exposing (..)
 
 
 type VisitsMsg
@@ -11,20 +13,9 @@ type VisitsMsg
 
 
 type alias Visit =
-    { patient : Int
-    , doctors : List Int
-    , nurses : List Int
+    { patient : Patient
+    , doctors : List Doctor
+    , nurses : List Nurse
     , date : String
     , id : Int
     }
-
-
-visits : List Visit
-visits =
-    [ { patient = 0
-      , doctors = [ 0 ]
-      , nurses = [ 0 ]
-      , date = "12/08/2017"
-      , id = 0
-      }
-    ]

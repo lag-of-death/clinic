@@ -55,7 +55,7 @@ init location =
       , patients = []
       , doctors = []
       , nurses = []
-      , visits = visits
+      , visits = []
       }
     , Nav.newUrl location.pathname
     )
@@ -74,6 +74,7 @@ type Route
     | Nurses
     | NurseId Int
     | Visits
+    | VisitId Int
 
 
 routeParser : UrlParser.Parser (Route -> a) a
@@ -86,6 +87,7 @@ routeParser =
         , UrlParser.map Patients (UrlParser.s "patients")
         , UrlParser.map Doctors (UrlParser.s "doctors")
         , UrlParser.map DoctorId (UrlParser.s "doctors" </> int)
+        , UrlParser.map VisitId (UrlParser.s "visits" </> int)
         , UrlParser.map PatientId (UrlParser.s "patients" </> int)
         , UrlParser.map NewPatient (UrlParser.s "patients" </> UrlParser.s "new")
         ]
@@ -171,10 +173,10 @@ update msg model =
                         Cmd.map NursesMsg PeopleHttp.getNurses
 
                     Visits ->
-                        Cmd.batch
-                            [ Cmd.map PatientsMsg PeopleHttp.getPatients
-                            , Cmd.map VisitsMsg VisitsHttp.getVisits
-                            ]
+                        Cmd.map VisitsMsg VisitsHttp.getVisits
+
+                    VisitId id ->
+                        Cmd.none
 
                     _ ->
                         Cmd.none
@@ -214,7 +216,10 @@ toRouteView model maybeRoute =
             div []
                 [ case route of
                     Visits ->
-                        Html.map VisitsMsg (VisitsView.view (VisitsView.visitsWithPatientsSurnames model.visits model.patients))
+                        Html.map VisitsMsg (VisitsView.view model.visits)
+
+                    VisitId id ->
+                        id |> toString |> text
 
                     Patients ->
                         Html.map PatientsMsg (PeopleView.patientsView model.patients)

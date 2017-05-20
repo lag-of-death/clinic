@@ -4,6 +4,7 @@ import Visits.Types exposing (..)
 import Http exposing (..)
 import Json.Decode as Decode
 import Requests exposing (..)
+import People.Requests exposing (..)
 
 
 deleteVisit : Int -> Cmd VisitsMsg
@@ -21,9 +22,9 @@ decodeVisits : Decode.Decoder (List Visit)
 decodeVisits =
     Decode.list
         (Decode.map5 Visit
-            (Decode.field "patient" Decode.int)
-            (Decode.field "doctors" (Decode.list Decode.int))
-            (Decode.field "nurses" (Decode.list Decode.int))
+            (Decode.field "patient" decodePatient)
+            (Decode.field "doctors" decodeDoctors)
+            (Decode.field "nurses" decodeNurses)
             (Decode.field "date" Decode.string)
             (Decode.field "id" Decode.int)
         )

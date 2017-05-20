@@ -1,17 +1,13 @@
+const rp         = require('request-promise');
+const {location} = require('./config');
+
 var visits = [
     {
-        patient: 2,
-        doctors: [0],
-        nurses: [0],
+        patient: null,
+        doctors: [],
+        nurses: [],
         date: new Date().toDateString(),
         id: 0
-    },
-    {
-        patient: 1,
-        doctors: [0],
-        nurses: [0],
-        date: new Date().toDateString(),
-        id: 1
     }
 ];
 
@@ -21,7 +17,27 @@ module.exports = require('express').Router()
     .post('/api/visits', newVisitHandler);
 
 function getVisitsHandler(req, res) {
-    res.send(visits);
+    const options = {
+        method: 'GET',
+        uri: `${location}/patient/1`,
+        resolveWithFullResponse: false
+    };
+
+    rp
+        .get(options)
+        .then(data => {
+
+            res.send(visits.map(visit => {
+                return Object.assign({}, visit, {
+                    patient: {
+                        personalData: JSON.parse(data)
+                    }
+                })
+            }));
+        })
+        .catch(err => {
+            console.log(err);
+        });
 }
 
 function delVisitHandler(req, res) {
