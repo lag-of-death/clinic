@@ -5,9 +5,9 @@ import People.Types exposing (..)
 
 defaultPerson : Person
 defaultPerson =
-    { name = "Jan"
-    , surname = "Kowalski"
-    , email = "abc@xyz.pl"
+    { name = ""
+    , surname = ""
+    , email = ""
     , id = -9999
     }
 
