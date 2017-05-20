@@ -14,6 +14,7 @@ import Visits.Types as VisitsTypes exposing (..)
 import Visits.View as VisitsView
 import Visits.Requests as VisitsHttp
 import Visits.Update as VisitsUpdate
+import Visits.Helpers exposing (..)
 import Styles exposing (app, body, menu, button)
 
 
@@ -176,7 +177,7 @@ update msg model =
                         Cmd.map VisitsMsg VisitsHttp.getVisits
 
                     VisitId id ->
-                        Cmd.none
+                        Cmd.map VisitsMsg (VisitsHttp.getVisit id)
 
                     _ ->
                         Cmd.none
@@ -219,7 +220,7 @@ toRouteView model maybeRoute =
                         Html.map VisitsMsg (VisitsView.view model.visits)
 
                     VisitId id ->
-                        id |> toString |> text
+                        Html.map VisitsMsg (VisitsView.visitView (getVisit id model.visits))
 
                     Patients ->
                         Html.map PatientsMsg (PeopleView.patientsView model.patients)

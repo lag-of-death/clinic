@@ -17,6 +17,11 @@ buttonActions visit =
         )
 
 
+visitView : Visit -> Html a
+visitView visit =
+    visit |> toString |> text
+
+
 view visits =
     div [ style block ]
         [ Views.list

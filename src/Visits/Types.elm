@@ -8,6 +8,7 @@ import People.Helpers exposing (..)
 type VisitsMsg
     = DelVisit Int
     | VisitsData (Result Http.Error (List Visit))
+    | VisitData (Result Http.Error Visit)
     | VisitDeleted (Result Http.Error ())
     | NewVisitsUrl String
 

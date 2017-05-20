@@ -10891,11 +10891,18 @@ var _user$project$Visits_Types$NewVisitsUrl = function (a) {
 var _user$project$Visits_Types$VisitDeleted = function (a) {
 	return {ctor: 'VisitDeleted', _0: a};
 };
+var _user$project$Visits_Types$VisitData = function (a) {
+	return {ctor: 'VisitData', _0: a};
+};
 var _user$project$Visits_Types$VisitsData = function (a) {
 	return {ctor: 'VisitsData', _0: a};
 };
 var _user$project$Visits_Types$DelVisit = function (a) {
 	return {ctor: 'DelVisit', _0: a};
+};
+var _user$project$Visits_View$visitView = function (visit) {
+	return _elm_lang$html$Html$text(
+		_elm_lang$core$Basics$toString(visit));
 };
 var _user$project$Visits_View$buttonActions = function (visit) {
 	return A2(
@@ -10971,19 +10978,31 @@ var _user$project$Visits_View$view = function (visits) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Visits_Requests$decodeVisits = _elm_lang$core$Json_Decode$list(
-	A6(
-		_elm_lang$core$Json_Decode$map5,
-		_user$project$Visits_Types$Visit,
-		A2(_elm_lang$core$Json_Decode$field, 'patient', _user$project$People_Requests$decodePatient),
-		A2(_elm_lang$core$Json_Decode$field, 'doctors', _user$project$People_Requests$decodeDoctors),
-		A2(_elm_lang$core$Json_Decode$field, 'nurses', _user$project$People_Requests$decodeNurses),
-		A2(_elm_lang$core$Json_Decode$field, 'date', _elm_lang$core$Json_Decode$string),
-		A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int)));
+var _user$project$Visits_Requests$decodeVisit = A6(
+	_elm_lang$core$Json_Decode$map5,
+	_user$project$Visits_Types$Visit,
+	A2(_elm_lang$core$Json_Decode$field, 'patient', _user$project$People_Requests$decodePatient),
+	A2(_elm_lang$core$Json_Decode$field, 'doctors', _user$project$People_Requests$decodeDoctors),
+	A2(_elm_lang$core$Json_Decode$field, 'nurses', _user$project$People_Requests$decodeNurses),
+	A2(_elm_lang$core$Json_Decode$field, 'date', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int));
+var _user$project$Visits_Requests$decodeVisits = _elm_lang$core$Json_Decode$list(_user$project$Visits_Requests$decodeVisit);
 var _user$project$Visits_Requests$getVisits = A2(
 	_elm_lang$http$Http$send,
 	_user$project$Visits_Types$VisitsData,
 	A2(_elm_lang$http$Http$get, '/api/visits', _user$project$Visits_Requests$decodeVisits));
+var _user$project$Visits_Requests$getVisit = function (id) {
+	return A2(
+		_elm_lang$http$Http$send,
+		_user$project$Visits_Types$VisitData,
+		A2(
+			_elm_lang$http$Http$get,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'/api/visits/',
+				_elm_lang$core$Basics$toString(id)),
+			_user$project$Visits_Requests$decodeVisit));
+};
 var _user$project$Visits_Requests$deleteVisit = function (id) {
 	return A2(
 		_elm_lang$http$Http$send,
@@ -11000,6 +11019,28 @@ var _user$project$Visits_Update$updateVisits = F2(
 					_0: model,
 					_1: _elm_lang$navigation$Navigation$newUrl(_p0._0)
 				};
+			case 'VisitData':
+				if (_p0._0.ctor === 'Err') {
+					var debug = A2(_elm_lang$core$Debug$log, 'visit err', _p0._0._0);
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					var _p1 = _p0._0._0;
+					var debug = A2(_elm_lang$core$Debug$log, 'visit', _p1);
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$List$isEmpty(model) ? {
+							ctor: '::',
+							_0: _p1,
+							_1: {ctor: '[]'}
+						} : A2(
+							_elm_lang$core$List$map,
+							function (oldVisit) {
+								return _elm_lang$core$Native_Utils.eq(oldVisit.id, _p1.id) ? _p1 : oldVisit;
+							},
+							model),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
 			case 'VisitDeleted':
 				return {ctor: '_Tuple2', _0: model, _1: _user$project$Visits_Requests$getVisits};
 			case 'VisitsData':
@@ -11016,6 +11057,26 @@ var _user$project$Visits_Update$updateVisits = F2(
 					_1: _user$project$Visits_Requests$deleteVisit(_p0._0)
 				};
 		}
+	});
+var _user$project$Visits_Helpers$defaultVisit = {
+	id: 0,
+	date: '',
+	doctors: {ctor: '[]'},
+	nurses: {ctor: '[]'},
+	patient: _user$project$People_Helpers$defaultPatient
+};
+var _user$project$Visits_Helpers$getVisit = F2(
+	function (id, visits) {
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			_user$project$Visits_Helpers$defaultVisit,
+			_elm_lang$core$List$head(
+				A2(
+					_elm_lang$core$List$filter,
+					function (visit) {
+						return _elm_lang$core$Native_Utils.eq(visit.id, id);
+					},
+					visits)));
 	});
 var _user$project$Main$init = function (location) {
 	return {
@@ -11235,7 +11296,10 @@ var _user$project$Main$update = F2(
 							case 'Visits':
 								return A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$VisitsMsg, _user$project$Visits_Requests$getVisits);
 							case 'VisitId':
-								return _elm_lang$core$Platform_Cmd$none;
+								return A2(
+									_elm_lang$core$Platform_Cmd$map,
+									_user$project$Main$VisitsMsg,
+									_user$project$Visits_Requests$getVisit(_p5._0));
 							default:
 								return _elm_lang$core$Platform_Cmd$none;
 						}
@@ -11270,8 +11334,11 @@ var _user$project$Main$toRouteView = F2(
 									_user$project$Main$VisitsMsg,
 									_user$project$Visits_View$view(model.visits));
 							case 'VisitId':
-								return _elm_lang$html$Html$text(
-									_elm_lang$core$Basics$toString(_p7._0));
+								return A2(
+									_elm_lang$html$Html$map,
+									_user$project$Main$VisitsMsg,
+									_user$project$Visits_View$visitView(
+										A2(_user$project$Visits_Helpers$getVisit, _p7._0, model.visits)));
 							case 'Patients':
 								return A2(
 									_elm_lang$html$Html$map,

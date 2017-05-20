@@ -20,10 +20,14 @@ module.exports = require('express').Router()
 function getVisitHandler(req, res) {
     const visit = visits.find(visit => visit.id === parseInt(req.params.id));
 
-    return getPatient(visit.patient)
-        .then(data => toVisitWithPatient(visit, data))
-        .then(visit => res.send(visit))
-        .catch(err => console.log(err));
+    if (visit) {
+        getPatient(visit.patient)
+            .then(data => toVisitWithPatient(visit, data))
+            .then(res.send.bind(res))
+            .catch(err => console.log(err));
+    } else {
+        res.send({});
+    }
 }
 
 function getVisitsHandler(req, res) {
@@ -37,7 +41,7 @@ function getVisitsHandler(req, res) {
 
     return Promise
         .all(visitsWithPatients)
-        .then(res.send.bind(null, res))
+        .then(res.send.bind(res))
         .catch(err => console.log(err));
 }
 
