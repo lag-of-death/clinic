@@ -1,5 +1,4 @@
-const rp         = require('request-promise');
-const {location} = require('./config');
+const {getPatient} = require('./common');
 
 var visits = [
     {
@@ -69,16 +68,6 @@ function delVisitHandler(req, res) {
 
 function newVisitHandler(req, res) {
     res.send('OK');
-}
-
-function getPatient(id) {
-    const options = {
-        method: 'GET',
-        uri: `${location}/patient/${id}`,
-        resolveWithFullResponse: false
-    };
-
-    return rp.get(options);
 }
 
 function toVisitWithPatient(visit, data) {

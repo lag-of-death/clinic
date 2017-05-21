@@ -1,10 +1,22 @@
-const rp         = require('request-promise');
-const {location} = require('./config');
+const rp           = require('request-promise');
+const {location}   = require('./config');
+const {getPatient} = require('./common');
 
 module.exports = require('express').Router()
     .get('/api/patients', getPatientsHandler.bind(null, location))
     .delete('/api/patients/:id', delPatientHandler.bind(null, location))
+    .get('/api/patients/:id', getPatientHandler)
     .post('/api/patients', newPatientHandler.bind(null, location));
+
+function getPatientHandler(req, res) {
+    return getPatient(req.params.id)
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.send(err);
+        })
+}
 
 function getPatientsHandler(location, req, res) {
     const options = {
