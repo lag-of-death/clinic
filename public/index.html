@@ -10900,9 +10900,150 @@ var _user$project$Visits_Types$VisitsData = function (a) {
 var _user$project$Visits_Types$DelVisit = function (a) {
 	return {ctor: 'DelVisit', _0: a};
 };
+var _user$project$Visits_View$surnameAndName = function (entity) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		entity.personalData.surname,
+		A2(_elm_lang$core$Basics_ops['++'], ' ', entity.personalData.name));
+};
+var _user$project$Visits_View$toCommaSeparated = function (list) {
+	return A2(
+		_elm_lang$core$String$join,
+		', ',
+		A2(
+			_elm_lang$core$List$map,
+			function (entity) {
+				return _user$project$Visits_View$surnameAndName(entity);
+			},
+			list));
+};
 var _user$project$Visits_View$visitView = function (visit) {
-	return _elm_lang$html$Html$text(
-		_elm_lang$core$Basics$toString(visit));
+	return A2(
+		_elm_lang$html$Html$table,
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'border', '1'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'border', _1: '2px solid black'},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'border-collapse', _1: 'collapse'},
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$tr,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$th,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Patient'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$th,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('Date'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$th,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Nurses'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$th,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('Doctors'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$tr,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$td,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									_user$project$Visits_View$surnameAndName(visit.patient)),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$td,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(visit.date),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$td,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(
+											_user$project$Visits_View$toCommaSeparated(visit.nurses)),
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$td,
+										{ctor: '[]'},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text(
+												_user$project$Visits_View$toCommaSeparated(visit.doctors)),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
 };
 var _user$project$Visits_View$buttonActions = function (visit) {
 	return A2(
@@ -10950,10 +11091,7 @@ var _user$project$Visits_View$view = function (visits) {
 								{
 									ctor: '::',
 									_0: _elm_lang$html$Html$text(
-										A2(
-											_elm_lang$core$Basics_ops['++'],
-											visit.patient.personalData.surname,
-											A2(_elm_lang$core$Basics_ops['++'], ' ', visit.patient.personalData.name))),
+										_user$project$Visits_View$surnameAndName(visit.patient)),
 									_1: {ctor: '[]'}
 								}),
 							_1: {

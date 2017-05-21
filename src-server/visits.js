@@ -4,8 +4,24 @@ const {location} = require('./config');
 var visits = [
     {
         patient: 1,
-        doctors: [],
-        nurses: [],
+        doctors: [{
+            speciality: 'surgeon',
+            personalData: {
+                id: 1,
+                surname: 'Pitt',
+                name: 'Bragg',
+                email: '4@B.pl'
+            }
+        }],
+        nurses: [{
+            isDistrictNurse: true,
+            personalData: {
+                id: 0,
+                surname: 'McDolan',
+                name: 'Sara',
+                email: 'a@B.pl'
+            }
+        }],
         date: new Date().toDateString(),
         id: 0
     }
