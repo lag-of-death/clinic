@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build-and-start": "npm run build && npm start",
-    "build": "cd src && elm-make Main.elm --output=../public/index.html",
+    "build": "cd src && elm make Main.elm --output=../public/index.html",
     "start": "node --harmony_trailing_commas index.js"
   },
   "repository": {
@@ -23,6 +23,7 @@
   "homepage": "https://github.com/lag-of-death/clinic#readme",
   "dependencies": {
     "body-parser": "^1.17.1",
+    "elm": "^0.18.0",
     "express": "^4.15.2",
     "express-spa": "0.0.2",
     "request": "^2.81.0",
