@@ -10531,8 +10531,8 @@ var _user$project$People_View$view = F2(
 				}
 			});
 	});
-var _user$project$People_View$listSingleEntryShell = F4(
-	function (onClick1, onClick2, a, whatPeople) {
+var _user$project$People_View$listSingleEntryShell = F3(
+	function (onClick1, onClick2, a) {
 		var person = a.personalData;
 		return {
 			ctor: '::',
@@ -10572,7 +10572,7 @@ var _user$project$People_View$patientsList = function (patients) {
 		A2(
 			_elm_lang$core$List$map,
 			function (patient) {
-				return A4(
+				return A3(
 					_user$project$People_View$listSingleEntryShell,
 					_elm_lang$html$Html_Events$onClick(
 						_user$project$People_Types$NewPatientsUrl(
@@ -10582,8 +10582,7 @@ var _user$project$People_View$patientsList = function (patients) {
 								_elm_lang$core$Basics$toString(patient.personalData.id)))),
 					_elm_lang$html$Html_Events$onClick(
 						_user$project$People_Types$DelPatient(patient.personalData.id)),
-					patient,
-					'patients');
+					patient);
 			},
 			patients));
 };
@@ -10629,7 +10628,7 @@ var _user$project$People_View$nursesList = function (nurses) {
 				return A2(
 					_user$project$People_View$withIsDistrictInfo,
 					nurse,
-					A4(
+					A3(
 						_user$project$People_View$listSingleEntryShell,
 						_elm_lang$html$Html_Events$onClick(
 							_user$project$People_Types$NewNursesUrl(
@@ -10639,8 +10638,7 @@ var _user$project$People_View$nursesList = function (nurses) {
 									_elm_lang$core$Basics$toString(nurse.personalData.id)))),
 						_elm_lang$html$Html_Events$onClick(
 							_user$project$People_Types$DelNurse(nurse.personalData.id)),
-						nurse,
-						'nurses'));
+						nurse));
 			},
 			nurses));
 };
@@ -10688,7 +10686,7 @@ var _user$project$People_View$doctorsList = function (doctors) {
 				return A2(
 					_user$project$People_View$withSpeciality,
 					doctor,
-					A4(
+					A3(
 						_user$project$People_View$listSingleEntryShell,
 						_elm_lang$html$Html_Events$onClick(
 							_user$project$People_Types$NewDoctorsUrl(
@@ -10698,8 +10696,7 @@ var _user$project$People_View$doctorsList = function (doctors) {
 									_elm_lang$core$Basics$toString(doctor.personalData.id)))),
 						_elm_lang$html$Html_Events$onClick(
 							_user$project$People_Types$DelDoctor(doctor.personalData.id)),
-						doctor,
-						'doctors'));
+						doctor));
 			},
 			doctors));
 };

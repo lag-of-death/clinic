@@ -8,10 +8,12 @@ import Styles exposing (button, block, blockStretched, blockCentered)
 import Views exposing (..)
 
 
+withSpeciality : Doctor -> List (Html msg) -> List (Html msg)
 withSpeciality doctor entryData =
     List.append entryData [ div [ style [ ( "width", "100px" ) ] ] [ text doctor.speciality ] ]
 
 
+withIsDistrictInfo : Nurse -> List (Html msg) -> List (Html msg)
 withIsDistrictInfo nurse entryData =
     List.append
         entryData
@@ -25,7 +27,8 @@ withIsDistrictInfo nurse entryData =
         ]
 
 
-listSingleEntryShell onClick1 onClick2 a whatPeople =
+listSingleEntryShell : Html.Attribute a -> Html.Attribute a -> { c | personalData : { b | surname : String, name : String } } -> List (Html a)
+listSingleEntryShell onClick1 onClick2 a =
     let
         person =
             a.personalData
@@ -39,6 +42,7 @@ listSingleEntryShell onClick1 onClick2 a whatPeople =
         ]
 
 
+doctorsList : List Doctor -> Html DoctorsMsg
 doctorsList doctors =
     list
         (List.map
@@ -48,7 +52,6 @@ doctorsList doctors =
                         (onClick (NewDoctorsUrl <| "/doctors/" ++ (toString doctor.personalData.id)))
                         (onClick (DelDoctor doctor.personalData.id))
                         doctor
-                        "doctors"
                     )
                 )
             )
@@ -56,6 +59,7 @@ doctorsList doctors =
         )
 
 
+nursesList : List Nurse -> Html NursesMsg
 nursesList nurses =
     list
         (List.map
@@ -67,7 +71,6 @@ nursesList nurses =
                         )
                         (onClick (DelNurse nurse.personalData.id))
                         nurse
-                        "nurses"
                     )
                 )
             )
@@ -75,6 +78,9 @@ nursesList nurses =
         )
 
 
+patientsList :
+    List { b | personalData : { a | id : Int, name : String, surname : String } }
+    -> Html PatientsMsg
 patientsList patients =
     list
         (List.map
@@ -83,21 +89,25 @@ patientsList patients =
                     (onClick (NewPatientsUrl <| "/patients/" ++ (toString patient.personalData.id)))
                     (onClick (DelPatient patient.personalData.id))
                     patient
-                    "patients"
                 )
             )
             patients
         )
 
 
+patientsView :
+    List { b | personalData : { a | id : Int, name : String, surname : String } }
+    -> Html PatientsMsg
 patientsView patients =
     view newPatient (patientsList patients)
 
 
+doctorsView : List Doctor -> Html DoctorsMsg
 doctorsView doctors =
     view (div [] []) (doctorsList doctors)
 
 
+view : Html msg -> Html msg -> Html msg
 view newEntity people =
     div [ style block ]
         [ people
@@ -105,10 +115,12 @@ view newEntity people =
         ]
 
 
+newPatient : Html PatientsMsg
 newPatient =
     newEntity (onClick (NewPatientsUrl <| "/patients/new")) "New patient"
 
 
+newPatientView : Html msg
 newPatientView =
     form
         [ style Styles.newPatientForm
@@ -143,10 +155,22 @@ newPatientView =
         ]
 
 
+patientView :
+    { c
+        | personalData :
+            { b | email : String, id : a, name : String, surname : String }
+    }
+    -> Html msg
 patientView patient =
     table [] (restTr patient)
 
 
+restTr :
+    { c
+        | personalData :
+            { b | email : String, id : a, name : String, surname : String }
+    }
+    -> List (Html msg)
 restTr person =
     [ tr []
         [ td []
@@ -175,6 +199,7 @@ restTr person =
     ]
 
 
+specialityTr : String -> Html msg
 specialityTr speciality =
     tr []
         [ td []
@@ -184,6 +209,7 @@ specialityTr speciality =
         ]
 
 
+districtNurseTr : Bool -> Html msg
 districtNurseTr isDistrict =
     tr []
         [ td []
@@ -198,13 +224,28 @@ districtNurseTr isDistrict =
         ]
 
 
+doctorView :
+    { c
+        | personalData :
+            { b | email : String, id : a, name : String, surname : String }
+        , speciality : String
+    }
+    -> Html msg
 doctorView doctor =
     table [] (List.concat [ (restTr doctor), [ specialityTr doctor.speciality ] ])
 
 
+nurseView :
+    { c
+        | isDistrictNurse : Bool
+        , personalData :
+            { b | email : String, id : a, name : String, surname : String }
+    }
+    -> Html msg
 nurseView nurse =
     table [] (List.concat [ (restTr nurse), [ districtNurseTr nurse.isDistrictNurse ] ])
 
 
+nursesView : List Nurse -> Html NursesMsg
 nursesView nurses =
     view (div [] []) (nursesList nurses)

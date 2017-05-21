@@ -5,6 +5,7 @@ import Html.Attributes exposing (..)
 import Styles exposing (..)
 
 
+newEntity : Html.Attribute a -> String -> Html a
 newEntity onClick label =
     div []
         [ Html.button
@@ -15,6 +16,7 @@ newEntity onClick label =
         ]
 
 
+list : List (List (Html msg)) -> Html msg
 list content =
     ul [ style [ ( "width", "70%" ), ( "padding", "0" ) ] ]
         (List.map
@@ -26,6 +28,7 @@ list content =
         )
 
 
+actions : Html.Attribute a -> Html.Attribute a -> List (Html a)
 actions onClick1 onClick2 =
     [ Html.button
         [ style Styles.button
