@@ -1,24 +1,24 @@
-const {sendSingleEntity} = require('./common');
+const { sendSingleEntity } = require('./common');
 
-var doctors = [
-    {
-        speciality: "surgeon",
-        personalData: {
-            name: "Thomas",
-            surname: "Alban",
-            email: "a@b.com",
-            id: 0
-        }
+let doctors = [
+  {
+    speciality: 'surgeon',
+    personalData: {
+      name: 'Thomas',
+      surname: 'Alban',
+      email: 'a@b.com',
+      id: 0,
     },
-    {
-        speciality: "psychiatrist",
-        personalData: {
-            name: "Andrew",
-            surname: "Gringo",
-            email: "da@be.de",
-            id: 1
-        }
-    }
+  },
+  {
+    speciality: 'psychiatrist',
+    personalData: {
+      name: 'Andrew',
+      surname: 'Gringo',
+      email: 'da@be.de',
+      id: 1,
+    },
+  },
 ];
 
 module.exports = require('express').Router()
@@ -28,19 +28,19 @@ module.exports = require('express').Router()
     .post('/api/doctors', newDoctorHandler);
 
 function getDoctorsHandler(req, res) {
-    res.send(doctors);
+  res.send(doctors);
 }
 
 function getDoctorHandler(req, res) {
-    sendSingleEntity(res, doctors, req.params.id);
+  sendSingleEntity(res, doctors, req.params.id);
 }
 
 function delDoctorHandler(req, res) {
-    doctors = doctors.filter(doctor => doctor.personalData.id !== parseInt(req.params.id));
+  doctors = doctors.filter(doctor => doctor.personalData.id !== parseInt(req.params.id, 10));
 
-    res.send('OK');
+  res.send('OK');
 }
 
 function newDoctorHandler(req, res) {
-    res.send('OK');
+  res.send('OK');
 }

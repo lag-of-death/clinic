@@ -1,29 +1,29 @@
-const {getPatient, asPersonalData} = require('./common');
+const { getPatient, asPersonalData } = require('./common');
 
-var visits = [
-    {
-        patient: 1,
-        doctors: [{
-            speciality: 'surgeon',
-            personalData: {
-                id: 1,
-                surname: 'Pitt',
-                name: 'Bragg',
-                email: '4@B.pl'
-            }
-        }],
-        nurses: [{
-            isDistrictNurse: true,
-            personalData: {
-                id: 0,
-                surname: 'McDolan',
-                name: 'Sara',
-                email: 'a@B.pl'
-            }
-        }],
-        date: new Date().toDateString(),
-        id: 0
-    }
+let visits = [
+  {
+    patient: 1,
+    doctors: [{
+      speciality: 'surgeon',
+      personalData: {
+        id: 1,
+        surname: 'Pitt',
+        name: 'Bragg',
+        email: '4@B.pl',
+      },
+    }],
+    nurses: [{
+      isDistrictNurse: true,
+      personalData: {
+        id: 0,
+        surname: 'McDolan',
+        name: 'Sara',
+        email: 'a@B.pl',
+      },
+    }],
+    date: new Date().toDateString(),
+    id: 0,
+  },
 ];
 
 module.exports = require('express').Router()
@@ -33,43 +33,39 @@ module.exports = require('express').Router()
     .post('/api/visits', newVisitHandler);
 
 function getVisitHandler(req, res) {
-    const visit = visits.find(visit => visit.id === parseInt(req.params.id));
+  const visit = visits.find(visit => visit.id === parseInt(req.params.id, 10));
 
-    if (visit) {
-        getPatient(visit.patient)
+  if (visit) {
+    getPatient(visit.patient)
             .then(data => toVisitWithPatient(visit, data))
             .then(res.send.bind(res))
             .catch(err => console.log(err));
-    } else {
-        res.send({});
-    }
+  } else {
+    res.send({});
+  }
 }
 
 function getVisitsHandler(req, res) {
-    const visitsWithPatients = visits
-        .map(visit => {
-            return getPatient(visit.patient)
-                .then(patient => {
-                    return toVisitWithPatient(visit, patient);
-                })
-        });
+  const visitsWithPatients = visits
+        .map(visit => getPatient(visit.patient)
+            .then(patient => toVisitWithPatient(visit, patient)));
 
-    return Promise
+  return Promise
         .all(visitsWithPatients)
         .then(res.send.bind(res))
         .catch(err => console.log(err));
 }
 
 function delVisitHandler(req, res) {
-    visits = visits.filter(visit => visit.id !== parseInt(req.params.id));
+  visits = visits.filter(visit => visit.id !== parseInt(req.params.id, 10));
 
-    res.send('OK');
+  res.send('OK');
 }
 
 function newVisitHandler(req, res) {
-    res.send('OK');
+  res.send('OK');
 }
 
 function toVisitWithPatient(visit, data) {
-    return Object.assign({}, visit, {patient: asPersonalData(data)})
+  return Object.assign({}, visit, { patient: asPersonalData(data) });
 }

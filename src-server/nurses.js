@@ -1,24 +1,24 @@
-const {sendSingleEntity} = require('./common');
+const { sendSingleEntity } = require('./common');
 
-var nurses = [
-    {
-        personalData: {
-            name: "Anna",
-            surname: "Novak",
-            email: "anna@novak.com",
-            id: 0,
-        },
-        isDistrictNurse: false,
+let nurses = [
+  {
+    personalData: {
+      name: 'Anna',
+      surname: 'Novak',
+      email: 'anna@novak.com',
+      id: 0,
     },
-    {
-        personalData: {
-            name: "Marry",
-            surname: "Lou",
-            email: "marry@lou.de",
-            id: 1,
-        },
-        isDistrictNurse: true,
-    }
+    isDistrictNurse: false,
+  },
+  {
+    personalData: {
+      name: 'Marry',
+      surname: 'Lou',
+      email: 'marry@lou.de',
+      id: 1,
+    },
+    isDistrictNurse: true,
+  },
 ];
 
 module.exports = require('express').Router()
@@ -28,19 +28,19 @@ module.exports = require('express').Router()
     .post('/api/nurses', newNurseHandler);
 
 function getNursesHandler(req, res) {
-    res.send(nurses);
+  res.send(nurses);
 }
 
 function getNurseHandler(req, res) {
-    sendSingleEntity(res, nurses, req.params.id);
+  sendSingleEntity(res, nurses, req.params.id);
 }
 
 function delNurseHandler(req, res) {
-    nurses = nurses.filter(nurse => nurse.personalData.id !== parseInt(req.params.id));
+  nurses = nurses.filter(nurse => nurse.personalData.id !== parseInt(req.params.id, 10));
 
-    res.send('OK');
+  res.send('OK');
 }
 
 function newNurseHandler(req, res) {
-    res.send('OK');
+  res.send('OK');
 }

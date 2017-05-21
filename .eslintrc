@@ -1,0 +1,16 @@
+{
+  "extends": "airbnb",
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "ecmaFeatures": {
+    "experimentalObjectRestSpread": true,
+    "jsx": false
+  },
+  "rules": {
+    "no-use-before-define": "off",
+    "no-shadow": "off",
+    "no-console": "off"
+  }
+}

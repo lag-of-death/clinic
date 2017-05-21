@@ -1,3 +1,3 @@
 module.exports = {
-    location: 'https://outpatient-hospital-api.herokuapp.com',
+  location: 'https://outpatient-hospital-api.herokuapp.com',
 };
