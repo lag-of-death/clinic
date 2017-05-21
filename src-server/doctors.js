@@ -1,3 +1,5 @@
+const {sendSingleEntity} = require('./common');
+
 var doctors = [
     {
         speciality: "surgeon",
@@ -21,11 +23,16 @@ var doctors = [
 
 module.exports = require('express').Router()
     .get('/api/doctors', getDoctorsHandler)
+    .get('/api/doctors/:id', getDoctorHandler)
     .delete('/api/doctors/:id', delDoctorHandler)
     .post('/api/doctors', newDoctorHandler);
 
 function getDoctorsHandler(req, res) {
     res.send(doctors);
+}
+
+function getDoctorHandler(req, res) {
+    sendSingleEntity(res, doctors, req.params.id);
 }
 
 function delDoctorHandler(req, res) {

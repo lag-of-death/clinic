@@ -1,3 +1,5 @@
+const {sendSingleEntity} = require('./common');
+
 var nurses = [
     {
         personalData: {
@@ -30,7 +32,7 @@ function getNursesHandler(req, res) {
 }
 
 function getNurseHandler(req, res) {
-    res.send(nurses.find(nurse => nurse.personalData.id === parseInt(req.params.id)));
+    sendSingleEntity(res, nurses, req.params.id);
 }
 
 function delNurseHandler(req, res) {

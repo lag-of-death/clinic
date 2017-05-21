@@ -2,7 +2,8 @@ const rp         = require('request-promise');
 const {location} = require('./config');
 
 module.exports = {
-    getPatient: getPatient.bind(null, location)
+    getPatient: getPatient.bind(null, location),
+    sendSingleEntity
 };
 
 function getPatient(location, id) {
@@ -13,4 +14,8 @@ function getPatient(location, id) {
     };
 
     return rp.get(options);
+}
+
+function sendSingleEntity(res, entities, id) {
+    return res.send(entities.find(entity => entity.personalData.id === parseInt(id)));
 }
