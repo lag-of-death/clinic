@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build-and-start": "npm run build && npm start",
-    "build": "cd src && elm make Main.elm --output=../public/index.html",
+    "build": "cd src && elm make --yes Main.elm --output=../public/index.html",
     "start": "node --harmony_trailing_commas index.js"
   },
   "repository": {
