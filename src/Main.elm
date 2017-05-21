@@ -76,6 +76,7 @@ type Route
     | NurseId Int
     | Visits
     | VisitId Int
+    | NewVisit
 
 
 routeParser : UrlParser.Parser (Route -> a) a
@@ -89,6 +90,7 @@ routeParser =
         , UrlParser.map Doctors (UrlParser.s "doctors")
         , UrlParser.map DoctorId (UrlParser.s "doctors" </> int)
         , UrlParser.map VisitId (UrlParser.s "visits" </> int)
+        , UrlParser.map NewVisit (UrlParser.s "visits" </> UrlParser.s "new")
         , UrlParser.map PatientId (UrlParser.s "patients" </> int)
         , UrlParser.map NewPatient (UrlParser.s "patients" </> UrlParser.s "new")
         ]
@@ -221,6 +223,9 @@ toRouteView model maybeRoute =
 
                     VisitId id ->
                         Html.map VisitsMsg (VisitsView.visitView (getVisit id model.visits))
+
+                    NewVisit ->
+                        Html.map VisitsMsg VisitsView.newVisitView
 
                     Patients ->
                         Html.map PatientsMsg (PeopleView.patientsView model.patients)

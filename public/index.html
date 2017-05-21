@@ -11045,6 +11045,7 @@ var _user$project$Visits_View$visitView = function (visit) {
 			}
 		});
 };
+var _user$project$Visits_View$newVisitView = _elm_lang$html$Html$text('New Visit View');
 var _user$project$Visits_View$buttonActions = function (visit) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -11113,7 +11114,15 @@ var _user$project$Visits_View$view = function (visits) {
 						};
 					},
 					visits)),
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_user$project$Views$newEntity,
+					_elm_lang$html$Html_Events$onClick(
+						_user$project$Visits_Types$NewVisitsUrl('/visits/new')),
+					'New visit'),
+				_1: {ctor: '[]'}
+			}
 		});
 };
 var _user$project$Visits_Requests$decodeVisit = A6(
@@ -11236,6 +11245,7 @@ var _user$project$Main$Model = F5(
 	function (a, b, c, d, e) {
 		return {history: a, patients: b, doctors: c, nurses: d, visits: e};
 	});
+var _user$project$Main$NewVisit = {ctor: 'NewVisit'};
 var _user$project$Main$VisitId = function (a) {
 	return {ctor: 'VisitId', _0: a};
 };
@@ -11312,21 +11322,31 @@ var _user$project$Main$routeParser = _evancz$url_parser$UrlParser$oneOf(
 										ctor: '::',
 										_0: A2(
 											_evancz$url_parser$UrlParser$map,
-											_user$project$Main$PatientId,
+											_user$project$Main$NewVisit,
 											A2(
 												_evancz$url_parser$UrlParser_ops['</>'],
-												_evancz$url_parser$UrlParser$s('patients'),
-												_evancz$url_parser$UrlParser$int)),
+												_evancz$url_parser$UrlParser$s('visits'),
+												_evancz$url_parser$UrlParser$s('new'))),
 										_1: {
 											ctor: '::',
 											_0: A2(
 												_evancz$url_parser$UrlParser$map,
-												_user$project$Main$NewPatient,
+												_user$project$Main$PatientId,
 												A2(
 													_evancz$url_parser$UrlParser_ops['</>'],
 													_evancz$url_parser$UrlParser$s('patients'),
-													_evancz$url_parser$UrlParser$s('new'))),
-											_1: {ctor: '[]'}
+													_evancz$url_parser$UrlParser$int)),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_evancz$url_parser$UrlParser$map,
+													_user$project$Main$NewPatient,
+													A2(
+														_evancz$url_parser$UrlParser_ops['</>'],
+														_evancz$url_parser$UrlParser$s('patients'),
+														_evancz$url_parser$UrlParser$s('new'))),
+												_1: {ctor: '[]'}
+											}
 										}
 									}
 								}
@@ -11477,6 +11497,8 @@ var _user$project$Main$toRouteView = F2(
 									_user$project$Main$VisitsMsg,
 									_user$project$Visits_View$visitView(
 										A2(_user$project$Visits_Helpers$getVisit, _p7._0, model.visits)));
+							case 'NewVisit':
+								return A2(_elm_lang$html$Html$map, _user$project$Main$VisitsMsg, _user$project$Visits_View$newVisitView);
 							case 'Patients':
 								return A2(
 									_elm_lang$html$Html$map,

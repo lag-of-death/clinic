@@ -19,6 +19,11 @@ buttonActions visit =
         )
 
 
+newVisitView : Html a
+newVisitView =
+    text "New Visit View"
+
+
 visitView : Visit -> Html a
 visitView visit =
     table [ attribute "border" "1", style [ ( "border", "2px solid black" ), ( "border-collapse", "collapse" ) ] ]
@@ -65,6 +70,7 @@ view visits =
                 )
                 visits
             )
+        , newEntity (onClick (NewVisitsUrl <| "/visits/new")) "New visit"
         ]
 
 
