@@ -1,4 +1,4 @@
-const {getPatient} = require('./common');
+const {getPatient, asPersonalData} = require('./common');
 
 var visits = [
     {
@@ -71,9 +71,5 @@ function newVisitHandler(req, res) {
 }
 
 function toVisitWithPatient(visit, data) {
-    return Object.assign({}, visit, {
-        patient: {
-            personalData: JSON.parse(data)
-        }
-    })
+    return Object.assign({}, visit, {patient: asPersonalData(data)})
 }

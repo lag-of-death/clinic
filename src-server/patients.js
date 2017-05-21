@@ -1,6 +1,6 @@
-const rp           = require('request-promise');
-const {location}   = require('./config');
-const {getPatient} = require('./common');
+const rp                           = require('request-promise');
+const {location}                   = require('./config');
+const {getPatient, asPersonalData} = require('./common');
 
 module.exports = require('express').Router()
     .get('/api/patients', getPatientsHandler.bind(null, location))
@@ -11,7 +11,7 @@ module.exports = require('express').Router()
 function getPatientHandler(req, res) {
     return getPatient(req.params.id)
         .then(data => {
-            res.send(data);
+            res.send(asPersonalData(data));
         })
         .catch(err => {
             res.send(err);

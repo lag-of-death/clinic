@@ -3,7 +3,8 @@ const {location} = require('./config');
 
 module.exports = {
     getPatient: getPatient.bind(null, location),
-    sendSingleEntity
+    sendSingleEntity,
+    asPersonalData
 };
 
 function getPatient(location, id) {
@@ -18,4 +19,10 @@ function getPatient(location, id) {
 
 function sendSingleEntity(res, entities, id) {
     return res.send(entities.find(entity => entity.personalData.id === parseInt(id)));
+}
+
+function asPersonalData(data) {
+    return {
+        personalData: JSON.parse(data)
+    }
 }

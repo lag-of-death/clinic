@@ -31,6 +31,7 @@ type alias Person =
 type NursesMsg
     = DelNurse Int
     | NursesData (Result Http.Error (List Nurse))
+    | NurseData (Result Http.Error Nurse)
     | NurseDeleted (Result Http.Error ())
     | NewNursesUrl String
 
@@ -39,11 +40,13 @@ type DoctorsMsg
     = NewDoctorsUrl String
     | DelDoctor Int
     | DoctorsData (Result Http.Error (List Doctor))
+    | DoctorData (Result Http.Error Doctor)
     | DoctorDeleted (Result Http.Error ())
 
 
 type PatientsMsg
     = NewPatientsUrl String
     | PatientsData (Result Http.Error (List Patient))
+    | PatientData (Result Http.Error Patient)
     | DelPatient Int
     | PatientDeleted (Result Http.Error ())

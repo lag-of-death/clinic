@@ -160,11 +160,11 @@ update msg model =
                     Patients ->
                         Cmd.map PatientsMsg PeopleHttp.getPatients
 
-                    PatientId _ ->
-                        Cmd.map PatientsMsg PeopleHttp.getPatients
+                    PatientId id ->
+                        Cmd.map PatientsMsg (PeopleHttp.getPatient id)
 
-                    DoctorId _ ->
-                        Cmd.map DoctorsMsg PeopleHttp.getDoctors
+                    DoctorId id ->
+                        Cmd.map DoctorsMsg (PeopleHttp.getDoctor id)
 
                     Doctors ->
                         Cmd.map DoctorsMsg PeopleHttp.getDoctors
@@ -172,8 +172,8 @@ update msg model =
                     Nurses ->
                         Cmd.map NursesMsg PeopleHttp.getNurses
 
-                    NurseId _ ->
-                        Cmd.map NursesMsg PeopleHttp.getNurses
+                    NurseId id ->
+                        Cmd.map NursesMsg (PeopleHttp.getNurse id)
 
                     Visits ->
                         Cmd.map VisitsMsg VisitsHttp.getVisits

@@ -4,6 +4,7 @@ import Visits.Requests exposing (..)
 import Visits.Types exposing (..)
 import Navigation as Nav
 import Debug
+import Visits.Helpers exposing (..)
 
 
 updateVisits : VisitsMsg -> List Visit -> ( List Visit, Cmd VisitsMsg )
@@ -29,17 +30,7 @@ updateVisits msg model =
                 debug =
                     Debug.log "visit" visit
             in
-                ( if List.isEmpty model then
-                    [ visit ]
-                  else
-                    List.map
-                        (\oldVisit ->
-                            if oldVisit.id == visit.id then
-                                visit
-                            else
-                                oldVisit
-                        )
-                        model
+                ( addVisit model visit
                 , Cmd.none
                 )
 

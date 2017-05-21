@@ -9856,6 +9856,9 @@ var _user$project$People_Types$NewNursesUrl = function (a) {
 var _user$project$People_Types$NurseDeleted = function (a) {
 	return {ctor: 'NurseDeleted', _0: a};
 };
+var _user$project$People_Types$NurseData = function (a) {
+	return {ctor: 'NurseData', _0: a};
+};
 var _user$project$People_Types$NursesData = function (a) {
 	return {ctor: 'NursesData', _0: a};
 };
@@ -9864,6 +9867,9 @@ var _user$project$People_Types$DelNurse = function (a) {
 };
 var _user$project$People_Types$DoctorDeleted = function (a) {
 	return {ctor: 'DoctorDeleted', _0: a};
+};
+var _user$project$People_Types$DoctorData = function (a) {
+	return {ctor: 'DoctorData', _0: a};
 };
 var _user$project$People_Types$DoctorsData = function (a) {
 	return {ctor: 'DoctorsData', _0: a};
@@ -9879,6 +9885,9 @@ var _user$project$People_Types$PatientDeleted = function (a) {
 };
 var _user$project$People_Types$DelPatient = function (a) {
 	return {ctor: 'DelPatient', _0: a};
+};
+var _user$project$People_Types$PatientData = function (a) {
+	return {ctor: 'PatientData', _0: a};
 };
 var _user$project$People_Types$PatientsData = function (a) {
 	return {ctor: 'PatientsData', _0: a};
@@ -10766,24 +10775,90 @@ var _user$project$People_Requests$decodeDoctor = A3(
 	A2(_elm_lang$core$Json_Decode$field, 'personalData', _user$project$People_Requests$decodePerson),
 	A2(_elm_lang$core$Json_Decode$field, 'speciality', _elm_lang$core$Json_Decode$string));
 var _user$project$People_Requests$decodeDoctors = _elm_lang$core$Json_Decode$list(_user$project$People_Requests$decodeDoctor);
-var _user$project$People_Requests$decodeNurses = _elm_lang$core$Json_Decode$list(
-	A3(
-		_elm_lang$core$Json_Decode$map2,
-		_user$project$People_Types$Nurse,
-		A2(_elm_lang$core$Json_Decode$field, 'personalData', _user$project$People_Requests$decodePerson),
-		A2(_elm_lang$core$Json_Decode$field, 'isDistrictNurse', _elm_lang$core$Json_Decode$bool)));
+var _user$project$People_Requests$decodeNurse = A3(
+	_elm_lang$core$Json_Decode$map2,
+	_user$project$People_Types$Nurse,
+	A2(_elm_lang$core$Json_Decode$field, 'personalData', _user$project$People_Requests$decodePerson),
+	A2(_elm_lang$core$Json_Decode$field, 'isDistrictNurse', _elm_lang$core$Json_Decode$bool));
+var _user$project$People_Requests$decodeNurses = _elm_lang$core$Json_Decode$list(_user$project$People_Requests$decodeNurse);
+var _user$project$People_Requests$getNurse = function (id) {
+	return A2(
+		_elm_lang$http$Http$send,
+		_user$project$People_Types$NurseData,
+		A2(
+			_elm_lang$http$Http$get,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'/api/nurses/',
+				_elm_lang$core$Basics$toString(id)),
+			_user$project$People_Requests$decodeNurse));
+};
 var _user$project$People_Requests$getNurses = A2(
 	_elm_lang$http$Http$send,
 	_user$project$People_Types$NursesData,
 	A2(_elm_lang$http$Http$get, '/api/nurses', _user$project$People_Requests$decodeNurses));
+var _user$project$People_Requests$getDoctor = function (id) {
+	return A2(
+		_elm_lang$http$Http$send,
+		_user$project$People_Types$DoctorData,
+		A2(
+			_elm_lang$http$Http$get,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'/api/doctors/',
+				_elm_lang$core$Basics$toString(id)),
+			_user$project$People_Requests$decodeDoctor));
+};
 var _user$project$People_Requests$getDoctors = A2(
 	_elm_lang$http$Http$send,
 	_user$project$People_Types$DoctorsData,
 	A2(_elm_lang$http$Http$get, '/api/doctors', _user$project$People_Requests$decodeDoctors));
+var _user$project$People_Requests$getPatient = function (id) {
+	return A2(
+		_elm_lang$http$Http$send,
+		_user$project$People_Types$PatientData,
+		A2(
+			_elm_lang$http$Http$get,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'/api/patients/',
+				_elm_lang$core$Basics$toString(id)),
+			_user$project$People_Requests$decodePatient));
+};
 var _user$project$People_Requests$getPatients = A2(
 	_elm_lang$http$Http$send,
 	_user$project$People_Types$PatientsData,
 	A2(_elm_lang$http$Http$get, '/api/patients', _user$project$People_Requests$decodePatients));
+var _user$project$People_Helpers$addPerson = F2(
+	function (model, entity) {
+		return _elm_lang$core$List$isEmpty(model) ? {
+			ctor: '::',
+			_0: entity,
+			_1: {ctor: '[]'}
+		} : A2(
+			_elm_lang$core$List$map,
+			function (oldEntity) {
+				return _elm_lang$core$Native_Utils.eq(oldEntity.personalData.id, entity.personalData.id) ? entity : oldEntity;
+			},
+			model);
+	});
+var _user$project$People_Helpers$getPerson = F3(
+	function (id, people, $default) {
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			$default,
+			_elm_lang$core$List$head(
+				A2(
+					_elm_lang$core$List$filter,
+					function (person) {
+						return _elm_lang$core$Native_Utils.eq(person.personalData.id, id);
+					},
+					people)));
+	});
+var _user$project$People_Helpers$defaultPerson = {name: '', surname: '', email: '', id: -9999};
+var _user$project$People_Helpers$defaultPatient = {personalData: _user$project$People_Helpers$defaultPerson};
+var _user$project$People_Helpers$defaultDoctor = {personalData: _user$project$People_Helpers$defaultPerson, speciality: 'surgeon'};
+var _user$project$People_Helpers$defaultNurse = {personalData: _user$project$People_Helpers$defaultPerson, isDistrictNurse: false};
 var _user$project$People_Update$updatePatients = F2(
 	function (msg, model) {
 		var _p0 = msg;
@@ -10802,11 +10877,22 @@ var _user$project$People_Update$updatePatients = F2(
 				};
 			case 'PatientDeleted':
 				return {ctor: '_Tuple2', _0: model, _1: _user$project$People_Requests$getPatients};
-			default:
+			case 'PatientsData':
 				if (_p0._0.ctor === 'Ok') {
 					return {ctor: '_Tuple2', _0: _p0._0._0, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
 					var error = A2(_elm_lang$core$Debug$log, 'PeopleData error: ', _p0._0._0);
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			default:
+				if (_p0._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: A2(_user$project$People_Helpers$addPerson, model, _p0._0._0),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					var error = A2(_elm_lang$core$Debug$log, 'PatientData error: ', _p0._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}
@@ -10829,9 +10915,19 @@ var _user$project$People_Update$updateDoctors = F2(
 				};
 			case 'DoctorDeleted':
 				return {ctor: '_Tuple2', _0: model, _1: _user$project$People_Requests$getDoctors};
-			default:
+			case 'DoctorsData':
 				if (_p1._0.ctor === 'Ok') {
 					return {ctor: '_Tuple2', _0: _p1._0._0, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			default:
+				if (_p1._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: A2(_user$project$People_Helpers$addPerson, model, _p1._0._0),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
@@ -10856,6 +10952,17 @@ var _user$project$People_Update$updateNurses = F2(
 					var error = A2(_elm_lang$core$Debug$log, 'NursesData error: ', _p2._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
+			case 'NurseData':
+				if (_p2._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: A2(_user$project$People_Helpers$addPerson, model, _p2._0._0),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					var error = A2(_elm_lang$core$Debug$log, 'NurseData error: ', _p2._0._0);
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 			default:
 				return {
 					ctor: '_Tuple2',
@@ -10864,23 +10971,6 @@ var _user$project$People_Update$updateNurses = F2(
 				};
 		}
 	});
-var _user$project$People_Helpers$getPerson = F3(
-	function (id, people, $default) {
-		return A2(
-			_elm_lang$core$Maybe$withDefault,
-			$default,
-			_elm_lang$core$List$head(
-				A2(
-					_elm_lang$core$List$filter,
-					function (person) {
-						return _elm_lang$core$Native_Utils.eq(person.personalData.id, id);
-					},
-					people)));
-	});
-var _user$project$People_Helpers$defaultPerson = {name: '', surname: '', email: '', id: -9999};
-var _user$project$People_Helpers$defaultPatient = {personalData: _user$project$People_Helpers$defaultPerson};
-var _user$project$People_Helpers$defaultDoctor = {personalData: _user$project$People_Helpers$defaultPerson, speciality: 'surgeon'};
-var _user$project$People_Helpers$defaultNurse = {personalData: _user$project$People_Helpers$defaultPerson, isDistrictNurse: false};
 var _user$project$Visits_Types$Visit = F5(
 	function (a, b, c, d, e) {
 		return {patient: a, doctors: b, nurses: c, date: d, id: e};
@@ -11156,54 +11246,18 @@ var _user$project$Visits_Requests$deleteVisit = function (id) {
 		_user$project$Visits_Types$VisitDeleted,
 		A2(_user$project$Requests$delete, 'visits', id));
 };
-var _user$project$Visits_Update$updateVisits = F2(
-	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
-			case 'NewVisitsUrl':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _elm_lang$navigation$Navigation$newUrl(_p0._0)
-				};
-			case 'VisitData':
-				if (_p0._0.ctor === 'Err') {
-					var debug = A2(_elm_lang$core$Debug$log, 'visit err', _p0._0._0);
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				} else {
-					var _p1 = _p0._0._0;
-					var debug = A2(_elm_lang$core$Debug$log, 'visit', _p1);
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$List$isEmpty(model) ? {
-							ctor: '::',
-							_0: _p1,
-							_1: {ctor: '[]'}
-						} : A2(
-							_elm_lang$core$List$map,
-							function (oldVisit) {
-								return _elm_lang$core$Native_Utils.eq(oldVisit.id, _p1.id) ? _p1 : oldVisit;
-							},
-							model),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				}
-			case 'VisitDeleted':
-				return {ctor: '_Tuple2', _0: model, _1: _user$project$Visits_Requests$getVisits};
-			case 'VisitsData':
-				if (_p0._0.ctor === 'Ok') {
-					return {ctor: '_Tuple2', _0: _p0._0._0, _1: _elm_lang$core$Platform_Cmd$none};
-				} else {
-					var error = A2(_elm_lang$core$Debug$log, 'VisitsData error: ', _p0._0._0);
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			default:
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Visits_Requests$deleteVisit(_p0._0)
-				};
-		}
+var _user$project$Visits_Helpers$addVisit = F2(
+	function (model, entity) {
+		return _elm_lang$core$List$isEmpty(model) ? {
+			ctor: '::',
+			_0: entity,
+			_1: {ctor: '[]'}
+		} : A2(
+			_elm_lang$core$List$map,
+			function (oldEntity) {
+				return _elm_lang$core$Native_Utils.eq(oldEntity.id, entity.id) ? entity : oldEntity;
+			},
+			model);
 	});
 var _user$project$Visits_Helpers$defaultVisit = {
 	id: 0,
@@ -11224,6 +11278,46 @@ var _user$project$Visits_Helpers$getVisit = F2(
 						return _elm_lang$core$Native_Utils.eq(visit.id, id);
 					},
 					visits)));
+	});
+var _user$project$Visits_Update$updateVisits = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'NewVisitsUrl':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _elm_lang$navigation$Navigation$newUrl(_p0._0)
+				};
+			case 'VisitData':
+				if (_p0._0.ctor === 'Err') {
+					var debug = A2(_elm_lang$core$Debug$log, 'visit err', _p0._0._0);
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					var _p1 = _p0._0._0;
+					var debug = A2(_elm_lang$core$Debug$log, 'visit', _p1);
+					return {
+						ctor: '_Tuple2',
+						_0: A2(_user$project$Visits_Helpers$addVisit, model, _p1),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
+			case 'VisitDeleted':
+				return {ctor: '_Tuple2', _0: model, _1: _user$project$Visits_Requests$getVisits};
+			case 'VisitsData':
+				if (_p0._0.ctor === 'Ok') {
+					return {ctor: '_Tuple2', _0: _p0._0._0, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					var error = A2(_elm_lang$core$Debug$log, 'VisitsData error: ', _p0._0._0);
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Visits_Requests$deleteVisit(_p0._0)
+				};
+		}
 	});
 var _user$project$Main$init = function (location) {
 	return {
@@ -11442,15 +11536,24 @@ var _user$project$Main$update = F2(
 							case 'Patients':
 								return A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PatientsMsg, _user$project$People_Requests$getPatients);
 							case 'PatientId':
-								return A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PatientsMsg, _user$project$People_Requests$getPatients);
+								return A2(
+									_elm_lang$core$Platform_Cmd$map,
+									_user$project$Main$PatientsMsg,
+									_user$project$People_Requests$getPatient(_p5._0));
 							case 'DoctorId':
-								return A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$DoctorsMsg, _user$project$People_Requests$getDoctors);
+								return A2(
+									_elm_lang$core$Platform_Cmd$map,
+									_user$project$Main$DoctorsMsg,
+									_user$project$People_Requests$getDoctor(_p5._0));
 							case 'Doctors':
 								return A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$DoctorsMsg, _user$project$People_Requests$getDoctors);
 							case 'Nurses':
 								return A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$NursesMsg, _user$project$People_Requests$getNurses);
 							case 'NurseId':
-								return A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$NursesMsg, _user$project$People_Requests$getNurses);
+								return A2(
+									_elm_lang$core$Platform_Cmd$map,
+									_user$project$Main$NursesMsg,
+									_user$project$People_Requests$getNurse(_p5._0));
 							case 'Visits':
 								return A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$VisitsMsg, _user$project$Visits_Requests$getVisits);
 							case 'VisitId':

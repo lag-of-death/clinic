@@ -2,6 +2,7 @@ module People.Update exposing (..)
 
 import People.Requests exposing (..)
 import People.Types exposing (..)
+import People.Helpers exposing (..)
 import Navigation as Nav
 
 
@@ -11,18 +12,30 @@ updateNurses msg model =
         NewNursesUrl url ->
             ( model, Nav.newUrl url )
 
+        NurseDeleted _ ->
+            ( model, getNurses )
+
         NursesData (Ok nurses) ->
             ( nurses
             , Cmd.none
             )
 
-        NurseDeleted _ ->
-            ( model, getNurses )
-
         NursesData (Err err) ->
             let
                 error =
                     Debug.log "NursesData error: " err
+            in
+                ( model, Cmd.none )
+
+        NurseData (Ok nurse) ->
+            ( addPerson model nurse
+            , Cmd.none
+            )
+
+        NurseData (Err err) ->
+            let
+                error =
+                    Debug.log "NurseData error: " err
             in
                 ( model, Cmd.none )
 
@@ -52,6 +65,16 @@ updateDoctors msg model =
             , Cmd.none
             )
 
+        DoctorData (Ok doctor) ->
+            ( addPerson model doctor
+            , Cmd.none
+            )
+
+        DoctorData (Err _) ->
+            ( model
+            , Cmd.none
+            )
+
 
 updatePatients : PatientsMsg -> Model -> ( Model, Cmd PatientsMsg )
 updatePatients msg model =
@@ -72,5 +95,15 @@ updatePatients msg model =
             let
                 error =
                     Debug.log "PeopleData error: " err
+            in
+                ( model, Cmd.none )
+
+        PatientData (Ok patient) ->
+            ( addPerson model patient, Cmd.none )
+
+        PatientData (Err err) ->
+            let
+                error =
+                    Debug.log "PatientData error: " err
             in
                 ( model, Cmd.none )

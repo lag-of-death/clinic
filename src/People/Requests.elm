@@ -11,9 +11,19 @@ getPatients =
     Http.send PatientsData (Http.get "/api/patients" decodePatients)
 
 
+getPatient : Int -> Cmd PatientsMsg
+getPatient id =
+    Http.send PatientData (Http.get ("/api/patients/" ++ (toString id)) decodePatient)
+
+
 getDoctors : Cmd DoctorsMsg
 getDoctors =
     Http.send DoctorsData (Http.get ("/api/doctors") decodeDoctors)
+
+
+getDoctor : Int -> Cmd DoctorsMsg
+getDoctor id =
+    Http.send DoctorData (Http.get ("/api/doctors/" ++ (toString id)) decodeDoctor)
 
 
 getNurses : Cmd NursesMsg
@@ -21,6 +31,12 @@ getNurses =
     Http.send NursesData (Http.get ("/api/nurses") decodeNurses)
 
 
+getNurse : Int -> Cmd NursesMsg
+getNurse id =
+    Http.send NurseData (Http.get ("/api/nurses/" ++ (toString id)) decodeNurse)
+
+
+decodePerson : Decode.Decoder Person
 decodePerson =
     Decode.map4 Person
         (Decode.field "name" Decode.string)
@@ -29,10 +45,12 @@ decodePerson =
         (Decode.field "id" Decode.int)
 
 
+decodePatient : Decode.Decoder Patient
 decodePatient =
     Decode.map Patient (Decode.field "personalData" decodePerson)
 
 
+decodePatients : Decode.Decoder (List Patient)
 decodePatients =
     Decode.list decodePatient
 
@@ -42,6 +60,7 @@ decodePeople =
     Decode.list decodePerson
 
 
+decodeDoctor : Decode.Decoder Doctor
 decodeDoctor =
     Decode.map2 Doctor
         (Decode.field "personalData" decodePerson)
@@ -53,13 +72,17 @@ decodeDoctors =
     Decode.list decodeDoctor
 
 
+decodeNurse : Decode.Decoder Nurse
+decodeNurse =
+    (Decode.map2 Nurse
+        (Decode.field "personalData" decodePerson)
+        (Decode.field "isDistrictNurse" Decode.bool)
+    )
+
+
 decodeNurses : Decode.Decoder (List Nurse)
 decodeNurses =
-    Decode.list
-        (Decode.map2 Nurse
-            (Decode.field "personalData" decodePerson)
-            (Decode.field "isDistrictNurse" Decode.bool)
-        )
+    Decode.list decodeNurse
 
 
 deleteDoctor : Int -> Cmd DoctorsMsg
