@@ -1,1 +1,1 @@
-web: node index.js
+web: node --harmony_trailing_commas index.js
