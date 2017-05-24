@@ -6,7 +6,8 @@
   "scripts": {
     "build-and-start": "npm run build && npm start",
     "build": "cd src && elm make --yes Main.elm --output=../public/index.html",
-    "start": "node --harmony_trailing_commas index.js"
+    "start": "node --harmony_trailing_commas index.js",
+    "heroku-postbuild": "npm run build"
   },
   "repository": {
     "type": "git",
