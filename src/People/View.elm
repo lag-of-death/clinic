@@ -1,6 +1,6 @@
 module People.View exposing (..)
 
-import Html.Attributes exposing (name, style, required)
+import Html.Attributes exposing (name, style, required, type_)
 import Html exposing (text, Html, div, button, ul, label, li, table, td, tr, form, input)
 import Html.Events exposing (onClick)
 import People.Types exposing (..)
@@ -120,39 +120,72 @@ newPatient =
     newEntity (onClick (NewPatientsUrl <| "/patients/new")) "New patient"
 
 
-newPatientView : Html msg
-newPatientView =
-    form
-        [ style Styles.newPatientForm
-        , Html.Attributes.action "/api/patients/"
-        , Html.Attributes.method "POST"
+newNurse : Html NursesMsg
+newNurse =
+    newEntity (onClick (NewNursesUrl <| "/nurses/new")) "New nurse"
+
+
+newNurseView : Html NursesMsg
+newNurseView =
+    formToSubmit "nurses" <|
+        List.concat
+            [ newPersonFields
+            , [ div [ style block, style blockCentered, style blockStretched ]
+                    [ label [] [ text "District nurse" ]
+                    , input [ type_ "checkbox", required True, name "isDistrictNurse", style Styles.button ]
+                        []
+                    ]
+              ]
+            , [ submitBtn ]
+            ]
+
+
+submitBtn : Html msg
+submitBtn =
+    Html.button
+        [ Html.Attributes.type_ "submit"
+        , style Styles.button
         ]
-        [ div [ style block, style blockCentered, style blockStretched ]
-            [ label [] [ text "Surname" ]
-            , input [ required True, name "surname", style Styles.button ]
-                []
-            ]
-        , div [ style block, style blockCentered, style blockStretched ]
-            [ label [] [ text "Name" ]
-            , input [ required True, name "name", style Styles.button ]
-                []
-            ]
-        , div [ style block, style blockCentered, style blockStretched ]
-            [ label [] [ text "E-mail" ]
-            , input
-                [ Html.Attributes.type_ "email"
-                , required True
-                , name "email"
-                , style Styles.button
-                ]
-                []
-            ]
-        , Html.button
-            [ Html.Attributes.type_ "submit"
+        [ text "Add" ]
+
+
+newPersonFields : List (Html msg)
+newPersonFields =
+    [ div [ style block, style blockCentered, style blockStretched ]
+        [ label [] [ text "Surname" ]
+        , input [ required True, name "surname", style Styles.button ]
+            []
+        ]
+    , div [ style block, style blockCentered, style blockStretched ]
+        [ label [] [ text "Name" ]
+        , input [ required True, name "name", style Styles.button ]
+            []
+        ]
+    , div [ style block, style blockCentered, style blockStretched ]
+        [ label [] [ text "E-mail" ]
+        , input
+            [ Html.Attributes.type_ "email"
+            , required True
+            , name "email"
             , style Styles.button
             ]
-            [ text "Add" ]
+            []
         ]
+    ]
+
+
+formToSubmit : String -> List (Html msg) -> Html msg
+formToSubmit endpoint =
+    form
+        [ style Styles.newPatientForm
+        , Html.Attributes.action ("/api/" ++ endpoint)
+        , Html.Attributes.method "POST"
+        ]
+
+
+newPatientView : Html msg
+newPatientView =
+    formToSubmit "patient" <| List.concat [ newPersonFields, [ submitBtn ] ]
 
 
 patientView :
@@ -248,4 +281,4 @@ nurseView nurse =
 
 nursesView : List Nurse -> Html NursesMsg
 nursesView nurses =
-    view (div [] []) (nursesList nurses)
+    view newNurse (nursesList nurses)
