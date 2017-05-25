@@ -1,6 +1,5 @@
-const rp = require('request-promise');
 const { location } = require('./config');
-const { getPatient, asPersonalData } = require('./common');
+const { getEntity, newEntity, delEntity } = require('./common');
 
 module.exports = require('express').Router()
     .get('/api/patients', getPatientsHandler.bind(null, location))
@@ -9,9 +8,9 @@ module.exports = require('express').Router()
     .post('/api/patients', newPatientHandler.bind(null, location));
 
 function getPatientHandler(req, res) {
-  return getPatient(req.params.id)
+  return getEntity(`patient/${req.params.id}`)
         .then((data) => {
-          res.send(asPersonalData(data));
+          res.send(data);
         })
         .catch((err) => {
           res.send(err);
@@ -19,50 +18,23 @@ function getPatientHandler(req, res) {
 }
 
 function getPatientsHandler(location, req, res) {
-  const options = {
-    method: 'GET',
-    uri: `${location}/patient`,
-    resolveWithFullResponse: false,
-  };
-
-  return rp(options)
-        .then(patients => res.send(
-            JSON.parse(patients)
-                .map(patient => ({
-                  personalData: patient,
-                })),
-            ),
-        )
-        .catch(() => res.redirect('/'));
+  getEntity('patient')
+      .then(patients => res.send(patients))
+      .catch(() => res.redirect('/'));
 }
 
 function delPatientHandler(location, req, res) {
-  const options = {
-    method: 'DELETE',
-    uri: `${location}/patient/${req.params.id}`,
-    resolveWithFullResponse: true,
-  };
-
-  return rp(options)
+  delEntity(`patient/${req.params.id}`)
         .then(() => res.send('OK'))
         .catch(() => res.send('ERR'));
 }
 
 function newPatientHandler(location, req, res) {
-  const options = {
-    method: 'POST',
-    uri: `${location}/patient`,
-    body: JSON.stringify(Object.assign({}, req.body, { id: null })),
-    headers: {
-      'content-type': 'application/json',
-    },
-  };
+  return newEntity('patient', Object.assign({}, req.body, { id: null }))
+      .then(() => res.redirect('/patients'))
+      .catch((err) => {
+        console.log(err);
 
-  return rp(options)
-        .then(() => res.redirect('/patients'))
-        .catch((err) => {
-          console.log(err);
-
-          res.redirect('/patients');
-        });
+        res.redirect('/patients');
+      });
 }

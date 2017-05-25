@@ -2,27 +2,42 @@ const rp = require('request-promise');
 const { location } = require('./config');
 
 module.exports = {
-  getPatient: getPatient.bind(null, location),
-  sendSingleEntity,
-  asPersonalData,
+  getEntity: getEntity.bind(null, location),
+  delEntity: delPerson.bind(null, location),
+  newEntity: newEntity.bind(null, location),
 };
 
-function getPatient(location, id) {
+
+function getEntity(location, pathEnd) {
   const options = {
     method: 'GET',
-    uri: `${location}/patient/${id}`,
+    uri: `${location}/${pathEnd}`,
     resolveWithFullResponse: false,
   };
 
-  return rp.get(options);
+  return rp.get(options).then(data => JSON.parse(data));
 }
 
-function sendSingleEntity(res, entities, id) {
-  return res.send(entities.find(entity => entity.personalData.id === parseInt(id, 10)));
-}
-
-function asPersonalData(data) {
-  return {
-    personalData: JSON.parse(data),
+function newEntity(location, endPath, body) {
+  const options = {
+    method: 'POST',
+    uri: `${location}/${endPath}`,
+    body: JSON.stringify(body),
+    headers: {
+      'content-type': 'application/json',
+    },
   };
+
+  return rp(options);
+}
+
+
+function delPerson(location, endPath) {
+  const options = {
+    method: 'DELETE',
+    uri: `${location}/${endPath}`,
+    resolveWithFullResponse: true,
+  };
+
+  return rp(options);
 }
