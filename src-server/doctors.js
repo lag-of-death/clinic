@@ -1,25 +1,4 @@
-const { sendSingleEntity } = require('./common');
-
-let doctors = [
-  {
-    speciality: 'surgeon',
-    personalData: {
-      name: 'Thomas',
-      surname: 'Alban',
-      email: 'a@b.com',
-      id: 0,
-    },
-  },
-  {
-    speciality: 'psychiatrist',
-    personalData: {
-      name: 'Andrew',
-      surname: 'Gringo',
-      email: 'da@be.de',
-      id: 1,
-    },
-  },
-];
+const { delEntity, newEntity, getEntity } = require('./common');
 
 module.exports = require('express').Router()
     .get('/api/doctors', getDoctorsHandler)
@@ -28,19 +7,42 @@ module.exports = require('express').Router()
     .post('/api/doctors', newDoctorHandler);
 
 function getDoctorsHandler(req, res) {
-  res.send(doctors);
+  getEntity('doctor')
+        .then(doctors => res.send(doctors))
+        .catch(() => res.redirect('/'));
 }
 
 function getDoctorHandler(req, res) {
-  sendSingleEntity(res, doctors, req.params.id);
+  getEntity(`doctor/${req.params.id}`)
+        .then((doctor) => {
+          res.send(doctor);
+        });
 }
 
 function delDoctorHandler(req, res) {
-  doctors = doctors.filter(doctor => doctor.personalData.id !== parseInt(req.params.id, 10));
-
-  res.send('OK');
+  delEntity(`doctor/${req.params.id}`)
+        .then(() => res.send('OK'))
+        .catch(() => res.send('ERR'));
 }
 
 function newDoctorHandler(req, res) {
-  res.send('OK');
+  const body = req.body;
+
+  const doctor = {
+    speciality: body.speciality,
+    personalData: {
+      name: body.name,
+      surname: body.surname,
+      email: body.email,
+      id: null,
+    },
+  };
+
+  newEntity('doctor', doctor)
+        .then(() => res.redirect('/doctors'))
+        .catch((err) => {
+          console.log(err);
+
+          res.redirect('/doctors');
+        });
 }
