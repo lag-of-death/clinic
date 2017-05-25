@@ -104,7 +104,7 @@ patientsView patients =
 
 doctorsView : List Doctor -> Html DoctorsMsg
 doctorsView doctors =
-    view (div [] []) (doctorsList doctors)
+    view newDoctor (doctorsList doctors)
 
 
 view : Html msg -> Html msg -> Html msg
@@ -125,6 +125,11 @@ newNurse =
     newEntity (onClick (NewNursesUrl <| "/nurses/new")) "New nurse"
 
 
+newDoctor : Html DoctorsMsg
+newDoctor =
+    newEntity (onClick (NewDoctorsUrl <| "/doctors/new")) "New doctor"
+
+
 newNurseView : Html NursesMsg
 newNurseView =
     formToSubmit "nurses" <|
@@ -133,6 +138,21 @@ newNurseView =
             , [ div [ style block, style blockCentered, style blockStretched ]
                     [ label [] [ text "District nurse" ]
                     , input [ type_ "checkbox", required True, name "isDistrictNurse", style Styles.button ]
+                        []
+                    ]
+              ]
+            , [ submitBtn ]
+            ]
+
+
+newDoctorView : Html DoctorsMsg
+newDoctorView =
+    formToSubmit "doctors" <|
+        List.concat
+            [ newPersonFields
+            , [ div [ style block, style blockCentered, style blockStretched ]
+                    [ label [] [ text "Speciality" ]
+                    , input [ required True, name "speciality", style Styles.button ]
                         []
                     ]
               ]
