@@ -1,30 +1,4 @@
-const { getPatient, asPersonalData } = require('./common');
-
-let visits = [
-  {
-    patient: 1,
-    doctors: [{
-      speciality: 'surgeon',
-      personalData: {
-        id: 1,
-        surname: 'Pitt',
-        name: 'Bragg',
-        email: '4@B.pl',
-      },
-    }],
-    nurses: [{
-      isDistrictNurse: true,
-      personalData: {
-        id: 0,
-        surname: 'McDolan',
-        name: 'Sara',
-        email: 'a@B.pl',
-      },
-    }],
-    date: new Date().toDateString(),
-    id: 0,
-  },
-];
+const { delEntity, getEntity, newEntity } = require('./common');
 
 module.exports = require('express').Router()
     .get('/api/visits', getVisitsHandler)
@@ -33,39 +7,41 @@ module.exports = require('express').Router()
     .post('/api/visits', newVisitHandler);
 
 function getVisitHandler(req, res) {
-  const visit = visits.find(visit => visit.id === parseInt(req.params.id, 10));
-
-  if (visit) {
-    getPatient(visit.patient)
-            .then(data => toVisitWithPatient(visit, data))
-            .then(res.send.bind(res))
-            .catch(err => console.log(err));
-  } else {
-    res.send({});
-  }
+  getEntity(`visit/${req.param.id}`)
+      .then(transformDate)
+      .then(visit => res.send(visit));
 }
 
 function getVisitsHandler(req, res) {
-  const visitsWithPatients = visits
-        .map(visit => getPatient(visit.patient)
-            .then(patient => toVisitWithPatient(visit, patient)));
-
-  return Promise
-        .all(visitsWithPatients)
-        .then(res.send.bind(res))
-        .catch(err => console.log(err));
+  getEntity('visit')
+      .then(visits => visits.map(transformDate))
+      .then(visits => res.send(visits));
 }
 
 function delVisitHandler(req, res) {
-  visits = visits.filter(visit => visit.id !== parseInt(req.params.id, 10));
-
-  res.send('OK');
+  delEntity(`visit/${req.params.id}`)
+        .then(() => res.send('OK'))
+        .catch(() => res.send('ERR'));
 }
 
 function newVisitHandler(req, res) {
-  res.send('OK');
+  const visit = {
+    patientId: parseInt(req.body.patientID, 10),
+    doctorsIds: [parseInt(req.body.doctorID, 10)],
+    nursesIds: [parseInt(req.body.nurseID, 10)],
+    date: +new Date(req.body.date),
+    id: null,
+  };
+
+  newEntity('visit', visit)
+        .then(() => res.redirect('/visits'))
+        .catch((err) => {
+          console.log(err);
+
+          res.redirect('/visits');
+        });
 }
 
-function toVisitWithPatient(visit, data) {
-  return Object.assign({}, visit, { patient: asPersonalData(data) });
+function transformDate(visit) {
+  return Object.assign({}, visit, { date: new Date(visit.date) });
 }
