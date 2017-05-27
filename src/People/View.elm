@@ -49,8 +49,8 @@ doctorsList doctors =
             (\doctor ->
                 (withSpeciality doctor
                     (listSingleEntryShell
-                        (onClick (NewDoctorsUrl <| "/doctors/" ++ (toString doctor.personalData.id)))
-                        (onClick (DelDoctor doctor.personalData.id))
+                        (onClick (NewDoctorsUrl <| "/doctors/" ++ (toString doctor.id)))
+                        (onClick (DelDoctor doctor.id))
                         doctor
                     )
                 )
@@ -67,9 +67,9 @@ nursesList nurses =
                 (withIsDistrictInfo nurse
                     (listSingleEntryShell
                         (onClick
-                            (NewNursesUrl <| "/nurses/" ++ (toString nurse.personalData.id))
+                            (NewNursesUrl <| "/nurses/" ++ (toString nurse.id))
                         )
-                        (onClick (DelNurse nurse.personalData.id))
+                        (onClick (DelNurse nurse.id))
                         nurse
                     )
                 )
@@ -79,15 +79,15 @@ nursesList nurses =
 
 
 patientsList :
-    List { b | personalData : { a | id : Int, name : String, surname : String } }
+    List { a | id : Int, personalData : { b | name : String, surname : String } }
     -> Html PatientsMsg
 patientsList patients =
     list
         (List.map
             (\patient ->
                 (listSingleEntryShell
-                    (onClick (NewPatientsUrl <| "/patients/" ++ (toString patient.personalData.id)))
-                    (onClick (DelPatient patient.personalData.id))
+                    (onClick (NewPatientsUrl <| "/patients/" ++ (toString patient.id)))
+                    (onClick (DelPatient patient.id))
                     patient
                 )
             )
@@ -96,7 +96,7 @@ patientsList patients =
 
 
 patientsView :
-    List { b | personalData : { a | id : Int, name : String, surname : String } }
+    List { a | id : Int, personalData : { b | name : String, surname : String } }
     -> Html PatientsMsg
 patientsView patients =
     view newPatient (patientsList patients)

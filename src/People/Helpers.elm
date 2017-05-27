@@ -15,6 +15,7 @@ defaultPerson =
 defaultPatient : Patient
 defaultPatient =
     { personalData = defaultPerson
+    , id = 0
     }
 
 
@@ -22,6 +23,7 @@ defaultDoctor : Doctor
 defaultDoctor =
     { personalData = defaultPerson
     , speciality = "surgeon"
+    , id = 0
     }
 
 
@@ -29,12 +31,13 @@ defaultNurse : Nurse
 defaultNurse =
     { personalData = defaultPerson
     , isDistrictNurse = False
+    , id = 0
     }
 
 
-getPerson : Int -> List { a | personalData : { b | id : Int } } -> { a | personalData : { b | id : Int } } -> { a | personalData : { b | id : Int } }
+getPerson : a -> List { b | id : a } -> { b | id : a } -> { b | id : a }
 getPerson id people default =
-    List.filter (\person -> person.personalData.id == id) people
+    List.filter (\person -> person.id == id) people
         |> List.head
         |> Maybe.withDefault default
 

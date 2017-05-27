@@ -9,15 +9,16 @@ type alias Model =
 
 type alias Patient =
     { personalData : Person
+    , id : Int
     }
 
 
 type alias Doctor =
-    { personalData : Person, speciality : String }
+    { personalData : Person, speciality : String, id : Int }
 
 
 type alias Nurse =
-    { personalData : Person, isDistrictNurse : Bool }
+    { personalData : Person, isDistrictNurse : Bool, id : Int }
 
 
 type alias Person =
