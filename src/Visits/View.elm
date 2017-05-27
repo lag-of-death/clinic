@@ -21,7 +21,43 @@ buttonActions visit =
 
 newVisitView : Html a
 newVisitView =
-    text "New Visit View"
+    Html.form
+        [ style Styles.newPatientForm
+        , Html.Attributes.action "/api/visits"
+        , Html.Attributes.method "POST"
+        ]
+        [ div [ style block, style blockCentered, style blockStretched ]
+            [ label [] [ text "Patient" ]
+            , input [ type_ "number", required True, name "patientID", style Styles.button, style [ ( "width", "30%" ) ] ]
+                []
+            ]
+        , div [ style block, style blockCentered, style blockStretched ]
+            [ label [] [ text "Doctor" ]
+            , input [ type_ "number", required True, name "doctorID", style Styles.button, style [ ( "width", "30%" ) ] ]
+                []
+            ]
+        , div [ style block, style blockCentered, style blockStretched ]
+            [ label [] [ text "Nurse" ]
+            , input [ type_ "number", required True, name "nurseID", style Styles.button, style [ ( "width", "30%" ) ] ]
+                []
+            ]
+        , div [ style block, style blockCentered, style blockStretched ]
+            [ label [] [ text "Date" ]
+            , input
+                [ type_ "date"
+                , required True
+                , name "date"
+                , style Styles.button
+                , style [ ( "width", "30%" ) ]
+                ]
+                []
+            ]
+        , Html.button
+            [ Html.Attributes.type_ "submit"
+            , style Styles.button
+            ]
+            [ text "Add" ]
+        ]
 
 
 visitView : Visit -> Html a
