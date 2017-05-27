@@ -7,7 +7,7 @@ module.exports = require('express').Router()
     .post('/api/visits', newVisitHandler);
 
 function getVisitHandler(req, res) {
-  getEntity(`visit/${req.param.id}`)
+  getEntity(`visit/${req.params.id}`)
       .then(transformDate)
       .then(visit => res.send(visit));
 }
