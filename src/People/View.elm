@@ -137,7 +137,7 @@ newNurseView =
             [ newPersonFields
             , [ div [ style block, style blockCentered, style blockStretched ]
                     [ label [] [ text "District nurse" ]
-                    , input [ type_ "checkbox", required True, name "isDistrictNurse", style Styles.button ]
+                    , input [ type_ "checkbox", name "isDistrictNurse", style Styles.button ]
                         []
                     ]
               ]
