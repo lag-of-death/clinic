@@ -205,7 +205,7 @@ formToSubmit endpoint =
 
 newPatientView : Html msg
 newPatientView =
-    formToSubmit "patient" <| List.concat [ newPersonFields, [ submitBtn ] ]
+    formToSubmit "patients" <| List.concat [ newPersonFields, [ submitBtn ] ]
 
 
 patientView :
