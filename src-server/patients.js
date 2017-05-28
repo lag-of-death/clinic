@@ -19,8 +19,8 @@ function getPatientHandler(req, res) {
 
 function getPatientsHandler(location, req, res) {
   getEntity('patient')
-      .then(patients => res.send(patients))
-      .catch(() => res.redirect('/'));
+        .then(patients => res.send(patients))
+        .catch(() => res.redirect('/'));
 }
 
 function delPatientHandler(location, req, res) {
@@ -30,11 +30,15 @@ function delPatientHandler(location, req, res) {
 }
 
 function newPatientHandler(location, req, res) {
-  return newEntity('patient', Object.assign({}, req.body, { id: null }))
-      .then(() => res.redirect('/patients'))
-      .catch((err) => {
-        console.log(err);
+  const newPatient = {
+    personalData: Object.assign({}, req.body, { id: null }),
+  };
 
-        res.redirect('/patients');
-      });
+  return newEntity('patient', newPatient)
+        .then(() => res.redirect('/patients'))
+        .catch((err) => {
+          console.log(err);
+
+          res.redirect('/patients');
+        });
 }
