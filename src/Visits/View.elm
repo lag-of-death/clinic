@@ -38,7 +38,7 @@ newVisitView =
             ]
         , div [ style block, style blockCentered, style blockStretched ]
             [ label [] [ text "NurseID" ]
-            , input [ type_ "number", required True, name "nurseID", style Styles.button, style [ ( "width", "30%" ) ] ]
+            , input [ type_ "number", name "nurseID", style Styles.button, style [ ( "width", "30%" ) ] ]
                 []
             ]
         , div [ style block, style blockCentered, style blockStretched ]
