@@ -211,7 +211,8 @@ newPatientView =
 patientView :
     { c
         | personalData :
-            { b | email : String, id : a, name : String, surname : String }
+            { b | email : String, name : String, surname : String }
+        , id : a
     }
     -> Html msg
 patientView patient =
@@ -220,8 +221,8 @@ patientView patient =
 
 restTr :
     { c
-        | personalData :
-            { b | email : String, id : a, name : String, surname : String }
+        | id : a
+        , personalData : { b | email : String, name : String, surname : String }
     }
     -> List (Html msg)
 restTr person =
@@ -247,7 +248,7 @@ restTr person =
         [ td []
             [ text "ID:" ]
         , td []
-            [ text <| toString <| person.personalData.id ]
+            [ text <| toString <| person.id ]
         ]
     ]
 
@@ -280,8 +281,9 @@ districtNurseTr isDistrict =
 doctorView :
     { c
         | personalData :
-            { b | email : String, id : a, name : String, surname : String }
+            { b | email : String, name : String, surname : String }
         , speciality : String
+        , id : a
     }
     -> Html msg
 doctorView doctor =
@@ -291,8 +293,9 @@ doctorView doctor =
 nurseView :
     { c
         | isDistrictNurse : Bool
+        , id : a
         , personalData :
-            { b | email : String, id : a, name : String, surname : String }
+            { b | email : String, name : String, surname : String }
     }
     -> Html msg
 nurseView nurse =
