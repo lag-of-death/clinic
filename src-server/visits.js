@@ -27,8 +27,8 @@ function delVisitHandler(req, res) {
 function newVisitHandler(req, res) {
   const visit = {
     patientId: parseInt(req.body.patientID, 10),
-    doctorsIds: [parseInt(req.body.doctorID, 10)],
-    nursesIds: [parseInt(req.body.nurseID, 10)],
+    doctorsIds: toInts(req.body.doctorID),
+    nursesIds: toInts(req.body.nurseID),
     date: +new Date(req.body.date),
     id: null,
   };
@@ -44,4 +44,10 @@ function newVisitHandler(req, res) {
 
 function transformDate(visit) {
   return Object.assign({}, visit, { date: new Date(visit.date) });
+}
+
+function toInts(entities) {
+  return entities
+        .map(entity => parseInt(entity, 10))
+        .filter(entity => entity);
 }

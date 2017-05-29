@@ -19,8 +19,38 @@ buttonActions visit =
         )
 
 
-newVisitView : Html a
-newVisitView =
+listOf :
+    Attribute msg
+    -> Attribute msg
+    -> String
+    -> String
+    -> Int
+    -> Bool
+    -> Html msg
+listOf incAction decAction label_ inputName numOf isRequired =
+    div [ style block, style blockCentered, style blockStretched ]
+        [ label [] [ text label_ ]
+        , div [ style block, style blockCentered, style blockStretched ] <|
+            [ ul [ style [ ( "list-style", "none" ), ( "margin", "6px" ) ] ]
+                (List.repeat numOf
+                    (li [ style [ ( "margin", "2px" ) ] ]
+                        [ input [ type_ "number", required isRequired, name inputName, style Styles.button ]
+                            []
+                        ]
+                    )
+                )
+            , (Html.button [ type_ "button", decAction, hidden (numOf <= 1) ]
+                [ text "-" ]
+              )
+            , (Html.button [ type_ "button", incAction ]
+                [ text "+" ]
+              )
+            ]
+        ]
+
+
+newVisitView : NewVisit -> Html NewVisitMsg
+newVisitView newVisit =
     Html.form
         [ style Styles.newPatientForm
         , Html.Attributes.action "/api/visits"
@@ -29,16 +59,6 @@ newVisitView =
         [ div [ style block, style blockCentered, style blockStretched ]
             [ label [] [ text "PatientID" ]
             , input [ type_ "number", required True, name "patientID", style Styles.button, style [ ( "width", "30%" ) ] ]
-                []
-            ]
-        , div [ style block, style blockCentered, style blockStretched ]
-            [ label [] [ text "DoctorID" ]
-            , input [ type_ "number", required True, name "doctorID", style Styles.button, style [ ( "width", "30%" ) ] ]
-                []
-            ]
-        , div [ style block, style blockCentered, style blockStretched ]
-            [ label [] [ text "NurseID" ]
-            , input [ type_ "number", name "nurseID", style Styles.button, style [ ( "width", "30%" ) ] ]
                 []
             ]
         , div [ style block, style blockCentered, style blockStretched ]
@@ -52,6 +72,20 @@ newVisitView =
                 ]
                 []
             ]
+        , listOf
+            (onClick IncDoctors)
+            (onClick DecDoctors)
+            "DoctorID"
+            "doctorID[]"
+            newVisit.numOfDoctors
+            True
+        , listOf
+            (onClick IncNurses)
+            (onClick DecNurses)
+            "NurseID"
+            "nurseID[]"
+            newVisit.numOfNurses
+            False
         , Html.button
             [ Html.Attributes.type_ "submit"
             , style Styles.button

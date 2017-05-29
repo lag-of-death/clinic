@@ -47,6 +47,7 @@ type alias Model =
     , doctors : List PeopleTypes.Doctor
     , nurses : List PeopleTypes.Nurse
     , visits : List Visit
+    , newVisit : NewVisit
     }
 
 
@@ -57,6 +58,7 @@ init location =
       , doctors = []
       , nurses = []
       , visits = []
+      , newVisit = VisitsTypes.newVisit
       }
     , Nav.newUrl location.pathname
     )
@@ -111,11 +113,19 @@ type Msg
     | DoctorsMsg PeopleTypes.DoctorsMsg
     | UrlChange Nav.Location
     | VisitsMsg VisitsTypes.VisitsMsg
+    | NewVisitMsg VisitsTypes.NewVisitMsg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        NewVisitMsg newVisitMsg ->
+            let
+                ( newVisit, cmd ) =
+                    VisitsUpdate.updateNewVisit newVisitMsg model.newVisit
+            in
+                ( { model | newVisit = newVisit }, Cmd.map NewVisitMsg cmd )
+
         VisitsMsg visitsMsg ->
             let
                 ( visits, cmd ) =
@@ -229,7 +239,7 @@ toRouteView model maybeRoute =
                         Html.map VisitsMsg (VisitsView.visitView (getVisit id model.visits))
 
                     NewVisit ->
-                        Html.map VisitsMsg VisitsView.newVisitView
+                        Html.map NewVisitMsg (VisitsView.newVisitView model.newVisit)
 
                     Patients ->
                         Html.map PatientsMsg (PeopleView.patientsView model.patients)

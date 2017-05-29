@@ -7,6 +7,22 @@ import Debug
 import Visits.Helpers exposing (..)
 
 
+updateNewVisit : NewVisitMsg -> NewVisit -> ( NewVisit, Cmd NewVisitMsg )
+updateNewVisit msg model =
+    case msg of
+        IncDoctors ->
+            ( { model | numOfDoctors = model.numOfDoctors + 1 }, Cmd.none )
+
+        DecDoctors ->
+            ( { model | numOfDoctors = model.numOfDoctors - 1 }, Cmd.none )
+
+        IncNurses ->
+            ( { model | numOfNurses = model.numOfNurses + 1 }, Cmd.none )
+
+        DecNurses ->
+            ( { model | numOfNurses = model.numOfNurses - 1 }, Cmd.none )
+
+
 updateVisits : VisitsMsg -> List Visit -> ( List Visit, Cmd VisitsMsg )
 updateVisits msg model =
     case msg of
