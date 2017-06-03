@@ -26,8 +26,6 @@ function delNurseHandler(req, res) {
 }
 
 function newNurseHandler(req, res) {
-  console.log(req.body);
-
   const nurse = {
     isDistrictNurse: req.body.isDistrictNurse === 'on',
     personalData: {
@@ -37,8 +35,6 @@ function newNurseHandler(req, res) {
       id: null,
     },
   };
-
-  console.log(nurse);
 
   newEntity('nurse', nurse)
       .then(() => res.redirect('/nurses'))
