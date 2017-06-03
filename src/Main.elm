@@ -4,7 +4,6 @@ import Html exposing (..)
 import Html.Events exposing (..)
 import Html.Attributes exposing (style)
 import Navigation as Nav
-import UrlParser exposing (..)
 import People.View as PeopleView
 import People.Update as PeopleUpdate
 import People.Types as PeopleTypes
@@ -16,6 +15,7 @@ import Visits.Requests as VisitsHttp
 import Visits.Update as VisitsUpdate
 import Visits.Helpers exposing (..)
 import Styles exposing (app, body, menu, button)
+import Routes exposing (..)
 
 
 main : Program Never Model Msg
@@ -62,44 +62,6 @@ init location =
       }
     , Nav.newUrl location.pathname
     )
-
-
-
--- ROUTES
-
-
-type Route
-    = PatientId Int
-    | Patients
-    | NewPatient
-    | Doctors
-    | DoctorId Int
-    | Nurses
-    | NurseId Int
-    | Visits
-    | VisitId Int
-    | NewVisit
-    | NewNurse
-    | NewDoctor
-
-
-routeParser : UrlParser.Parser (Route -> a) a
-routeParser =
-    UrlParser.oneOf
-        [ UrlParser.map Patients top
-        , UrlParser.map Visits (UrlParser.s "visits")
-        , UrlParser.map Nurses (UrlParser.s "nurses")
-        , UrlParser.map NurseId (UrlParser.s "nurses" </> int)
-        , UrlParser.map NewNurse (UrlParser.s "nurses" </> UrlParser.s "new")
-        , UrlParser.map Patients (UrlParser.s "patients")
-        , UrlParser.map Doctors (UrlParser.s "doctors")
-        , UrlParser.map DoctorId (UrlParser.s "doctors" </> int)
-        , UrlParser.map VisitId (UrlParser.s "visits" </> int)
-        , UrlParser.map NewVisit (UrlParser.s "visits" </> UrlParser.s "new")
-        , UrlParser.map PatientId (UrlParser.s "patients" </> int)
-        , UrlParser.map NewPatient (UrlParser.s "patients" </> UrlParser.s "new")
-        , UrlParser.map NewDoctor (UrlParser.s "doctors" </> UrlParser.s "new")
-        ]
 
 
 
@@ -164,7 +126,7 @@ update msg model =
         UrlChange location ->
             let
                 maybeRoute =
-                    UrlParser.parsePath routeParser location
+                    parseRoute location
 
                 route =
                     Maybe.withDefault Patients maybeRoute
