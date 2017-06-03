@@ -7,7 +7,7 @@ import Debug
 import Visits.Helpers exposing (..)
 
 
-updateNewVisit : NewVisitMsg -> NewVisit -> ( NewVisit, Cmd NewVisitMsg )
+updateNewVisit : NewVisitMsg -> NewVisitModel -> ( NewVisitModel, Cmd NewVisitMsg )
 updateNewVisit msg model =
     case msg of
         IncDoctors ->

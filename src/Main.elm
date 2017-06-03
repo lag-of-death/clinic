@@ -43,22 +43,22 @@ subscriptions model =
 
 type alias Model =
     { history : List (Maybe Route)
-    , patients : List PeopleTypes.Patient
-    , doctors : List PeopleTypes.Doctor
-    , nurses : List PeopleTypes.Nurse
-    , visits : List Visit
-    , newVisit : NewVisit
+    , patients : PeopleTypes.PatientsModel
+    , doctors : PeopleTypes.DoctorsModel
+    , nurses : PeopleTypes.NursesModel
+    , visits : VisitsTypes.VisitsModel
+    , newVisit : NewVisitModel
     }
 
 
 init : Nav.Location -> ( Model, Cmd Msg )
 init location =
     ( { history = []
-      , patients = []
-      , doctors = []
-      , nurses = []
-      , visits = []
-      , newVisit = VisitsTypes.newVisit
+      , patients = PeopleTypes.initialPatients
+      , doctors = PeopleTypes.initialDoctors
+      , nurses = PeopleTypes.initialNurses
+      , visits = VisitsTypes.initialVisits
+      , newVisit = VisitsTypes.initialNewVisit
       }
     , Nav.newUrl location.pathname
     )

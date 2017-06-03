@@ -5,11 +5,20 @@ import People.Types exposing (..)
 import People.Helpers exposing (..)
 
 
-newVisit : NewVisit
-newVisit =
+type alias VisitsModel =
+    List Visit
+
+
+initialNewVisit : NewVisitModel
+initialNewVisit =
     { numOfDoctors = 1
     , numOfNurses = 1
     }
+
+
+initialVisits : List Visit
+initialVisits =
+    []
 
 
 type NewVisitMsg
@@ -27,7 +36,7 @@ type VisitsMsg
     | NewVisitsUrl String
 
 
-type alias NewVisit =
+type alias NewVisitModel =
     { numOfDoctors : Int
     , numOfNurses : Int
     }

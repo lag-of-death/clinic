@@ -3,7 +3,30 @@ module People.Types exposing (..)
 import Http
 
 
-type alias Model =
+initialNurses : List Nurse
+initialNurses =
+    []
+
+
+initialDoctors : List Doctor
+initialDoctors =
+    []
+
+
+initialPatients : List Patient
+initialPatients =
+    []
+
+
+type alias DoctorsModel =
+    List Doctor
+
+
+type alias NursesModel =
+    List Nurse
+
+
+type alias PatientsModel =
     List Patient
 
 

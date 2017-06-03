@@ -49,7 +49,7 @@ listOf incAction decAction label_ inputName numOf isRequired =
         ]
 
 
-newVisitView : NewVisit -> Html NewVisitMsg
+newVisitView : NewVisitModel -> Html NewVisitMsg
 newVisitView newVisit =
     Html.form
         [ style Styles.newPatientForm

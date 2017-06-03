@@ -76,7 +76,7 @@ updateDoctors msg model =
             )
 
 
-updatePatients : PatientsMsg -> Model -> ( Model, Cmd PatientsMsg )
+updatePatients : PatientsMsg -> PatientsModel -> ( PatientsModel, Cmd PatientsMsg )
 updatePatients msg model =
     case msg of
         NewPatientsUrl url ->
