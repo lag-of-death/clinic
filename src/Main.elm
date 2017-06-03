@@ -171,11 +171,7 @@ view model =
     Html.body [ style Styles.body ]
         [ div
             [ style Styles.menu ]
-            [ Html.button [ style Styles.button, onClick (NewUrl "/patients/") ] [ text "patients" ]
-            , Html.button [ style Styles.button, onClick (NewUrl "/nurses/") ] [ text "nurses" ]
-            , Html.button [ style Styles.button, onClick (NewUrl "/doctors/") ] [ text "doctors" ]
-            , Html.button [ style Styles.button, onClick (NewUrl "/visits/") ] [ text "visits" ]
-            ]
+            (List.map toMenuBtn [ "patients", "nurses", "doctors", "visits" ])
         , main_ [ style Styles.app ]
             [ model.history
                 |> List.head
@@ -183,6 +179,11 @@ view model =
                 |> toRouteView model
             ]
         ]
+
+
+toMenuBtn : String -> Html Msg
+toMenuBtn whatAppPart =
+    Html.button [ style Styles.button, onClick (NewUrl <| "/" ++ whatAppPart ++ "/") ] [ text whatAppPart ]
 
 
 toRouteView : Model -> Maybe Route -> Html Msg
