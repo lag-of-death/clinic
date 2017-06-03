@@ -1,4 +1,4 @@
-module People.View exposing (..)
+module People.Views exposing (..)
 
 import Html.Attributes exposing (name, style, required, type_)
 import Html exposing (text, Html, div, button, ul, label, li, table, td, tr, form, input)

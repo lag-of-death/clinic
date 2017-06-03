@@ -1,4 +1,4 @@
-module Visits.View exposing (..)
+module Visits.Views exposing (..)
 
 import Visits.Types exposing (..)
 import Views exposing (..)

@@ -4,13 +4,13 @@ import Html exposing (..)
 import Html.Events exposing (..)
 import Html.Attributes exposing (style)
 import Navigation as Nav
-import People.View as PeopleView
+import People.Views as PeopleView
 import People.Update as PeopleUpdate
 import People.Types as PeopleTypes
 import People.Requests as PeopleHttp
 import People.Helpers exposing (..)
 import Visits.Types as VisitsTypes exposing (..)
-import Visits.View as VisitsView
+import Visits.Views as VisitsView
 import Visits.Requests as VisitsHttp
 import Visits.Update as VisitsUpdate
 import Visits.Helpers exposing (..)
