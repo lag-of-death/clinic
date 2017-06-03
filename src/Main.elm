@@ -208,7 +208,7 @@ toRouteView model maybeRoute =
                         Html.map PatientsMsg (PeopleView.patientsView model.patients)
 
                     PatientId id ->
-                        Html.map PatientsMsg (PeopleView.patientView (getPerson id model.patients defaultPatient))
+                        Html.map PatientsMsg (PeopleView.patientView (getPerson id model.patients PeopleTypes.defaultPatient))
 
                     NewPatient ->
                         Html.map PatientsMsg PeopleView.newPatientView
@@ -217,7 +217,7 @@ toRouteView model maybeRoute =
                         Html.map DoctorsMsg (PeopleView.doctorsView model.doctors)
 
                     DoctorId id ->
-                        Html.map DoctorsMsg (PeopleView.doctorView (getPerson id model.doctors defaultDoctor))
+                        Html.map DoctorsMsg (PeopleView.doctorView (getPerson id model.doctors PeopleTypes.defaultDoctor))
 
                     NewDoctor ->
                         Html.map DoctorsMsg PeopleView.newDoctorView
@@ -226,7 +226,7 @@ toRouteView model maybeRoute =
                         Html.map NursesMsg (PeopleView.nursesView model.nurses)
 
                     NurseId id ->
-                        Html.map NursesMsg (PeopleView.nurseView (getPerson id model.nurses defaultNurse))
+                        Html.map NursesMsg (PeopleView.nurseView (getPerson id model.nurses PeopleTypes.defaultNurse))
 
                     NewNurse ->
                         Html.map NursesMsg PeopleView.newNurseView

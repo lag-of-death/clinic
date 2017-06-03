@@ -3,6 +3,38 @@ module People.Types exposing (..)
 import Http
 
 
+defaultPerson : Person
+defaultPerson =
+    { name = ""
+    , surname = ""
+    , email = ""
+    , id = -9999
+    }
+
+
+defaultPatient : Patient
+defaultPatient =
+    { personalData = defaultPerson
+    , id = 0
+    }
+
+
+defaultDoctor : Doctor
+defaultDoctor =
+    { personalData = defaultPerson
+    , speciality = "surgeon"
+    , id = 0
+    }
+
+
+defaultNurse : Nurse
+defaultNurse =
+    { personalData = defaultPerson
+    , isDistrictNurse = False
+    , id = 0
+    }
+
+
 initialNurses : List Nurse
 initialNurses =
     []

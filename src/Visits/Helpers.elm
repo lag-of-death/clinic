@@ -1,12 +1,7 @@
 module Visits.Helpers exposing (..)
 
-import People.Helpers exposing (..)
+import People.Types exposing (..)
 import Visits.Types exposing (..)
-
-
-defaultVisit : Visit
-defaultVisit =
-    { id = 0, date = "", doctors = [], nurses = [], patient = defaultPatient }
 
 
 getVisit : Int -> List Visit -> Visit

@@ -5,8 +5,9 @@ import People.Types exposing (..)
 import People.Helpers exposing (..)
 
 
-type alias VisitsModel =
-    List Visit
+defaultVisit : Visit
+defaultVisit =
+    { id = 0, date = "", doctors = [], nurses = [], patient = defaultPatient }
 
 
 initialNewVisit : NewVisitModel
@@ -19,6 +20,10 @@ initialNewVisit =
 initialVisits : List Visit
 initialVisits =
     []
+
+
+type alias VisitsModel =
+    List Visit
 
 
 type NewVisitMsg
