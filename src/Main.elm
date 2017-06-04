@@ -16,6 +16,9 @@ import Visits.Update as VisitsUpdate
 import Visits.Helpers exposing (..)
 import Styles exposing (app, body, menu, button)
 import Routes exposing (..)
+import Modal.Views
+import Modal.Update exposing (..)
+import Modal.Types exposing (..)
 
 
 main : Program Never Model Msg
@@ -48,6 +51,7 @@ type alias Model =
     , nurses : PeopleTypes.NursesModel
     , visits : VisitsTypes.VisitsModel
     , newVisit : NewVisitModel
+    , modal : Modal.Types.Modal Msg
     }
 
 
@@ -59,6 +63,7 @@ init location =
       , nurses = PeopleTypes.initialNurses
       , visits = VisitsTypes.initialVisits
       , newVisit = VisitsTypes.initialNewVisit
+      , modal = Modal.Types.initialModel NoOp
       }
     , Nav.newUrl location.pathname
     )
@@ -76,47 +81,99 @@ type Msg
     | UrlChange Nav.Location
     | VisitsMsg VisitsTypes.VisitsMsg
     | NewVisitMsg VisitsTypes.NewVisitMsg
+    | ModalMsg (Modal.Update.Msg Msg)
+    | NoOp
+
+
+prepareModal :
+    { a | modal : { c | msg : Msg, shouldShow : b } }
+    -> Msg
+    -> ( { a | modal : { c | msg : Msg, shouldShow : Bool } }, Cmd msg )
+prepareModal model msg =
+    let
+        ( modalModel, _ ) =
+            Modal.Update.update
+                (Prepare <| ModalMsg <| Do msg)
+                model.modal
+                NoOp
+    in
+        ( { model | modal = modalModel }
+        , Cmd.none
+        )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        ModalMsg modalMsg ->
+            let
+                ( newModal, cmd ) =
+                    Modal.Update.update modalMsg model.modal NoOp
+            in
+                ( { model | modal = newModal }, cmd )
+
         NewVisitMsg newVisitMsg ->
             let
-                ( newVisit, cmd ) =
+                ( newVisit, cmd, msgFromChild ) =
                     VisitsUpdate.updateNewVisit newVisitMsg model.newVisit
             in
                 ( { model | newVisit = newVisit }, Cmd.map NewVisitMsg cmd )
 
         VisitsMsg visitsMsg ->
             let
-                ( visits, cmd ) =
+                ( visits, cmd, msgFromChild ) =
                     VisitsUpdate.updateVisits visitsMsg model.visits
             in
-                ( { model | visits = visits }, Cmd.map VisitsMsg cmd )
+                case visitsMsg of
+                    DelVisit _ ->
+                        prepareModal model (VisitsMsg msgFromChild)
+
+                    allOtherBranches ->
+                        ( { model | visits = visits }
+                        , Cmd.map VisitsMsg cmd
+                        )
 
         NursesMsg nursesMsg ->
             let
-                ( nurses, cmd ) =
+                ( nurses, cmd, msgFromChild ) =
                     PeopleUpdate.updateNurses nursesMsg model.nurses
             in
-                ( { model | nurses = nurses }, Cmd.map NursesMsg cmd )
+                case nursesMsg of
+                    PeopleTypes.DelNurse _ ->
+                        prepareModal model (NursesMsg msgFromChild)
+
+                    allOtherBranches ->
+                        ( { model | nurses = nurses }
+                        , Cmd.map NursesMsg cmd
+                        )
 
         DoctorsMsg doctorsMsg ->
             let
-                ( doctors, cmd ) =
+                ( doctors, cmd, msgFromChild ) =
                     PeopleUpdate.updateDoctors doctorsMsg model.doctors
             in
-                ( { model | doctors = doctors }, Cmd.map DoctorsMsg cmd )
+                case doctorsMsg of
+                    PeopleTypes.DelDoctor _ ->
+                        prepareModal model (DoctorsMsg msgFromChild)
+
+                    allOtherBranches ->
+                        ( { model | doctors = doctors }
+                        , Cmd.map DoctorsMsg cmd
+                        )
 
         PatientsMsg patientsMsg ->
             let
-                ( patients, peopleCmd ) =
+                ( patients, peopleCmd, msgFromChild ) =
                     PeopleUpdate.updatePatients patientsMsg model.patients
             in
-                ( { model | patients = patients }
-                , Cmd.map PatientsMsg peopleCmd
-                )
+                case patientsMsg of
+                    PeopleTypes.DelPatient _ ->
+                        prepareModal model (PatientsMsg msgFromChild)
+
+                    allOtherBranches ->
+                        ( { model | patients = patients }
+                        , Cmd.map PatientsMsg peopleCmd
+                        )
 
         NewUrl url ->
             ( model
@@ -161,6 +218,9 @@ update msg model =
                         Cmd.none
                 )
 
+        _ ->
+            ( model, Cmd.none )
+
 
 
 -- VIEW
@@ -178,6 +238,12 @@ view model =
                 |> Maybe.withDefault (Just Patients)
                 |> toRouteView model
             ]
+        , Modal.Views.view
+            (ModalMsg Hide)
+            "OK"
+            model.modal.textMsg
+            model.modal.shouldShow
+            model.modal.msg
         ]
 
 

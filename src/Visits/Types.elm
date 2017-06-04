@@ -31,6 +31,7 @@ type NewVisitMsg
     | IncNurses
     | DecDoctors
     | DecNurses
+    | NoNewVisitOp
 
 
 type VisitsMsg
@@ -39,6 +40,8 @@ type VisitsMsg
     | VisitData (Result Http.Error Visit)
     | VisitDeleted (Result Http.Error ())
     | NewVisitsUrl String
+    | NoVisitsOp
+    | ReallyDelVisit Int
 
 
 type alias NewVisitModel =

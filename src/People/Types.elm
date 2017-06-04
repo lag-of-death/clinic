@@ -90,6 +90,8 @@ type NursesMsg
     | NurseData (Result Http.Error Nurse)
     | NurseDeleted (Result Http.Error ())
     | NewNursesUrl String
+    | NoNursesOp
+    | ReallyDeleteNurse Int
 
 
 type DoctorsMsg
@@ -98,6 +100,8 @@ type DoctorsMsg
     | DoctorsData (Result Http.Error (List Doctor))
     | DoctorData (Result Http.Error Doctor)
     | DoctorDeleted (Result Http.Error ())
+    | NoDoctorsOp
+    | ReallyDeleteDoctor Int
 
 
 type PatientsMsg
@@ -105,4 +109,6 @@ type PatientsMsg
     | PatientsData (Result Http.Error (List Patient))
     | PatientData (Result Http.Error Patient)
     | DelPatient Int
+    | ReallyDeletePatient Int
     | PatientDeleted (Result Http.Error ())
+    | NoPatientsOp
