@@ -121,6 +121,9 @@ update msg model =
                     VisitsUpdate.updateVisits visitsMsg model.visits
             in
                 case visitsMsg of
+                    VisitsTypes.VisitDeleted (Err err) ->
+                        prepareModal model (PrepareErr)
+
                     DelVisit _ ->
                         prepareModal model (Prepare <| ModalMsg <| Do <| VisitsMsg msgFromChild)
 
