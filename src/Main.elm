@@ -135,6 +135,9 @@ update msg model =
                     PeopleUpdate.updateNurses nursesMsg model.nurses
             in
                 case nursesMsg of
+                    PeopleTypes.NurseDeleted (Err err) ->
+                        prepareModal model (PrepareErr)
+
                     PeopleTypes.DelNurse _ ->
                         prepareModal model (Prepare <| ModalMsg <| Do <| NursesMsg msgFromChild)
 
