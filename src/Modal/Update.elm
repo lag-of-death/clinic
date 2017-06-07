@@ -8,13 +8,21 @@ type Msg msg
     | Hide
     | Do msg
     | Prepare msg
+    | PrepareErr
 
 
 update :
     Msg a
-    -> { c | msg : a, shouldShow : b }
+    -> { c | textMsg : String, withActions : Bool, msg : a, shouldShow : b }
     -> a
-    -> ( { c | msg : a, shouldShow : Bool }, Cmd a )
+    -> ( { c
+            | msg : a
+            , shouldShow : Bool
+            , textMsg : String
+            , withActions : Bool
+         }
+       , Cmd a
+       )
 update modalMsg model noOp =
     case modalMsg of
         Show ->
@@ -24,7 +32,22 @@ update modalMsg model noOp =
             ( { model | shouldShow = False }, Cmd.none )
 
         Prepare msg ->
-            ( { model | msg = msg, shouldShow = True }
+            ( { model
+                | msg = msg
+                , textMsg = "Are you sure?"
+                , withActions = True
+                , shouldShow = True
+              }
+            , Cmd.none
+            )
+
+        PrepareErr ->
+            ( { model
+                | msg = noOp
+                , textMsg = "ERROR"
+                , shouldShow = True
+                , withActions = False
+              }
             , Cmd.none
             )
 

@@ -85,15 +85,11 @@ type Msg
     | NoOp
 
 
-prepareModal :
-    { a | modal : { c | msg : Msg, shouldShow : b } }
-    -> Msg
-    -> ( { a | modal : { c | msg : Msg, shouldShow : Bool } }, Cmd msg )
 prepareModal model msg =
     let
         ( modalModel, _ ) =
             Modal.Update.update
-                (Prepare <| ModalMsg <| Do msg)
+                msg
                 model.modal
                 NoOp
     in
@@ -126,7 +122,7 @@ update msg model =
             in
                 case visitsMsg of
                     DelVisit _ ->
-                        prepareModal model (VisitsMsg msgFromChild)
+                        prepareModal model (Prepare <| ModalMsg <| Do <| VisitsMsg msgFromChild)
 
                     allOtherBranches ->
                         ( { model | visits = visits }
@@ -140,7 +136,7 @@ update msg model =
             in
                 case nursesMsg of
                     PeopleTypes.DelNurse _ ->
-                        prepareModal model (NursesMsg msgFromChild)
+                        prepareModal model (Prepare <| ModalMsg <| Do <| NursesMsg msgFromChild)
 
                     allOtherBranches ->
                         ( { model | nurses = nurses }
@@ -154,7 +150,7 @@ update msg model =
             in
                 case doctorsMsg of
                     PeopleTypes.DelDoctor _ ->
-                        prepareModal model (DoctorsMsg msgFromChild)
+                        prepareModal model (Prepare <| ModalMsg <| Do <| DoctorsMsg msgFromChild)
 
                     allOtherBranches ->
                         ( { model | doctors = doctors }
@@ -167,8 +163,11 @@ update msg model =
                     PeopleUpdate.updatePatients patientsMsg model.patients
             in
                 case patientsMsg of
+                    PeopleTypes.PatientDeleted (Err err) ->
+                        prepareModal model (PrepareErr)
+
                     PeopleTypes.DelPatient _ ->
-                        prepareModal model (PatientsMsg msgFromChild)
+                        prepareModal model (Prepare <| ModalMsg <| Do <| PatientsMsg msgFromChild)
 
                     allOtherBranches ->
                         ( { model | patients = patients }
@@ -244,6 +243,7 @@ view model =
             model.modal.textMsg
             model.modal.shouldShow
             model.modal.msg
+            model.modal.withActions
         ]
 
 
