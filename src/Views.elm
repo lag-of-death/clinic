@@ -7,9 +7,10 @@ import Styles exposing (..)
 
 newEntity : Html.Attribute a -> String -> Html a
 newEntity onClick label =
-    div []
+    div [ style [ ( "width", "15%" ) ] ]
         [ Html.button
             [ style Styles.button
+            , style [ ( "width", "100%" ), ( "word-break", "break-all" ) ]
             , onClick
             ]
             [ text label ]
