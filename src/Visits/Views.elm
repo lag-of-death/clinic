@@ -8,6 +8,7 @@ import Html.Attributes exposing (..)
 import People.Helpers exposing (..)
 import People.Types exposing (..)
 import Styles exposing (..)
+import Visits.Helpers exposing (..)
 
 
 buttonActions : Visit -> Html VisitsMsg
@@ -109,7 +110,7 @@ visitView visit =
                 ]
             , td
                 []
-                [ visit.date |> text ]
+                [ formatDate visit.date |> text ]
             , td
                 []
                 [ toCommaSeparated visit.nurses |> text ]
@@ -134,7 +135,8 @@ view visits =
                     [ div [ style [ ( "width", "100px" ) ] ]
                         [ text <| surnameAndName visit.patient
                         ]
-                    , div [] [ text visit.date ]
+                    , div []
+                        [ formatDate visit.date |> text ]
                     , buttonActions visit
                     ]
                 )

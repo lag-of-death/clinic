@@ -2,6 +2,8 @@ module Visits.Helpers exposing (..)
 
 import People.Types exposing (..)
 import Visits.Types exposing (..)
+import Date exposing (Month(..), Date)
+import Date.Extra as Date
 
 
 getVisit : Int -> List Visit -> Visit
@@ -24,3 +26,9 @@ addVisit model entity =
                     oldEntity
             )
             model
+
+
+formatDate : String -> String
+formatDate date =
+    Result.withDefault (Date.fromTime 0) (Date.fromString date)
+        |> Date.toFormattedString "EEEE, MMMM d, y 'at' h:mm a"
