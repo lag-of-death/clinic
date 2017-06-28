@@ -10,13 +10,14 @@ styles : Attribute msg
 styles =
     style
         [ ( "position", "fixed" )
-        , ( "bottom", "50%" )
-        , ( "left", "10%" )
-        , ( "height", "20%" )
+        , ( "bottom", "55%" )
+        , ( "left", "20%" )
+        , ( "height", "25%" )
         , ( "display", "flex" )
         , ( "justify-content", "center" )
+        , ( "box-sizing", "border-box" )
         , ( "align-items", "center" )
-        , ( "width", "80%" )
+        , ( "width", "60%" )
         , ( "font-family", "monospace" )
         , ( "padding", "12px" )
         , ( "font-size", "30px" )

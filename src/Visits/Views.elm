@@ -90,6 +90,7 @@ newVisitView newVisit =
         , Html.button
             [ Html.Attributes.type_ "submit"
             , style Styles.button
+            , style Styles.submit
             ]
             [ text "Add" ]
         ]
@@ -97,12 +98,16 @@ newVisitView newVisit =
 
 visitView : Visit -> Html a
 visitView visit =
-    table [ attribute "border" "1", style [ ( "border", "2px solid black" ), ( "border-collapse", "collapse" ) ] ]
+    table
+        [ attribute "border" "1"
+        , attribute "cellpadding" "10"
+        , style [ ( "border", "2px solid black" ), ( "border-collapse", "collapse" ) ]
+        ]
         [ tr []
-            [ th [] [ text "Patient" ]
-            , th [] [ text "Date" ]
-            , th [] [ text "Nurses" ]
-            , th [] [ text "Doctors" ]
+            [ Html.th [ style Styles.th ] [ text "Patient" ]
+            , Html.th [ style Styles.th ] [ text "Date" ]
+            , Html.th [ style Styles.th ] [ text "Nurses" ]
+            , Html.th [ style Styles.th ] [ text "Doctors" ]
             ]
         , tr []
             [ td []
@@ -132,7 +137,7 @@ view visits =
         [ Views.list
             (List.map
                 (\visit ->
-                    [ div [ style [ ( "width", "100px" ) ] ]
+                    [ div []
                         [ text <| surnameAndName visit.patient
                         ]
                     , div []

@@ -1,6 +1,12 @@
 module Styles exposing (..)
 
 
+th : List ( String, String )
+th =
+    [ ( "background", "lightblue" )
+    ]
+
+
 button : List ( String, String )
 button =
     [ ( "border", "2px solid black" )
@@ -8,6 +14,12 @@ button =
     , ( "padding", "4px" )
     , ( "font-size", "20px" )
     , ( "font-family", "monospace" )
+    ]
+
+
+submit : List ( String, String )
+submit =
+    [ ( "margin", "2%" )
     ]
 
 
@@ -25,19 +37,20 @@ blockStretched =
 block : List ( String, String )
 block =
     [ ( "display", "flex" )
-    , ( "justify-content", "space-around" )
+    , ( "background", "lightblue" )
+    , ( "justify-content", "space-between" )
     , ( "padding", "10px" )
     ]
 
 
 menu : List ( String, String )
 menu =
-    List.concat [ block, [ ( "border-bottom", "2px solid black" ) ] ]
+    List.concat [ block, [ ( "border-bottom", "2px solid black" ), ( "justify-content", "space-around" ) ] ]
 
 
 app : List ( String, String )
 app =
-    [ ( "padding", "6px" ), ( "font-size", "24px" ) ]
+    [ ( "padding", "6px" ), ( "font-size", "24px" ), ( "margin", "1%" ) ]
 
 
 body : List ( String, String )
@@ -54,4 +67,5 @@ newPatientForm =
     , ( "display", "flex" )
     , ( "flex-direction", "column" )
     , ( "justify-content", "center" )
+    , ( "border", "2px solid black" )
     ]

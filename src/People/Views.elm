@@ -33,7 +33,7 @@ listSingleEntryShell onClick1 onClick2 a =
         person =
             a.personalData
     in
-        [ div [ style [ ( "width", "100px" ) ] ] [ text <| person.surname ++ " " ++ person.name ]
+        [ div [] [ text <| person.surname ++ " " ++ person.name ]
         , div []
             (actions
                 onClick1
@@ -165,6 +165,7 @@ submitBtn =
     Html.button
         [ Html.Attributes.type_ "submit"
         , style Styles.button
+        , style Styles.submit
         ]
         [ text "Add" ]
 

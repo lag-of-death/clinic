@@ -19,6 +19,7 @@ import Routes exposing (..)
 import Modal.Views
 import Modal.Update exposing (..)
 import Modal.Types exposing (..)
+import Views exposing (..)
 
 
 main : Program Never Model Msg
@@ -270,7 +271,7 @@ toRouteView model maybeRoute =
         Just route ->
             case route of
                 Visits ->
-                    Html.map VisitsMsg (VisitsView.view model.visits)
+                    bordered <| Html.map VisitsMsg (VisitsView.view model.visits)
 
                 VisitId id ->
                     centerElement <| Html.map VisitsMsg (VisitsView.visitView (getVisit id model.visits))
@@ -279,7 +280,7 @@ toRouteView model maybeRoute =
                     centerElement <| Html.map NewVisitMsg (VisitsView.newVisitView model.newVisit)
 
                 Patients ->
-                    Html.map PatientsMsg (PeopleView.patientsView model.patients)
+                    bordered <| Html.map PatientsMsg (PeopleView.patientsView model.patients)
 
                 PatientId id ->
                     centerElement <| Html.map PatientsMsg (PeopleView.patientView (getPerson id model.patients PeopleTypes.defaultPatient))
@@ -288,7 +289,7 @@ toRouteView model maybeRoute =
                     centerElement <| Html.map PatientsMsg PeopleView.newPatientView
 
                 Doctors ->
-                    Html.map DoctorsMsg (PeopleView.doctorsView model.doctors)
+                    bordered <| Html.map DoctorsMsg (PeopleView.doctorsView model.doctors)
 
                 DoctorId id ->
                     centerElement <| Html.map DoctorsMsg (PeopleView.doctorView (getPerson id model.doctors PeopleTypes.defaultDoctor))
@@ -297,16 +298,10 @@ toRouteView model maybeRoute =
                     centerElement <| Html.map DoctorsMsg PeopleView.newDoctorView
 
                 Nurses ->
-                    Html.map NursesMsg (PeopleView.nursesView model.nurses)
+                    bordered <| Html.map NursesMsg (PeopleView.nursesView model.nurses)
 
                 NurseId id ->
                     centerElement <| Html.map NursesMsg (PeopleView.nurseView (getPerson id model.nurses PeopleTypes.defaultNurse))
 
                 NewNurse ->
                     centerElement <| Html.map NursesMsg PeopleView.newNurseView
-
-
-centerElement : Html msg -> Html msg
-centerElement el =
-    div [ style [ ( "display", "flex" ), ( "justify-content", "center" ) ] ]
-        [ el ]
