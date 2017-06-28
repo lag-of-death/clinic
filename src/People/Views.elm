@@ -44,7 +44,7 @@ listSingleEntryShell onClick1 onClick2 a =
         person =
             a.personalData
     in
-        [ div [] [ text <| person.surname ++ " " ++ person.name ]
+        [ div [ style [ ( "width", "30%" ) ] ] [ text <| person.surname ++ " " ++ person.name ]
         , div []
             (actions
                 onClick1
