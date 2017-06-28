@@ -65,11 +65,11 @@ newVisitView newVisit =
         , div [ style block, style blockCentered, style blockStretched ]
             [ label [] [ text "Date" ]
             , input
-                [ type_ "date"
+                [ type_ "datetime-local"
+                , attribute "step" "3600"
                 , required True
                 , name "date"
                 , style Styles.button
-                , style [ ( "width", "30%" ) ]
                 ]
                 []
             ]

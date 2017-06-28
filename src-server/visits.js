@@ -25,11 +25,13 @@ function delVisitHandler(req, res) {
 }
 
 function newVisitHandler(req, res) {
+  const date = new Date(req.body.date);
+
   const visit = {
     patientId: parseInt(req.body.patientID, 10),
     doctorsIds: toInts(req.body.doctorID),
     nursesIds: toInts(req.body.nurseID),
-    date: +new Date(req.body.date),
+    date: +date + (date.getTimezoneOffset() * 60 * 1000),
     id: null,
   };
 
