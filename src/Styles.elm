@@ -9,7 +9,7 @@ module Styles
         , menu
         , app
         , body
-        , newPatientForm
+        , form
         )
 
 
@@ -73,8 +73,8 @@ body =
     ]
 
 
-newPatientForm : List ( String, String )
-newPatientForm =
+form : List ( String, String )
+form =
     [ ( "width", "60%" )
     , ( "display", "flex" )
     , ( "flex-direction", "column" )

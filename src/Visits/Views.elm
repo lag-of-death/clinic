@@ -55,7 +55,7 @@ listOf incAction decAction label_ inputName numOf isRequired =
 newVisitView : NewVisitModel -> Html NewVisitMsg
 newVisitView newVisit =
     Html.form
-        [ style Styles.newPatientForm
+        [ style Styles.form
         , Html.Attributes.action "/api/visits"
         , Html.Attributes.method "POST"
         ]

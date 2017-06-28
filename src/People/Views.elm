@@ -206,7 +206,7 @@ newPersonFields =
 formToSubmit : String -> List (Html msg) -> Html msg
 formToSubmit endpoint =
     form
-        [ style Styles.newPatientForm
+        [ style Styles.form
         , Html.Attributes.action ("/api/" ++ endpoint)
         , Html.Attributes.method "POST"
         ]
