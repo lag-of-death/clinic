@@ -1,75 +1,62 @@
-module Visits.Update exposing (..)
+module Visits.Update exposing (updateVisits, updateNewVisit)
 
-import Visits.Requests exposing (..)
-import Visits.Types exposing (..)
+import Visits.Requests exposing (getVisits, deleteVisit)
+import Visits.Types as VT
 import Navigation as Nav
-import Debug
-import Visits.Helpers exposing (..)
+import Visits.Helpers
 
 
-updateNewVisit : NewVisitMsg -> NewVisitModel -> ( NewVisitModel, Cmd NewVisitMsg, NewVisitMsg )
+updateNewVisit : VT.NewVisitMsg -> VT.NewVisitModel -> ( VT.NewVisitModel, Cmd VT.NewVisitMsg, VT.NewVisitMsg )
 updateNewVisit msg model =
     case msg of
-        NoNewVisitOp ->
-            ( model, Cmd.none, NoNewVisitOp )
+        VT.NoNewVisitOp ->
+            ( model, Cmd.none, VT.NoNewVisitOp )
 
-        IncDoctors ->
-            ( { model | numOfDoctors = model.numOfDoctors + 1 }, Cmd.none, NoNewVisitOp )
+        VT.IncDoctors ->
+            ( { model | numOfDoctors = model.numOfDoctors + 1 }, Cmd.none, VT.NoNewVisitOp )
 
-        DecDoctors ->
-            ( { model | numOfDoctors = model.numOfDoctors - 1 }, Cmd.none, NoNewVisitOp )
+        VT.DecDoctors ->
+            ( { model | numOfDoctors = model.numOfDoctors - 1 }, Cmd.none, VT.NoNewVisitOp )
 
-        IncNurses ->
-            ( { model | numOfNurses = model.numOfNurses + 1 }, Cmd.none, NoNewVisitOp )
+        VT.IncNurses ->
+            ( { model | numOfNurses = model.numOfNurses + 1 }, Cmd.none, VT.NoNewVisitOp )
 
-        DecNurses ->
-            ( { model | numOfNurses = model.numOfNurses - 1 }, Cmd.none, NoNewVisitOp )
+        VT.DecNurses ->
+            ( { model | numOfNurses = model.numOfNurses - 1 }, Cmd.none, VT.NoNewVisitOp )
 
 
-updateVisits : VisitsMsg -> List Visit -> ( List Visit, Cmd VisitsMsg, VisitsMsg )
+updateVisits : VT.VisitsMsg -> List VT.Visit -> ( List VT.Visit, Cmd VT.VisitsMsg, VT.VisitsMsg )
 updateVisits msg model =
     case msg of
-        NoVisitsOp ->
-            ( model, Cmd.none, NoVisitsOp )
+        VT.NoVisitsOp ->
+            ( model, Cmd.none, VT.NoVisitsOp )
 
-        NewVisitsUrl url ->
-            ( model, Nav.newUrl url, NoVisitsOp )
+        VT.NewVisitsUrl url ->
+            ( model, Nav.newUrl url, VT.NoVisitsOp )
 
-        VisitsData (Ok visits) ->
+        VT.VisitsData (Ok visits) ->
             ( visits
             , Cmd.none
-            , NoVisitsOp
+            , VT.NoVisitsOp
             )
 
-        VisitData (Err err) ->
-            let
-                debug =
-                    Debug.log "visit err" err
-            in
-                ( model, Cmd.none, NoVisitsOp )
+        VT.VisitData (Err _) ->
+            ( model, Cmd.none, VT.NoVisitsOp )
 
-        VisitData (Ok visit) ->
-            let
-                debug =
-                    Debug.log "visit" visit
-            in
-                ( addVisit model visit
-                , Cmd.none
-                , NoVisitsOp
-                )
+        VT.VisitData (Ok visit) ->
+            ( Visits.Helpers.addVisit model visit
+            , Cmd.none
+            , VT.NoVisitsOp
+            )
 
-        VisitDeleted _ ->
-            ( model, getVisits, NoVisitsOp )
+        VT.VisitDeleted _ ->
+            ( model, getVisits, VT.NoVisitsOp )
 
-        VisitsData (Err err) ->
-            let
-                error =
-                    Debug.log "VisitsData error: " err
-            in
-                ( model, Cmd.none, NoVisitsOp )
+        VT.VisitsData (Err _) ->
+            ( model, Cmd.none, VT.NoVisitsOp )
 
-        DelVisit id ->
-            ( model, Cmd.none, ReallyDelVisit id )
+        VT.DelVisit id ->
+            ( model, Cmd.none, VT.ReallyDelVisit id )
 
-        ReallyDelVisit id ->
-            ( model, deleteVisit id, NoVisitsOp )
+        VT.ReallyDelVisit id ->
+            ( model, deleteVisit id, VT.NoVisitsOp )

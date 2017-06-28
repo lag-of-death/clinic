@@ -1,13 +1,28 @@
-module Visits.Types exposing (..)
+module Visits.Types
+    exposing
+        ( Visit
+        , NewVisitMsg
+            ( IncNurses
+            , IncDoctors
+            , DecDoctors
+            , DecNurses
+            , NoNewVisitOp
+            )
+        , VisitsMsg(NewVisitsUrl, DelVisit, VisitsData, VisitData, VisitDeleted, NoVisitsOp, ReallyDelVisit)
+        , defaultVisit
+        , initialVisits
+        , initialNewVisit
+        , VisitsModel
+        , NewVisitModel
+        )
 
-import Http exposing (..)
-import People.Types exposing (..)
-import People.Helpers exposing (..)
+import Http
+import People.Types as PT
 
 
 defaultVisit : Visit
 defaultVisit =
-    { id = 0, date = "", doctors = [], nurses = [], patient = defaultPatient }
+    { id = 0, date = "", doctors = [], nurses = [], patient = PT.defaultPatient }
 
 
 initialNewVisit : NewVisitModel
@@ -51,9 +66,9 @@ type alias NewVisitModel =
 
 
 type alias Visit =
-    { patient : Patient
-    , doctors : List Doctor
-    , nurses : List Nurse
+    { patient : PT.Patient
+    , doctors : List PT.Doctor
+    , nurses : List PT.Nurse
     , date : String
     , id : Int
     }

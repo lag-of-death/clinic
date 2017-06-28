@@ -1,8 +1,7 @@
-module Visits.Helpers exposing (..)
+module Visits.Helpers exposing (formatDate, addVisit, getVisit)
 
-import People.Types exposing (..)
-import Visits.Types exposing (..)
-import Date exposing (Month(..), Date)
+import Visits.Types exposing (Visit, defaultVisit)
+import Date
 import Date.Extra as Date
 
 

@@ -1,7 +1,15 @@
-module People.Decoders exposing (..)
+module People.Decoders
+    exposing
+        ( decodeDoctor
+        , decodeNurses
+        , decodeDoctors
+        , decodePatients
+        , decodeNurse
+        , decodePatient
+        )
 
 import Json.Decode as Decode
-import People.Types exposing (..)
+import People.Types exposing (Person, Patient, Doctor, Nurse)
 
 
 decodePerson : Decode.Decoder Person
@@ -25,11 +33,6 @@ decodePatients =
     Decode.list decodePatient
 
 
-decodePeople : Decode.Decoder (List Person)
-decodePeople =
-    Decode.list decodePerson
-
-
 decodeDoctor : Decode.Decoder Doctor
 decodeDoctor =
     Decode.map3 Doctor
@@ -45,11 +48,10 @@ decodeDoctors =
 
 decodeNurse : Decode.Decoder Nurse
 decodeNurse =
-    (Decode.map3 Nurse
+    Decode.map3 Nurse
         (Decode.field "personalData" decodePerson)
         (Decode.field "isDistrictNurse" Decode.bool)
         (Decode.field "id" Decode.int)
-    )
 
 
 decodeNurses : Decode.Decoder (List Nurse)

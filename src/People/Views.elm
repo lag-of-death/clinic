@@ -1,19 +1,30 @@
-module People.Views exposing (..)
+module People.Views
+    exposing
+        ( patientsView
+        , patientView
+        , newPatientView
+        , doctorsView
+        , doctorView
+        , newDoctorView
+        , newNurseView
+        , nursesView
+        , nurseView
+        )
 
 import Html.Attributes exposing (name, style, required, type_)
-import Html exposing (text, Html, div, button, ul, label, li, table, td, tr, form, input)
+import Html exposing (text, Html, div, label, table, td, tr, form, input)
 import Html.Events exposing (onClick)
-import People.Types exposing (..)
-import Styles exposing (button, block, blockStretched, blockCentered)
-import Views exposing (..)
+import People.Types as PT
+import Styles exposing (block, blockStretched, blockCentered)
+import Views exposing (newEntity, list, actions)
 
 
-withSpeciality : Doctor -> List (Html msg) -> List (Html msg)
+withSpeciality : PT.Doctor -> List (Html msg) -> List (Html msg)
 withSpeciality doctor entryData =
     List.append entryData [ div [ style [ ( "width", "100px" ) ] ] [ text doctor.speciality ] ]
 
 
-withIsDistrictInfo : Nurse -> List (Html msg) -> List (Html msg)
+withIsDistrictInfo : PT.Nurse -> List (Html msg) -> List (Html msg)
 withIsDistrictInfo nurse entryData =
     List.append
         entryData
@@ -42,37 +53,35 @@ listSingleEntryShell onClick1 onClick2 a =
         ]
 
 
-doctorsList : List Doctor -> Html DoctorsMsg
+doctorsList : List PT.Doctor -> Html PT.DoctorsMsg
 doctorsList doctors =
     list
         (List.map
             (\doctor ->
-                (withSpeciality doctor
+                withSpeciality doctor
                     (listSingleEntryShell
-                        (onClick (NewDoctorsUrl <| "/doctors/" ++ (toString doctor.id)))
-                        (onClick (DelDoctor doctor.id))
+                        (onClick (PT.NewDoctorsUrl <| "/doctors/" ++ toString doctor.id))
+                        (onClick (PT.DelDoctor doctor.id))
                         doctor
                     )
-                )
             )
             doctors
         )
 
 
-nursesList : List Nurse -> Html NursesMsg
+nursesList : List PT.Nurse -> Html PT.NursesMsg
 nursesList nurses =
     list
         (List.map
             (\nurse ->
-                (withIsDistrictInfo nurse
+                withIsDistrictInfo nurse
                     (listSingleEntryShell
                         (onClick
-                            (NewNursesUrl <| "/nurses/" ++ (toString nurse.id))
+                            (PT.NewNursesUrl <| "/nurses/" ++ toString nurse.id)
                         )
-                        (onClick (DelNurse nurse.id))
+                        (onClick (PT.DelNurse nurse.id))
                         nurse
                     )
-                )
             )
             nurses
         )
@@ -80,16 +89,15 @@ nursesList nurses =
 
 patientsList :
     List { a | id : Int, personalData : { b | name : String, surname : String } }
-    -> Html PatientsMsg
+    -> Html PT.PatientsMsg
 patientsList patients =
     list
         (List.map
             (\patient ->
-                (listSingleEntryShell
-                    (onClick (NewPatientsUrl <| "/patients/" ++ (toString patient.id)))
-                    (onClick (DelPatient patient.id))
+                listSingleEntryShell
+                    (onClick (PT.NewPatientsUrl <| "/patients/" ++ toString patient.id))
+                    (onClick (PT.DelPatient patient.id))
                     patient
-                )
             )
             patients
         )
@@ -97,40 +105,40 @@ patientsList patients =
 
 patientsView :
     List { a | id : Int, personalData : { b | name : String, surname : String } }
-    -> Html PatientsMsg
+    -> Html PT.PatientsMsg
 patientsView patients =
     view newPatient (patientsList patients)
 
 
-doctorsView : List Doctor -> Html DoctorsMsg
+doctorsView : List PT.Doctor -> Html PT.DoctorsMsg
 doctorsView doctors =
     view newDoctor (doctorsList doctors)
 
 
 view : Html msg -> Html msg -> Html msg
-view newEntity people =
+view newEntityBtn people =
     div [ style block ]
         [ people
-        , newEntity
+        , newEntityBtn
         ]
 
 
-newPatient : Html PatientsMsg
+newPatient : Html PT.PatientsMsg
 newPatient =
-    newEntity (onClick (NewPatientsUrl <| "/patients/new")) "New patient"
+    newEntity (onClick (PT.NewPatientsUrl <| "/patients/new")) "New patient"
 
 
-newNurse : Html NursesMsg
+newNurse : Html PT.NursesMsg
 newNurse =
-    newEntity (onClick (NewNursesUrl <| "/nurses/new")) "New nurse"
+    newEntity (onClick (PT.NewNursesUrl <| "/nurses/new")) "New nurse"
 
 
-newDoctor : Html DoctorsMsg
+newDoctor : Html PT.DoctorsMsg
 newDoctor =
-    newEntity (onClick (NewDoctorsUrl <| "/doctors/new")) "New doctor"
+    newEntity (onClick (PT.NewDoctorsUrl <| "/doctors/new")) "New doctor"
 
 
-newNurseView : Html NursesMsg
+newNurseView : Html PT.NursesMsg
 newNurseView =
     formToSubmit "nurses" <|
         List.concat
@@ -145,7 +153,7 @@ newNurseView =
             ]
 
 
-newDoctorView : Html DoctorsMsg
+newDoctorView : Html PT.DoctorsMsg
 newDoctorView =
     formToSubmit "doctors" <|
         List.concat
@@ -288,7 +296,7 @@ doctorView :
     }
     -> Html msg
 doctorView doctor =
-    table [] (List.concat [ (restTr doctor), [ specialityTr doctor.speciality ] ])
+    table [] (List.concat [ restTr doctor, [ specialityTr doctor.speciality ] ])
 
 
 nurseView :
@@ -300,9 +308,9 @@ nurseView :
     }
     -> Html msg
 nurseView nurse =
-    table [] (List.concat [ (restTr nurse), [ districtNurseTr nurse.isDistrictNurse ] ])
+    table [] (List.concat [ restTr nurse, [ districtNurseTr nurse.isDistrictNurse ] ])
 
 
-nursesView : List Nurse -> Html NursesMsg
+nursesView : List PT.Nurse -> Html PT.NursesMsg
 nursesView nurses =
     view newNurse (nursesList nurses)

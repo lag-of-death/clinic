@@ -1,6 +1,4 @@
-module People.Helpers exposing (..)
-
-import People.Types exposing (..)
+module People.Helpers exposing (addPerson, getPerson)
 
 
 getPerson : a -> List { b | id : a } -> { b | id : a } -> { b | id : a }

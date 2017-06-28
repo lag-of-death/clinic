@@ -1,4 +1,16 @@
-module Styles exposing (..)
+module Styles
+    exposing
+        ( th
+        , button
+        , submit
+        , blockCentered
+        , blockStretched
+        , block
+        , menu
+        , app
+        , body
+        , newPatientForm
+        )
 
 
 th : List ( String, String )

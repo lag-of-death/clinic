@@ -1,21 +1,25 @@
-module Visits.Views exposing (..)
+module Visits.Views exposing (newVisitView, visitView, view)
 
-import Visits.Types exposing (..)
-import Views exposing (..)
-import Html exposing (..)
-import Html.Events exposing (..)
-import Html.Attributes exposing (..)
-import People.Helpers exposing (..)
-import People.Types exposing (..)
-import Styles exposing (..)
-import Visits.Helpers exposing (..)
+import Visits.Types
+    exposing
+        ( VisitsMsg(NewVisitsUrl, DelVisit)
+        , Visit
+        , NewVisitModel
+        , NewVisitMsg(DecDoctors, IncDoctors, IncNurses, DecNurses)
+        )
+import Html exposing (Html, div, label, text, li, ul, input, Attribute, tr, td, table)
+import Html.Events exposing (onClick)
+import Html.Attributes exposing (style, type_, attribute, required, name, hidden)
+import Styles exposing (blockCentered, blockStretched, block)
+import Views
+import Visits.Helpers
 
 
 buttonActions : Visit -> Html VisitsMsg
 buttonActions visit =
     div []
-        (actions
-            (onClick (NewVisitsUrl <| "/visits/" ++ (toString visit.id)))
+        (Views.actions
+            (onClick (NewVisitsUrl <| "/visits/" ++ toString visit.id))
             (onClick (DelVisit visit.id))
         )
 
@@ -40,12 +44,10 @@ listOf incAction decAction label_ inputName numOf isRequired =
                         ]
                     )
                 )
-            , (Html.button [ type_ "button", decAction, hidden (numOf <= 1) ]
+            , Html.button [ type_ "button", decAction, hidden (numOf <= 1) ]
                 [ text "-" ]
-              )
-            , (Html.button [ type_ "button", incAction ]
+            , Html.button [ type_ "button", incAction ]
                 [ text "+" ]
-              )
             ]
         ]
 
@@ -115,7 +117,7 @@ visitView visit =
                 ]
             , td
                 []
-                [ formatDate visit.date |> text ]
+                [ Visits.Helpers.formatDate visit.date |> text ]
             , td
                 []
                 [ toCommaSeparated visit.nurses |> text ]
@@ -141,13 +143,13 @@ view visits =
                         [ text <| surnameAndName visit.patient
                         ]
                     , div []
-                        [ formatDate visit.date |> text ]
+                        [ Visits.Helpers.formatDate visit.date |> text ]
                     , buttonActions visit
                     ]
                 )
                 visits
             )
-        , newEntity (onClick (NewVisitsUrl <| "/visits/new")) "New visit"
+        , Views.newEntity (onClick (NewVisitsUrl <| "/visits/new")) "New visit"
         ]
 
 

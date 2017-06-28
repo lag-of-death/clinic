@@ -1,23 +1,22 @@
-module Visits.Requests exposing (..)
+module Visits.Requests exposing (getVisits, deleteVisit, getVisit)
 
-import Visits.Types exposing (..)
-import Visits.Decoders exposing (..)
-import Http exposing (..)
-import Requests exposing (..)
-import People.Requests exposing (..)
+import Visits.Types as VT
+import Visits.Decoders exposing (decodeVisit, decodeVisits)
+import Http
+import Requests exposing (delete)
 
 
-deleteVisit : Int -> Cmd VisitsMsg
+deleteVisit : Int -> Cmd VT.VisitsMsg
 deleteVisit id =
-    Http.send VisitDeleted
+    Http.send VT.VisitDeleted
         (delete "visits" id)
 
 
-getVisit : Int -> Cmd VisitsMsg
+getVisit : Int -> Cmd VT.VisitsMsg
 getVisit id =
-    Http.send VisitData (Http.get ("/api/visits/" ++ (toString id)) decodeVisit)
+    Http.send VT.VisitData (Http.get ("/api/visits/" ++ toString id) decodeVisit)
 
 
-getVisits : Cmd VisitsMsg
+getVisits : Cmd VT.VisitsMsg
 getVisits =
-    Http.send VisitsData (Http.get "/api/visits" decodeVisits)
+    Http.send VT.VisitsData (Http.get "/api/visits" decodeVisits)

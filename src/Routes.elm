@@ -1,7 +1,24 @@
-module Routes exposing (..)
+module Routes
+    exposing
+        ( Route
+            ( PatientId
+            , Patients
+            , NewPatient
+            , Doctors
+            , DoctorId
+            , Nurses
+            , NurseId
+            , Visits
+            , VisitId
+            , NewVisit
+            , NewNurse
+            , NewDoctor
+            )
+        , parseRoute
+        )
 
 import Navigation exposing (Location)
-import UrlParser exposing (..)
+import UrlParser exposing (int, top, (</>))
 
 
 parseRoute : Location -> Maybe Route

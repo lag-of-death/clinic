@@ -1,9 +1,8 @@
-module Modal.Views exposing (..)
+module Modal.Views exposing (view)
 
-import Modal.Update exposing (..)
-import Html exposing (..)
-import Html.Events exposing (..)
-import Html.Attributes exposing (..)
+import Html exposing (Attribute, div, Html, text, button, span)
+import Html.Events exposing (onClick)
+import Html.Attributes exposing (style)
 
 
 styles : Attribute msg
@@ -24,11 +23,6 @@ styles =
         , ( "background", "#FFF" )
         , ( "border", "2px solid black" )
         ]
-
-
-textStyles : Attribute msg
-textStyles =
-    style [ ( "text-align", "center" ) ]
 
 
 buttonsStyles : Attribute msg
@@ -57,22 +51,20 @@ view : msg -> String -> String -> Bool -> msg -> Bool -> Html msg
 view xButtonMsg actionBtnLabel question shouldShow actionMsg withActions =
     if shouldShow == True then
         div [ styles ]
-            [ (Html.button
+            [ Html.button
                 [ onClick xButtonMsg, buttonsStyles, closeButtonStyles ]
                 [ text "X" ]
-              )
             , div [] [ text question ]
             , if withActions then
-                (div
+                div
                     [ buttonsStyles, yesNoButtonsStyles ]
                     [ button
                         [ onClick actionMsg ]
                         [ text actionBtnLabel ]
                     , button [ onClick xButtonMsg ] [ text "Cancel" ]
                     ]
-                )
               else
-                (span [] [])
+                span [] []
             ]
     else
         span [] []

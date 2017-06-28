@@ -1,4 +1,47 @@
-module People.Types exposing (..)
+module People.Types
+    exposing
+        ( Person
+        , Nurse
+        , Doctor
+        , Patient
+        , defaultPerson
+        , defaultNurse
+        , defaultPatient
+        , initialNurses
+        , initialPatients
+        , initialDoctors
+        , defaultDoctor
+        , PatientsModel
+        , DoctorsModel
+        , NursesModel
+        , NursesMsg
+            ( DelNurse
+            , NursesData
+            , NurseData
+            , NurseDeleted
+            , NewNursesUrl
+            , NoNursesOp
+            , ReallyDeleteNurse
+            )
+        , DoctorsMsg
+            ( NewDoctorsUrl
+            , DelDoctor
+            , DoctorsData
+            , DoctorData
+            , DoctorDeleted
+            , NoDoctorsOp
+            , ReallyDeleteDoctor
+            )
+        , PatientsMsg
+            ( NewPatientsUrl
+            , PatientsData
+            , PatientData
+            , DelPatient
+            , ReallyDeletePatient
+            , PatientDeleted
+            , NoPatientsOp
+            )
+        )
 
 import Http
 
@@ -69,11 +112,17 @@ type alias Patient =
 
 
 type alias Doctor =
-    { personalData : Person, speciality : String, id : Int }
+    { personalData : Person
+    , speciality : String
+    , id : Int
+    }
 
 
 type alias Nurse =
-    { personalData : Person, isDistrictNurse : Bool, id : Int }
+    { personalData : Person
+    , isDistrictNurse : Bool
+    , id : Int
+    }
 
 
 type alias Person =

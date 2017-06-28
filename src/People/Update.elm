@@ -1,133 +1,117 @@
-module People.Update exposing (..)
+module People.Update exposing (updatePatients, updateDoctors, updateNurses)
 
-import People.Requests exposing (..)
-import People.Types exposing (..)
-import People.Helpers exposing (..)
+import People.Requests exposing (getDoctors, deleteNurse, deleteDoctor, getPatients, deletePatient, getNurses)
+import People.Types as PT
+import People.Helpers exposing (addPerson)
 import Navigation as Nav
 
 
-updateNurses : NursesMsg -> List Nurse -> ( List Nurse, Cmd NursesMsg, NursesMsg )
+updateNurses : PT.NursesMsg -> List PT.Nurse -> ( List PT.Nurse, Cmd PT.NursesMsg, PT.NursesMsg )
 updateNurses msg model =
     case msg of
-        NoNursesOp ->
-            ( model, Cmd.none, NoNursesOp )
+        PT.NoNursesOp ->
+            ( model, Cmd.none, PT.NoNursesOp )
 
-        NewNursesUrl url ->
-            ( model, Nav.newUrl url, NoNursesOp )
+        PT.NewNursesUrl url ->
+            ( model, Nav.newUrl url, PT.NoNursesOp )
 
-        NurseDeleted _ ->
-            ( model, getNurses, NoNursesOp )
+        PT.NurseDeleted _ ->
+            ( model, getNurses, PT.NoNursesOp )
 
-        NursesData (Ok nurses) ->
+        PT.NursesData (Ok nurses) ->
             ( nurses
             , Cmd.none
-            , NoNursesOp
+            , PT.NoNursesOp
             )
 
-        NursesData (Err err) ->
-            let
-                error =
-                    Debug.log "NursesData error: " err
-            in
-                ( model, Cmd.none, NoNursesOp )
+        PT.NursesData (Err _) ->
+            ( model, Cmd.none, PT.NoNursesOp )
 
-        NurseData (Ok nurse) ->
+        PT.NurseData (Ok nurse) ->
             ( addPerson model nurse
             , Cmd.none
-            , NoNursesOp
+            , PT.NoNursesOp
             )
 
-        NurseData (Err err) ->
-            let
-                error =
-                    Debug.log "NurseData error: " err
-            in
-                ( model, Cmd.none, NoNursesOp )
+        PT.NurseData (Err _) ->
+            ( model, Cmd.none, PT.NoNursesOp )
 
-        DelNurse id ->
-            ( model, Cmd.none, ReallyDeleteNurse id )
+        PT.DelNurse id ->
+            ( model, Cmd.none, PT.ReallyDeleteNurse id )
 
-        ReallyDeleteNurse id ->
-            ( model, deleteNurse id, NoNursesOp )
+        PT.ReallyDeleteNurse id ->
+            ( model, deleteNurse id, PT.NoNursesOp )
 
 
-updateDoctors : DoctorsMsg -> List Doctor -> ( List Doctor, Cmd DoctorsMsg, DoctorsMsg )
+updateDoctors : PT.DoctorsMsg -> List PT.Doctor -> ( List PT.Doctor, Cmd PT.DoctorsMsg, PT.DoctorsMsg )
 updateDoctors msg model =
     case msg of
-        NoDoctorsOp ->
-            ( model, Cmd.none, NoDoctorsOp )
+        PT.NoDoctorsOp ->
+            ( model, Cmd.none, PT.NoDoctorsOp )
 
-        NewDoctorsUrl url ->
-            ( model, Nav.newUrl url, NoDoctorsOp )
+        PT.NewDoctorsUrl url ->
+            ( model, Nav.newUrl url, PT.NoDoctorsOp )
 
-        DelDoctor id ->
-            ( model, Cmd.none, ReallyDeleteDoctor id )
+        PT.DelDoctor id ->
+            ( model, Cmd.none, PT.ReallyDeleteDoctor id )
 
-        ReallyDeleteDoctor id ->
-            ( model, deleteDoctor id, NoDoctorsOp )
+        PT.ReallyDeleteDoctor id ->
+            ( model, deleteDoctor id, PT.NoDoctorsOp )
 
-        DoctorDeleted _ ->
-            ( model, getDoctors, NoDoctorsOp )
+        PT.DoctorDeleted _ ->
+            ( model, getDoctors, PT.NoDoctorsOp )
 
-        DoctorsData (Ok doctors) ->
+        PT.DoctorsData (Ok doctors) ->
             ( doctors
             , Cmd.none
-            , NoDoctorsOp
+            , PT.NoDoctorsOp
             )
 
-        DoctorsData (Err _) ->
+        PT.DoctorsData (Err _) ->
             ( model
             , Cmd.none
-            , NoDoctorsOp
+            , PT.NoDoctorsOp
             )
 
-        DoctorData (Ok doctor) ->
+        PT.DoctorData (Ok doctor) ->
             ( addPerson model doctor
             , Cmd.none
-            , NoDoctorsOp
+            , PT.NoDoctorsOp
             )
 
-        DoctorData (Err _) ->
+        PT.DoctorData (Err _) ->
             ( model
             , Cmd.none
-            , NoDoctorsOp
+            , PT.NoDoctorsOp
             )
 
 
-updatePatients : PatientsMsg -> PatientsModel -> ( PatientsModel, Cmd PatientsMsg, PatientsMsg )
+updatePatients : PT.PatientsMsg -> PT.PatientsModel -> ( PT.PatientsModel, Cmd PT.PatientsMsg, PT.PatientsMsg )
 updatePatients msg model =
     case msg of
-        NoPatientsOp ->
-            ( model, Cmd.none, NoPatientsOp )
+        PT.NoPatientsOp ->
+            ( model, Cmd.none, PT.NoPatientsOp )
 
-        NewPatientsUrl url ->
-            ( model, Nav.newUrl url, NoPatientsOp )
+        PT.NewPatientsUrl url ->
+            ( model, Nav.newUrl url, PT.NoPatientsOp )
 
-        DelPatient id ->
-            ( model, Cmd.none, ReallyDeletePatient id )
+        PT.DelPatient id ->
+            ( model, Cmd.none, PT.ReallyDeletePatient id )
 
-        ReallyDeletePatient id ->
-            ( model, deletePatient id, NoPatientsOp )
+        PT.ReallyDeletePatient id ->
+            ( model, deletePatient id, PT.NoPatientsOp )
 
-        PatientDeleted _ ->
-            ( model, getPatients, NoPatientsOp )
+        PT.PatientDeleted _ ->
+            ( model, getPatients, PT.NoPatientsOp )
 
-        PatientsData (Ok people) ->
-            ( people, Cmd.none, NoPatientsOp )
+        PT.PatientsData (Ok people) ->
+            ( people, Cmd.none, PT.NoPatientsOp )
 
-        PatientsData (Err err) ->
-            let
-                error =
-                    Debug.log "PeopleData error: " err
-            in
-                ( model, Cmd.none, NoPatientsOp )
+        PT.PatientsData (Err _) ->
+            ( model, Cmd.none, PT.NoPatientsOp )
 
-        PatientData (Ok patient) ->
-            ( addPerson model patient, Cmd.none, NoPatientsOp )
+        PT.PatientData (Ok patient) ->
+            ( addPerson model patient, Cmd.none, PT.NoPatientsOp )
 
-        PatientData (Err err) ->
-            let
-                error =
-                    Debug.log "PatientData error: " err
-            in
-                ( model, Cmd.none, NoPatientsOp )
+        PT.PatientData (Err _) ->
+            ( model, Cmd.none, PT.NoPatientsOp )

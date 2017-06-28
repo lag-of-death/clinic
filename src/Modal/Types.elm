@@ -1,4 +1,4 @@
-module Modal.Types exposing (..)
+module Modal.Types exposing (initialModel, Modal)
 
 
 initialModel : a -> { msg : a, shouldShow : Bool, textMsg : String, withActions : Bool }

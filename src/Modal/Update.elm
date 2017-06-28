@@ -1,6 +1,7 @@
-module Modal.Update exposing (..)
+module Modal.Update exposing (Msg(Show, Hide, Do, Prepare, PrepareErr), update)
 
-import Task exposing (..)
+import Task
+import Modal.Types exposing (Modal)
 
 
 type Msg msg
@@ -11,18 +12,7 @@ type Msg msg
     | PrepareErr
 
 
-update :
-    Msg a
-    -> { c | textMsg : String, withActions : Bool, msg : a, shouldShow : b }
-    -> a
-    -> ( { c
-            | msg : a
-            , shouldShow : Bool
-            , textMsg : String
-            , withActions : Bool
-         }
-       , Cmd a
-       )
+update : Msg a -> Modal a -> a -> ( Modal a, Cmd a )
 update modalMsg model noOp =
     case modalMsg of
         Show ->
@@ -53,5 +43,5 @@ update modalMsg model noOp =
 
         Do msg ->
             ( { model | shouldShow = False, msg = noOp }
-            , Task.succeed (msg) |> Task.perform identity
+            , Task.succeed msg |> Task.perform identity
             )

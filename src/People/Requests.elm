@@ -1,54 +1,65 @@
-module People.Requests exposing (..)
+module People.Requests
+    exposing
+        ( deleteDoctor
+        , getPatient
+        , deletePatient
+        , getPatients
+        , getDoctors
+        , getDoctor
+        , getNurse
+        , getNurses
+        , deleteNurse
+        )
 
 import Http
-import People.Types exposing (..)
-import People.Decoders exposing (..)
-import Requests exposing (..)
+import People.Types as PT
+import People.Decoders as PD
+import Requests exposing (delete)
 
 
-getPatients : Cmd PatientsMsg
+getPatients : Cmd PT.PatientsMsg
 getPatients =
-    Http.send PatientsData (Http.get "/api/patients" decodePatients)
+    Http.send PT.PatientsData (Http.get "/api/patients" PD.decodePatients)
 
 
-getPatient : Int -> Cmd PatientsMsg
+getPatient : Int -> Cmd PT.PatientsMsg
 getPatient id =
-    Http.send PatientData (Http.get ("/api/patients/" ++ (toString id)) decodePatient)
+    Http.send PT.PatientData (Http.get ("/api/patients/" ++ toString id) PD.decodePatient)
 
 
-getDoctors : Cmd DoctorsMsg
+getDoctors : Cmd PT.DoctorsMsg
 getDoctors =
-    Http.send DoctorsData (Http.get ("/api/doctors") decodeDoctors)
+    Http.send PT.DoctorsData (Http.get "/api/doctors" PD.decodeDoctors)
 
 
-getDoctor : Int -> Cmd DoctorsMsg
+getDoctor : Int -> Cmd PT.DoctorsMsg
 getDoctor id =
-    Http.send DoctorData (Http.get ("/api/doctors/" ++ (toString id)) decodeDoctor)
+    Http.send PT.DoctorData (Http.get ("/api/doctors/" ++ toString id) PD.decodeDoctor)
 
 
-getNurses : Cmd NursesMsg
+getNurses : Cmd PT.NursesMsg
 getNurses =
-    Http.send NursesData (Http.get ("/api/nurses") decodeNurses)
+    Http.send PT.NursesData (Http.get "/api/nurses" PD.decodeNurses)
 
 
-getNurse : Int -> Cmd NursesMsg
+getNurse : Int -> Cmd PT.NursesMsg
 getNurse id =
-    Http.send NurseData (Http.get ("/api/nurses/" ++ (toString id)) decodeNurse)
+    Http.send PT.NurseData (Http.get ("/api/nurses/" ++ toString id) PD.decodeNurse)
 
 
-deleteDoctor : Int -> Cmd DoctorsMsg
+deleteDoctor : Int -> Cmd PT.DoctorsMsg
 deleteDoctor id =
-    Http.send DoctorDeleted
+    Http.send PT.DoctorDeleted
         (delete "doctors" id)
 
 
-deleteNurse : Int -> Cmd NursesMsg
+deleteNurse : Int -> Cmd PT.NursesMsg
 deleteNurse id =
-    Http.send NurseDeleted
+    Http.send PT.NurseDeleted
         (delete "nurses" id)
 
 
-deletePatient : Int -> Cmd PatientsMsg
+deletePatient : Int -> Cmd PT.PatientsMsg
 deletePatient id =
-    Http.send PatientDeleted
+    Http.send PT.PatientDeleted
         (delete "patients" id)

@@ -1,17 +1,16 @@
-module Requests exposing (..)
+module Requests exposing (delete)
 
-import Http exposing (..)
+import Http
 
 
 delete : String -> a -> Http.Request ()
 delete entity id =
-    (Http.request
+    Http.request
         { method = "DELETE"
         , headers = []
-        , url = "/api/" ++ entity ++ "/" ++ (toString id)
+        , url = "/api/" ++ entity ++ "/" ++ toString id
         , body = Http.emptyBody
         , expect = Http.expectStringResponse (\_ -> Ok ())
         , timeout = Nothing
         , withCredentials = False
         }
-    )

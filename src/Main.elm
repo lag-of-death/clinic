@@ -1,25 +1,42 @@
-module Main exposing (..)
+module Main exposing (main)
 
-import Html exposing (..)
-import Html.Events exposing (..)
+import Html exposing (div, Html, main_, text)
+import Html.Events exposing (onClick)
 import Html.Attributes exposing (style)
 import Navigation as Nav
 import People.Views as PeopleView
 import People.Update as PeopleUpdate
 import People.Types as PeopleTypes
 import People.Requests as PeopleHttp
-import People.Helpers exposing (..)
-import Visits.Types as VisitsTypes exposing (..)
+import People.Helpers exposing (getPerson)
+import Visits.Types as VisitsTypes exposing (NewVisitModel, VisitsMsg(DelVisit))
 import Visits.Views as VisitsView
 import Visits.Requests as VisitsHttp
 import Visits.Update as VisitsUpdate
-import Visits.Helpers exposing (..)
-import Styles exposing (app, body, menu, button)
-import Routes exposing (..)
+import Visits.Helpers exposing (getVisit)
+import Styles
+import Routes
+    exposing
+        ( Route
+            ( PatientId
+            , Patients
+            , NewPatient
+            , Doctors
+            , DoctorId
+            , Nurses
+            , NurseId
+            , Visits
+            , VisitId
+            , NewVisit
+            , NewNurse
+            , NewDoctor
+            )
+        , parseRoute
+        )
 import Modal.Views
-import Modal.Update exposing (..)
-import Modal.Types exposing (..)
-import Views exposing (..)
+import Modal.Update exposing (Msg(Do, PrepareErr, Prepare, Hide))
+import Modal.Types
+import Views exposing (centerElement, bordered)
 
 
 main : Program Never Model Msg
@@ -37,7 +54,7 @@ main =
 
 
 subscriptions : Model -> Sub msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
@@ -86,6 +103,7 @@ type Msg
     | NoOp
 
 
+prepareModal : Model -> Modal.Update.Msg Msg -> ( Model, Cmd msg )
 prepareModal model msg =
     let
         ( modalModel, _ ) =
@@ -111,7 +129,7 @@ update msg model =
 
         NewVisitMsg newVisitMsg ->
             let
-                ( newVisit, cmd, msgFromChild ) =
+                ( newVisit, cmd, _ ) =
                     VisitsUpdate.updateNewVisit newVisitMsg model.newVisit
             in
                 ( { model | newVisit = newVisit }, Cmd.map NewVisitMsg cmd )
@@ -122,13 +140,13 @@ update msg model =
                     VisitsUpdate.updateVisits visitsMsg model.visits
             in
                 case visitsMsg of
-                    VisitsTypes.VisitDeleted (Err err) ->
-                        prepareModal model (PrepareErr)
+                    VisitsTypes.VisitDeleted (Err _) ->
+                        prepareModal model PrepareErr
 
                     DelVisit _ ->
                         prepareModal model (Prepare <| ModalMsg <| Do <| VisitsMsg msgFromChild)
 
-                    allOtherBranches ->
+                    _ ->
                         ( { model | visits = visits }
                         , Cmd.map VisitsMsg cmd
                         )
@@ -139,13 +157,13 @@ update msg model =
                     PeopleUpdate.updateNurses nursesMsg model.nurses
             in
                 case nursesMsg of
-                    PeopleTypes.NurseDeleted (Err err) ->
-                        prepareModal model (PrepareErr)
+                    PeopleTypes.NurseDeleted (Err _) ->
+                        prepareModal model PrepareErr
 
                     PeopleTypes.DelNurse _ ->
                         prepareModal model (Prepare <| ModalMsg <| Do <| NursesMsg msgFromChild)
 
-                    allOtherBranches ->
+                    _ ->
                         ( { model | nurses = nurses }
                         , Cmd.map NursesMsg cmd
                         )
@@ -156,13 +174,13 @@ update msg model =
                     PeopleUpdate.updateDoctors doctorsMsg model.doctors
             in
                 case doctorsMsg of
-                    PeopleTypes.DoctorDeleted (Err err) ->
-                        prepareModal model (PrepareErr)
+                    PeopleTypes.DoctorDeleted (Err _) ->
+                        prepareModal model PrepareErr
 
                     PeopleTypes.DelDoctor _ ->
                         prepareModal model (Prepare <| ModalMsg <| Do <| DoctorsMsg msgFromChild)
 
-                    allOtherBranches ->
+                    _ ->
                         ( { model | doctors = doctors }
                         , Cmd.map DoctorsMsg cmd
                         )
@@ -173,13 +191,13 @@ update msg model =
                     PeopleUpdate.updatePatients patientsMsg model.patients
             in
                 case patientsMsg of
-                    PeopleTypes.PatientDeleted (Err err) ->
-                        prepareModal model (PrepareErr)
+                    PeopleTypes.PatientDeleted (Err _) ->
+                        prepareModal model PrepareErr
 
                     PeopleTypes.DelPatient _ ->
                         prepareModal model (Prepare <| ModalMsg <| Do <| PatientsMsg msgFromChild)
 
-                    allOtherBranches ->
+                    _ ->
                         ( { model | patients = patients }
                         , Cmd.map PatientsMsg peopleCmd
                         )

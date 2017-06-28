@@ -1,8 +1,8 @@
-module Views exposing (..)
+module Views exposing (centerElement, list, actions, newEntity, bordered)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Styles exposing (..)
+import Html exposing (div, Html, text, ul, li)
+import Html.Attributes exposing (style)
+import Styles exposing (block, blockStretched, blockCentered)
 
 
 newEntity : Html.Attribute a -> String -> Html a
