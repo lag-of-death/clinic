@@ -19,7 +19,7 @@ styles =
         , ( "width", "80%" )
         , ( "font-family", "monospace" )
         , ( "padding", "12px" )
-        , ( "font-size", "150%" )
+        , ( "font-size", "30px" )
         , ( "background", "#FFF" )
         , ( "border", "2px solid black" )
         ]
@@ -56,13 +56,11 @@ view : msg -> String -> String -> Bool -> msg -> Bool -> Html msg
 view xButtonMsg actionBtnLabel question shouldShow actionMsg withActions =
     if shouldShow == True then
         div [ styles ]
-            [ div [ buttonsStyles, closeButtonStyles ]
-                [ (Html.button
-                    [ onClick xButtonMsg ]
-                    [ text "X" ]
-                  )
-                ]
-            , text question
+            [ (Html.button
+                [ onClick xButtonMsg, buttonsStyles, closeButtonStyles ]
+                [ text "X" ]
+              )
+            , div [] [ text question ]
             , if withActions then
                 (div
                     [ buttonsStyles, yesNoButtonsStyles ]

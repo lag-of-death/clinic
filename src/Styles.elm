@@ -6,6 +6,7 @@ button =
     [ ( "border", "2px solid black" )
     , ( "background", "white" )
     , ( "padding", "4px" )
+    , ( "font-size", "20px" )
     , ( "font-family", "monospace" )
     ]
 
@@ -36,7 +37,7 @@ menu =
 
 app : List ( String, String )
 app =
-    [ ( "padding", "6px" ) ]
+    [ ( "padding", "6px" ), ( "font-size", "24px" ) ]
 
 
 body : List ( String, String )
