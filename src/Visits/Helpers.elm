@@ -28,6 +28,18 @@ addVisit model entity =
 
 
 formatDate : String -> String
-formatDate date =
-    Result.withDefault (Date.fromTime 0) (Date.fromString date)
-        |> Date.toFormattedString "EEEE, MMMM d, y 'at' h:mm a"
+formatDate dateAsString =
+    let
+        date =
+            Result.withDefault (Date.fromTime 0) (Date.fromString dateAsString)
+
+        time =
+            date |> Date.toTime
+
+        offset =
+            date |> Date.offsetFromUtc
+    in
+        time
+            - toFloat (offset * 60 * 1000)
+            |> Date.fromTime
+            |> Date.toFormattedString "EEEE, MMMM d, y 'at' h:mm a"
