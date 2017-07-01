@@ -139,10 +139,10 @@ view visits =
         [ Views.list
             (List.map
                 (\visit ->
-                    [ div []
+                    [ div [ style [ ( "width", "30%" ) ] ]
                         [ text <| surnameAndName visit.patient
                         ]
-                    , div []
+                    , div [ style [ ( "width", "40%" ) ] ]
                         [ Visits.Helpers.formatDate visit.date |> text ]
                     , buttonActions visit
                     ]
