@@ -2,6 +2,7 @@ module Main exposing (main)
 
 import Html exposing (div, Html, main_, text)
 import Html.Events exposing (onClick)
+import Task
 import Html.Attributes exposing (style)
 import Navigation as Nav
 import People.Views as PeopleView
@@ -15,6 +16,7 @@ import Visits.Requests as VisitsHttp
 import Visits.Update as VisitsUpdate
 import Visits.Helpers exposing (getVisit)
 import Styles
+import Animation
 import Routes
     exposing
         ( Route
@@ -53,17 +55,25 @@ main =
 -- SUBSCRIPTIONS
 
 
-subscriptions : Model -> Sub msg
-subscriptions _ =
-    Sub.none
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Animation.subscription Animate [ model.style ]
 
 
 
 -- MODEL
 
 
+initialStyle : Animation.State
+initialStyle =
+    Animation.style
+        [ Animation.opacity 0.0
+        ]
+
+
 type alias Model =
     { history : List (Maybe Route)
+    , style : Animation.State
     , patients : PeopleTypes.PatientsModel
     , doctors : PeopleTypes.DoctorsModel
     , nurses : PeopleTypes.NursesModel
@@ -76,6 +86,7 @@ type alias Model =
 init : Nav.Location -> ( Model, Cmd Msg )
 init location =
     ( { history = []
+      , style = initialStyle
       , patients = PeopleTypes.initialPatients
       , doctors = PeopleTypes.initialDoctors
       , nurses = PeopleTypes.initialNurses
@@ -91,6 +102,11 @@ init location =
 -- UPDATE
 
 
+show : Cmd Msg
+show =
+    Task.perform (\_ -> Show) <| Task.succeed ()
+
+
 type Msg
     = NewUrl String
     | PatientsMsg PeopleTypes.PatientsMsg
@@ -101,6 +117,8 @@ type Msg
     | NewVisitMsg VisitsTypes.NewVisitMsg
     | ModalMsg (Modal.Update.Msg Msg)
     | NoOp
+    | Animate Animation.Msg
+    | Show
 
 
 prepareModal : Model -> Modal.Update.Msg Msg -> ( Model, Cmd msg )
@@ -120,6 +138,29 @@ prepareModal model msg =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        Animate animMsg ->
+            ( { model
+                | style = Animation.update animMsg model.style
+              }
+            , Cmd.none
+            )
+
+        Show ->
+            let
+                newStyle =
+                    Animation.interrupt
+                        [ Animation.to
+                            [ Animation.opacity 1.0
+                            ]
+                        ]
+                        model.style
+            in
+                ( { model
+                    | style = newStyle
+                  }
+                , Cmd.none
+                )
+
         ModalMsg modalMsg ->
             let
                 ( newModal, cmd ) =
@@ -148,7 +189,7 @@ update msg model =
 
                     _ ->
                         ( { model | visits = visits }
-                        , Cmd.map VisitsMsg cmd
+                        , Cmd.batch [ show, Cmd.map VisitsMsg cmd ]
                         )
 
         NursesMsg nursesMsg ->
@@ -165,7 +206,7 @@ update msg model =
 
                     _ ->
                         ( { model | nurses = nurses }
-                        , Cmd.map NursesMsg cmd
+                        , Cmd.batch [ show, Cmd.map NursesMsg cmd ]
                         )
 
         DoctorsMsg doctorsMsg ->
@@ -182,7 +223,10 @@ update msg model =
 
                     _ ->
                         ( { model | doctors = doctors }
-                        , Cmd.map DoctorsMsg cmd
+                        , Cmd.batch
+                            [ show
+                            , Cmd.map DoctorsMsg cmd
+                            ]
                         )
 
         PatientsMsg patientsMsg ->
@@ -199,12 +243,12 @@ update msg model =
 
                     _ ->
                         ( { model | patients = patients }
-                        , Cmd.map PatientsMsg peopleCmd
+                        , Cmd.batch [ show, Cmd.map PatientsMsg peopleCmd ]
                         )
 
         NewUrl url ->
-            ( model
-            , Nav.newUrl url
+            ( { model | style = initialStyle }
+            , Cmd.batch [ Nav.newUrl url ]
             )
 
         UrlChange location ->
@@ -259,7 +303,12 @@ view model =
         [ div
             [ style Styles.menu ]
             (List.map toMenuBtn [ "patients", "nurses", "doctors", "visits" ])
-        , main_ [ style Styles.app ]
+        , main_
+            (List.concat
+                [ [ style Styles.app ]
+                , Animation.render model.style
+                ]
+            )
             [ model.history
                 |> List.head
                 |> Maybe.withDefault (Just Patients)
