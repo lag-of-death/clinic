@@ -1,9 +1,9 @@
 module Visits.Views exposing (newVisitView, visitView, view)
 
+import People.Update
 import Visits.Types
     exposing
-        ( VisitsMsg(NewVisitsUrl, DelVisit)
-        , Visit
+        ( Visit
         , NewVisitModel
         , NewVisitMsg(DecDoctors, IncDoctors, IncNurses, DecNurses)
         )
@@ -15,12 +15,12 @@ import Views
 import Visits.Helpers
 
 
-buttonActions : Visit -> Html VisitsMsg
+buttonActions : Visit -> Html (People.Update.Msg e)
 buttonActions visit =
     div []
         (Views.actions
-            (onClick (NewVisitsUrl <| "/visits/" ++ toString visit.id))
-            (onClick (DelVisit visit.id))
+            (onClick (People.Update.NewEntityUrl <| "/visits/" ++ toString visit.id))
+            (onClick (People.Update.DelEntity visit.id))
         )
 
 
@@ -133,7 +133,7 @@ toCommaSeparated list =
     List.map (\entity -> surnameAndName entity) list |> String.join ", "
 
 
-view : List Visit -> Html VisitsMsg
+view : List Visit -> Html (People.Update.Msg e)
 view visits =
     div [ style block ]
         [ Views.list
@@ -149,7 +149,7 @@ view visits =
                 )
                 visits
             )
-        , Views.newEntity (onClick (NewVisitsUrl <| "/visits/new")) "New visit"
+        , Views.newEntity (onClick (People.Update.NewEntityUrl <| "/visits/new")) "New visit"
         ]
 
 

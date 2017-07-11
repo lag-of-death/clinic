@@ -1,117 +1,71 @@
-module People.Update exposing (updatePatients, updateDoctors, updateNurses)
+module People.Update
+    exposing
+        ( updateEntity
+        , Msg
+            ( NewEntityUrl
+            , EntitiesData
+            , EntityData
+            , DelEntity
+            , ReallyDeleteEntity
+            , EntityDeleted
+            , NoOp
+            )
+        )
 
-import People.Requests exposing (getDoctors, deleteNurse, deleteDoctor, getPatients, deletePatient, getNurses)
-import People.Types as PT
-import People.Helpers exposing (addPerson)
+import People.Requests exposing (get, del)
 import Navigation as Nav
+import Json.Decode
+import Http
 
 
-updateNurses : PT.NursesMsg -> List PT.Nurse -> ( List PT.Nurse, Cmd PT.NursesMsg, PT.NursesMsg )
-updateNurses msg model =
+type Msg e
+    = NewEntityUrl String
+    | EntitiesData (Result Http.Error (List e))
+    | EntityData (Result Http.Error e)
+    | DelEntity Int
+    | ReallyDeleteEntity Int
+    | EntityDeleted (Result Http.Error ())
+    | NoOp
+
+
+updateEntity :
+    Msg a
+    -> List a
+    -> String
+    -> Json.Decode.Decoder (List e)
+    -> (List a -> a -> List a)
+    -> ( List a, Cmd (Msg e), Msg e1 )
+updateEntity msg model entitiesName decodeEntities doSth =
     case msg of
-        PT.NoNursesOp ->
-            ( model, Cmd.none, PT.NoNursesOp )
+        NoOp ->
+            ( model, Cmd.none, NoOp )
 
-        PT.NewNursesUrl url ->
-            ( model, Nav.newUrl url, PT.NoNursesOp )
+        NewEntityUrl url ->
+            ( model, Nav.newUrl url, NoOp )
 
-        PT.NurseDeleted _ ->
-            ( model, getNurses, PT.NoNursesOp )
+        EntityDeleted _ ->
+            ( model, get entitiesName decodeEntities EntitiesData, NoOp )
 
-        PT.NursesData (Ok nurses) ->
+        EntitiesData (Ok nurses) ->
             ( nurses
             , Cmd.none
-            , PT.NoNursesOp
+            , NoOp
             )
 
-        PT.NursesData (Err _) ->
-            ( model, Cmd.none, PT.NoNursesOp )
+        EntitiesData (Err _) ->
+            ( model, Cmd.none, NoOp )
 
-        PT.NurseData (Ok nurse) ->
-            ( addPerson model nurse
+        EntityData (Ok entity) ->
+            ( doSth model entity
             , Cmd.none
-            , PT.NoNursesOp
+            , NoOp
             )
 
-        PT.NurseData (Err _) ->
-            ( model, Cmd.none, PT.NoNursesOp )
+        EntityData (Err _) ->
+            ( model, Cmd.none, NoOp )
 
-        PT.DelNurse id ->
-            ( model, Cmd.none, PT.ReallyDeleteNurse id )
+        DelEntity id ->
+            ( model, Cmd.none, ReallyDeleteEntity id )
 
-        PT.ReallyDeleteNurse id ->
-            ( model, deleteNurse id, PT.NoNursesOp )
-
-
-updateDoctors : PT.DoctorsMsg -> List PT.Doctor -> ( List PT.Doctor, Cmd PT.DoctorsMsg, PT.DoctorsMsg )
-updateDoctors msg model =
-    case msg of
-        PT.NoDoctorsOp ->
-            ( model, Cmd.none, PT.NoDoctorsOp )
-
-        PT.NewDoctorsUrl url ->
-            ( model, Nav.newUrl url, PT.NoDoctorsOp )
-
-        PT.DelDoctor id ->
-            ( model, Cmd.none, PT.ReallyDeleteDoctor id )
-
-        PT.ReallyDeleteDoctor id ->
-            ( model, deleteDoctor id, PT.NoDoctorsOp )
-
-        PT.DoctorDeleted _ ->
-            ( model, getDoctors, PT.NoDoctorsOp )
-
-        PT.DoctorsData (Ok doctors) ->
-            ( doctors
-            , Cmd.none
-            , PT.NoDoctorsOp
-            )
-
-        PT.DoctorsData (Err _) ->
-            ( model
-            , Cmd.none
-            , PT.NoDoctorsOp
-            )
-
-        PT.DoctorData (Ok doctor) ->
-            ( addPerson model doctor
-            , Cmd.none
-            , PT.NoDoctorsOp
-            )
-
-        PT.DoctorData (Err _) ->
-            ( model
-            , Cmd.none
-            , PT.NoDoctorsOp
-            )
-
-
-updatePatients : PT.PatientsMsg -> PT.PatientsModel -> ( PT.PatientsModel, Cmd PT.PatientsMsg, PT.PatientsMsg )
-updatePatients msg model =
-    case msg of
-        PT.NoPatientsOp ->
-            ( model, Cmd.none, PT.NoPatientsOp )
-
-        PT.NewPatientsUrl url ->
-            ( model, Nav.newUrl url, PT.NoPatientsOp )
-
-        PT.DelPatient id ->
-            ( model, Cmd.none, PT.ReallyDeletePatient id )
-
-        PT.ReallyDeletePatient id ->
-            ( model, deletePatient id, PT.NoPatientsOp )
-
-        PT.PatientDeleted _ ->
-            ( model, getPatients, PT.NoPatientsOp )
-
-        PT.PatientsData (Ok people) ->
-            ( people, Cmd.none, PT.NoPatientsOp )
-
-        PT.PatientsData (Err _) ->
-            ( model, Cmd.none, PT.NoPatientsOp )
-
-        PT.PatientData (Ok patient) ->
-            ( addPerson model patient, Cmd.none, PT.NoPatientsOp )
-
-        PT.PatientData (Err _) ->
-            ( model, Cmd.none, PT.NoPatientsOp )
+        ReallyDeleteEntity id ->
+            ( model, del id EntityDeleted entitiesName, NoOp )
