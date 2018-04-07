@@ -8,14 +8,14 @@ getPerson id people default =
         |> Maybe.withDefault default
 
 
-addPerson : List { a | personalData : { b | id : Int } } -> { a | personalData : { b | id : Int } } -> List { a | personalData : { b | id : Int } }
+addPerson : List { a | personal : { b | id : Int } } -> { a | personal : { b | id : Int } } -> List { a | personal : { b | id : Int } }
 addPerson model entity =
     if List.isEmpty model then
         [ entity ]
     else
         List.map
             (\oldEntity ->
-                if oldEntity.personalData.id == entity.personalData.id then
+                if oldEntity.personal.id == entity.personal.id then
                     entity
                 else
                     oldEntity

@@ -31,7 +31,7 @@ withIsDistrictInfo nurse entryData =
         entryData
         [ div [ style [ ( "width", "100px" ) ] ]
             [ text <|
-                if nurse.isDistrictNurse then
+                if nurse.district then
                     "district nurse"
                 else
                     ""
@@ -39,11 +39,11 @@ withIsDistrictInfo nurse entryData =
         ]
 
 
-listSingleEntryShell : Html.Attribute a -> Html.Attribute a -> { c | personalData : { b | surname : String, name : String } } -> List (Html a)
+listSingleEntryShell : Html.Attribute a -> Html.Attribute a -> { c | personal : { b | surname : String, name : String } } -> List (Html a)
 listSingleEntryShell onClick1 onClick2 a =
     let
         person =
-            a.personalData
+            a.personal
     in
         [ div [ style [ ( "width", "30%" ) ] ] [ text <| person.surname ++ " " ++ person.name ]
         , div []
@@ -88,7 +88,7 @@ nursesList nurses =
         )
 
 
-patientsList : List { a | id : Int, personalData : { b | name : String, surname : String } } -> Html (PU.Msg e)
+patientsList : List { a | id : Int, personal : { b | name : String, surname : String } } -> Html (PU.Msg e)
 patientsList patients =
     list
         (List.map
@@ -102,7 +102,7 @@ patientsList patients =
         )
 
 
-patientsView : List { a | id : Int, personalData : { b | name : String, surname : String } } -> Html (PU.Msg PT.Patient)
+patientsView : List { a | id : Int, personal : { b | name : String, surname : String } } -> Html (PU.Msg PT.Patient)
 patientsView patients =
     view newPatient (patientsList patients)
 
@@ -142,7 +142,7 @@ newNurseView =
             [ newPersonFields
             , [ div [ style block, style blockCentered, style blockStretched ]
                     [ label [] [ text "District nurse" ]
-                    , input [ type_ "checkbox", name "isDistrictNurse", style Styles.button ]
+                    , input [ type_ "checkbox", name "district", style Styles.button ]
                         []
                     ]
               ]
@@ -216,7 +216,7 @@ newPatientView =
 
 patientView :
     { c
-        | personalData :
+        | personal :
             { b | email : String, name : String, surname : String }
         , id : a
     }
@@ -228,7 +228,7 @@ patientView patient =
 restTr :
     { c
         | id : a
-        , personalData : { b | email : String, name : String, surname : String }
+        , personal : { b | email : String, name : String, surname : String }
     }
     -> List (Html msg)
 restTr person =
@@ -236,19 +236,19 @@ restTr person =
         [ td []
             [ text "Surname:" ]
         , td []
-            [ text person.personalData.surname ]
+            [ text person.personal.surname ]
         ]
     , tr []
         [ td []
             [ text "Name:" ]
         , td []
-            [ text person.personalData.name ]
+            [ text person.personal.name ]
         ]
     , tr []
         [ td []
             [ text "E-mail:" ]
         , td []
-            [ text person.personalData.email ]
+            [ text person.personal.email ]
         ]
     , tr []
         [ td []
@@ -286,7 +286,7 @@ districtNurseTr isDistrict =
 
 doctorView :
     { c
-        | personalData :
+        | personal :
             { b | email : String, name : String, surname : String }
         , speciality : String
         , id : a
@@ -298,14 +298,14 @@ doctorView doctor =
 
 nurseView :
     { c
-        | isDistrictNurse : Bool
+        | district : Bool
         , id : a
-        , personalData :
+        , personal :
             { b | email : String, name : String, surname : String }
     }
     -> Html (PU.Msg e)
 nurseView nurse =
-    table [] (List.concat [ restTr nurse, [ districtNurseTr nurse.isDistrictNurse ] ])
+    table [] (List.concat [ restTr nurse, [ districtNurseTr nurse.district ] ])
 
 
 nursesView : List PT.Nurse -> Html (PU.Msg e)

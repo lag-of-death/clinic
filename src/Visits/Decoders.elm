@@ -9,9 +9,9 @@ decodeVisit : Decode.Decoder Visit
 decodeVisit =
     Decode.map5 Visit
         (Decode.field "patient" PD.decodePatient)
-        (Decode.field "doctors" PD.decodeDoctors)
-        (Decode.field "nurses" PD.decodeNurses)
-        (Decode.field "date" Decode.string)
+        (Decode.field "doctor" PD.decodeDoctor)
+        (Decode.field "nurse" PD.decodeNurse)
+        (Decode.field "date" Decode.int)
         (Decode.field "id" Decode.int)
 
 

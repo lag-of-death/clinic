@@ -1,19 +1,10 @@
 module Visits.Types
     exposing
         ( Visit
-        , NewVisitMsg
-            ( IncNurses
-            , IncDoctors
-            , DecDoctors
-            , DecNurses
-            , NoNewVisitOp
-            )
         , VisitsMsg(NewVisitsUrl, DelVisit, VisitsData, VisitData, VisitDeleted, NoVisitsOp, ReallyDelVisit)
         , defaultVisit
         , initialVisits
-        , initialNewVisit
         , VisitsModel
-        , NewVisitModel
         )
 
 import Http
@@ -22,14 +13,7 @@ import People.Types as PT
 
 defaultVisit : Visit
 defaultVisit =
-    { id = 0, date = "", doctors = [], nurses = [], patient = PT.defaultPatient }
-
-
-initialNewVisit : NewVisitModel
-initialNewVisit =
-    { numOfDoctors = 1
-    , numOfNurses = 1
-    }
+    { id = 0, date = 0, doctor = PT.defaultDoctor, nurse = PT.defaultNurse, patient = PT.defaultPatient }
 
 
 initialVisits : List Visit
@@ -39,14 +23,6 @@ initialVisits =
 
 type alias VisitsModel =
     List Visit
-
-
-type NewVisitMsg
-    = IncDoctors
-    | IncNurses
-    | DecDoctors
-    | DecNurses
-    | NoNewVisitOp
 
 
 type VisitsMsg
@@ -59,16 +35,10 @@ type VisitsMsg
     | ReallyDelVisit Int
 
 
-type alias NewVisitModel =
-    { numOfDoctors : Int
-    , numOfNurses : Int
-    }
-
-
 type alias Visit =
     { patient : PT.Patient
-    , doctors : List PT.Doctor
-    , nurses : List PT.Nurse
-    , date : String
+    , doctor : PT.Doctor
+    , nurse : PT.Nurse
+    , date : Int
     , id : Int
     }

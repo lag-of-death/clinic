@@ -1,46 +1,40 @@
-const { delEntity, newEntity, getEntity } = require('./common');
+const { delEntity, createEntity, getEntities } = require(`./common`);
+const express = require(`express`);
 
-module.exports = require('express').Router()
-    .get('/api/nurses', getNursesHandler)
-    .get('/api/nurses/:id', getNurseHandler)
-    .delete('/api/nurses/:id', delNurseHandler)
-    .post('/api/nurses', newNurseHandler);
+const rxjs = require(`rxjs`);
 
-function getNursesHandler(req, res) {
-  getEntity('nurse')
-        .then(nurses => res.send(nurses))
-        .catch(() => res.redirect('/'));
-}
+const getNursesSubject = new rxjs.Subject();
+const delNurseSubject = new rxjs.Subject();
+const getNurseSubject = new rxjs.Subject();
+const newNurseSubject = new rxjs.Subject();
 
-function getNurseHandler(req, res) {
-  getEntity(`nurse/${req.params.id}`)
-      .then((nurse) => {
-        res.send(nurse);
-      });
-}
+getNursesSubject.subscribe((args) => {
+  const [req, res] = args;
 
-function delNurseHandler(req, res) {
-  delEntity(`nurse/${req.params.id}`)
-        .then(() => res.send('OK'))
-        .catch(() => res.send('ERR'));
-}
+  getEntities(req, res, `nurse`, [`is_district_nurse as district`]);
+});
 
-function newNurseHandler(req, res) {
-  const nurse = {
-    isDistrictNurse: req.body.isDistrictNurse === 'on',
-    personalData: {
-      name: req.body.name,
-      surname: req.body.surname,
-      email: req.body.email,
-      id: null,
-    },
-  };
+delNurseSubject.subscribe((args) => {
+  const [req, res] = args;
 
-  newEntity('nurse', nurse)
-      .then(() => res.redirect('/nurses'))
-      .catch((err) => {
-        console.log(err);
+  delEntity(req, res, `nurse`);
+});
 
-        res.redirect('/nurses');
-      });
-}
+getNurseSubject.subscribe((args) => {
+  const [req, res] = args;
+
+  getEntities(req, res, `nurse`, [`is_district_nurse as district`]);
+});
+
+newNurseSubject.subscribe((args) => {
+  const [req, res] = args;
+  const query = `insert into nurse (id, person_id, is_district_nurse) values (nextval('patient_id_seq'), $1, $2)`;
+
+  createEntity(req, res, `nurses`, (data, db) => db.query(query, [data[0].id, req.body.isDistrictNurse === `on`]));
+});
+
+module.exports = express.Router()
+                        .get(`/api/nurses`, (req, res) => getNursesSubject.next([req, res]))
+                        .get(`/api/nurses/:id`, (req, res) => getNurseSubject.next([req, res]))
+                        .delete(`/api/nurses/:id`, (req, res) => delNurseSubject.next([req, res]))
+                        .post(`/api/nurses`, (req, res) => newNurseSubject.next([req, res]));

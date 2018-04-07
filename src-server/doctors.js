@@ -1,48 +1,40 @@
-const { delEntity, newEntity, getEntity } = require('./common');
+const { delEntity, createEntity, getEntities } = require(`./common`);
+const rxjs = require(`rxjs`);
 
-module.exports = require('express').Router()
-    .get('/api/doctors', getDoctorsHandler)
-    .get('/api/doctors/:id', getDoctorHandler)
-    .delete('/api/doctors/:id', delDoctorHandler)
-    .post('/api/doctors', newDoctorHandler);
+const getDoctorsSubject = new rxjs.Subject();
+const delDoctorSubject = new rxjs.Subject();
+const getDoctorSubject = new rxjs.Subject();
+const newDoctorSubject = new rxjs.Subject();
 
-function getDoctorsHandler(req, res) {
-  getEntity('doctor')
-        .then(doctors => res.send(doctors))
-        .catch(() => res.redirect('/'));
-}
+getDoctorsSubject.subscribe((args) => {
+  const [req, res] = args;
 
-function getDoctorHandler(req, res) {
-  getEntity(`doctor/${req.params.id}`)
-        .then((doctor) => {
-          res.send(doctor);
-        });
-}
+  getEntities(req, res, `doctor`, [`speciality`]);
+});
 
-function delDoctorHandler(req, res) {
-  delEntity(`doctor/${req.params.id}`)
-        .then(() => res.send('OK'))
-        .catch(() => res.send('ERR'));
-}
+delDoctorSubject.subscribe((args) => {
+  const [req, res] = args;
 
-function newDoctorHandler(req, res) {
-  const body = req.body;
+  delEntity(req, res, `doctor`);
+});
 
-  const doctor = {
-    speciality: body.speciality,
-    personalData: {
-      name: body.name,
-      surname: body.surname,
-      email: body.email,
-      id: null,
-    },
-  };
+getDoctorSubject.subscribe((args) => {
+  const [req, res] = args;
 
-  newEntity('doctor', doctor)
-        .then(() => res.redirect('/doctors'))
-        .catch((err) => {
-          console.log(err);
+  getEntities(req, res, `doctor`, [`speciality`]);
+});
 
-          res.redirect('/doctors');
-        });
-}
+newDoctorSubject.subscribe((args) => {
+  const [req, res] = args;
+  const query = `insert into doctor (id, person_id, speciality) values (nextval('doctor_id_seq'), $1, $2)`;
+
+  createEntity(req, res, `doctors`, (data, db) => db.query(query, [data[0].id, req.body.speciality]));
+});
+
+const router = require(`express`).Router();
+
+module.exports = router
+    .get(`/api/doctors`, (req, res) => getDoctorsSubject.next([req, res]))
+    .get(`/api/doctors/:id`, (req, res) => getDoctorSubject.next([req, res]))
+    .delete(`/api/doctors/:id`, (req, res) => delDoctorSubject.next([req, res]))
+    .post(`/api/doctors`, (req, res) => newDoctorSubject.next([req, res]));

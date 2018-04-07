@@ -4,14 +4,14 @@ import People.Update
 import Visits.Types
     exposing
         ( Visit
-        , NewVisitModel
-        , NewVisitMsg(DecDoctors, IncDoctors, IncNurses, DecNurses)
         )
-import Html exposing (Html, div, label, text, li, ul, input, Attribute, tr, td, table)
-import Html.Events exposing (onClick)
-import Html.Attributes exposing (style, type_, attribute, required, name, hidden)
+import Html exposing (Html, div, label, text, li, ul, input, Attribute, tr, td, table, select, option)
+import Html.Events exposing (onClick, onInput)
+import Html.Attributes exposing (style, type_, attribute, required, name, hidden, value)
 import Styles exposing (blockCentered, blockStretched, block)
 import Views
+import People.Types
+import Types
 import Visits.Helpers
 
 
@@ -52,43 +52,35 @@ listOf incAction decAction label_ inputName numOf isRequired =
         ]
 
 
-newVisitView : NewVisitModel -> Html NewVisitMsg
-newVisitView newVisit =
+newVisitView : Types.Model -> Html a
+newVisitView model =
     Html.form
         [ style Styles.form
         , Html.Attributes.action "/api/visits"
         , Html.Attributes.method "POST"
         ]
         [ div [ style block, style blockCentered, style blockStretched ]
-            [ label [] [ text "PatientID" ]
-            , input [ type_ "number", required True, name "patientID", style Styles.button, style [ ( "width", "30%" ) ] ]
-                []
+            [ label [] [ text "Patient" ]
+            , select [ required True, style Styles.button, style [ ( "width", "30%" ) ], name "patientID" ] (List.map personToOption model.patients)
+            ]
+        , div [ style block, style blockCentered, style blockStretched ]
+            [ label [] [ text "Nurse" ]
+            , select [ required True, style Styles.button, style [ ( "width", "30%" ) ], name "nurseID" ] (List.map personToOption model.nurses)
+            ]
+        , div [ style block, style blockCentered, style blockStretched ]
+            [ label [] [ text "Doctor" ]
+            , select [ required True, style Styles.button, style [ ( "width", "30%" ) ], name "doctorID" ] (List.map personToOption model.doctors)
             ]
         , div [ style block, style blockCentered, style blockStretched ]
             [ label [] [ text "Date" ]
             , input
                 [ type_ "datetime-local"
                 , attribute "step" "3600"
-                , required True
                 , name "date"
                 , style Styles.button
                 ]
                 []
             ]
-        , listOf
-            (onClick IncDoctors)
-            (onClick DecDoctors)
-            "DoctorID"
-            "doctorID[]"
-            newVisit.numOfDoctors
-            True
-        , listOf
-            (onClick IncNurses)
-            (onClick DecNurses)
-            "NurseID"
-            "nurseID[]"
-            newVisit.numOfNurses
-            False
         , Html.button
             [ Html.Attributes.type_ "submit"
             , style Styles.button
@@ -115,20 +107,20 @@ visitView visit =
             [ td []
                 [ surnameAndName visit.patient |> text
                 ]
+            , td []
+                [ surnameAndName visit.doctor |> text
+                ]
+            , td []
+                [ surnameAndName visit.nurse |> text
+                ]
             , td
                 []
                 [ Visits.Helpers.formatDate visit.date |> text ]
-            , td
-                []
-                [ toCommaSeparated visit.nurses |> text ]
-            , td []
-                [ toCommaSeparated visit.doctors |> text
-                ]
             ]
         ]
 
 
-toCommaSeparated : List { c | personalData : { b | name : String, surname : String } } -> String
+toCommaSeparated : List { c | personal : { b | name : String, surname : String } } -> String
 toCommaSeparated list =
     List.map (\entity -> surnameAndName entity) list |> String.join ", "
 
@@ -153,6 +145,13 @@ view visits =
         ]
 
 
-surnameAndName : { a | personalData : { b | surname : String, name : String } } -> String
+surnameAndName : { a | personal : { b | surname : String, name : String } } -> String
 surnameAndName entity =
-    entity.personalData.surname ++ " " ++ entity.personalData.name
+    entity.personal.surname ++ " " ++ entity.personal.name
+
+
+personToOption : { a | personal : People.Types.Person, id : Int } -> Html b
+personToOption person =
+    option
+        [ value <| toString <| person.id ]
+        [ text <| surnameAndName person ]

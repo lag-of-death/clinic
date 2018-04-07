@@ -1,44 +1,53 @@
-const { location } = require('./config');
-const { getEntity, newEntity, delEntity } = require('./common');
+const rxjs = require(`rxjs`);
+const router = require(`express`).Router();
+const { delEntity, getEntities, createEntity } = require(`./common`);
 
-module.exports = require('express').Router()
-    .get('/api/patients', getPatientsHandler.bind(null, location))
-    .delete('/api/patients/:id', delPatientHandler.bind(null, location))
-    .get('/api/patients/:id', getPatientHandler)
-    .post('/api/patients', newPatientHandler.bind(null, location));
+const getPatientsSubject = new rxjs.Subject();
+const delPatientSubject = new rxjs.Subject();
+const getPatientSubject = new rxjs.Subject();
+const newPatientSubject = new rxjs.Subject();
 
-function getPatientHandler(req, res) {
-  return getEntity(`patient/${req.params.id}`)
-        .then((data) => {
-          res.send(data);
-        })
-        .catch((err) => {
-          res.send(err);
-        });
-}
 
-function getPatientsHandler(location, req, res) {
-  getEntity('patient')
-        .then(patients => res.send(patients))
-        .catch(() => res.redirect('/'));
-}
+// .filter: sprawdzanie formularzy - poprawnosci?
 
-function delPatientHandler(location, req, res) {
-  delEntity(`patient/${req.params.id}`)
-        .then(() => res.send('OK'))
-        .catch(() => res.send('ERR'));
-}
+getPatientsSubject
+    .do(() => {
+      console.log(`i can do logging here :`);
+    })
+    .filter((req, res) => {
+      console.log(typeof req, typeof res);
 
-function newPatientHandler(location, req, res) {
-  const newPatient = {
-    personalData: Object.assign({}, req.body, { id: null }),
-  };
+      return true;
+    })
+    .subscribe((args) => {
+      const [req, res] = args;
 
-  return newEntity('patient', newPatient)
-        .then(() => res.redirect('/patients'))
-        .catch((err) => {
-          console.log(err);
+      getEntities(req, res, `patient`);
+    });
 
-          res.redirect('/patients');
-        });
-}
+
+delPatientSubject.subscribe((args) => {
+  const [req, res] = args;
+
+  delEntity(req, res, `patient`);
+});
+
+getPatientSubject.subscribe((args) => {
+  const [req, res] = args;
+
+  getEntities(req, res, `patient`);
+});
+
+newPatientSubject.subscribe((args) => {
+  const [req, res] = args;
+  const query = `insert into patient (id, person_id) values (nextval('patient_id_seq'), $1)`;
+
+  createEntity(req, res, `patients`, (data, db) => db.query(query, [data[0].id]));
+});
+
+module.exports = router
+    .get(`/api/patients`, (req, res) => getPatientsSubject.next([req, res]))
+    .delete(`/api/patients/:id`, (req, res) => delPatientSubject.next([req, res]))
+    .get(`/api/patients/:id`, (req, res) => getPatientSubject.next([req, res]))
+    .post(`/api/patients`, (req, res) => newPatientSubject.next([req, res]));
+

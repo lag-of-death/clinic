@@ -24,7 +24,7 @@ decodePerson =
 decodePatient : Decode.Decoder Patient
 decodePatient =
     Decode.map2 Patient
-        (Decode.field "personalData" decodePerson)
+        (Decode.field "personal" decodePerson)
         (Decode.field "id" Decode.int)
 
 
@@ -36,7 +36,7 @@ decodePatients =
 decodeDoctor : Decode.Decoder Doctor
 decodeDoctor =
     Decode.map3 Doctor
-        (Decode.field "personalData" decodePerson)
+        (Decode.field "personal" decodePerson)
         (Decode.field "speciality" Decode.string)
         (Decode.field "id" Decode.int)
 
@@ -49,8 +49,8 @@ decodeDoctors =
 decodeNurse : Decode.Decoder Nurse
 decodeNurse =
     Decode.map3 Nurse
-        (Decode.field "personalData" decodePerson)
-        (Decode.field "isDistrictNurse" Decode.bool)
+        (Decode.field "personal" decodePerson)
+        (Decode.field "district" Decode.bool)
         (Decode.field "id" Decode.int)
 
 

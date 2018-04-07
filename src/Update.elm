@@ -1,5 +1,6 @@
 module Update exposing (update)
 
+import Date
 import Task
 import Types
 import Visits.Decoders as VD
@@ -9,7 +10,7 @@ import People.Helpers exposing (addPerson)
 import Visits.Helpers exposing (addVisit)
 import People.Requests
 import Animation
-import Routes exposing (Route(PatientId, Patients, Doctors, DoctorId, Nurses, NurseId, Visits, VisitId), parseRoute)
+import Routes exposing (Route(PatientId, Patients, Doctors, DoctorId, Nurses, NurseId, Visits, VisitId, NewVisit), parseRoute)
 import Modal.Update exposing (Msg(Do, PrepareErr, Prepare))
 import People.Update as PU
 import People.Decoders as PD
@@ -48,13 +49,6 @@ update msg model =
             in
                 ( { model | modal = newModal }, cmd )
 
-        Types.NewVisitMsg newVisitMsg ->
-            let
-                ( newVisit, cmd, _ ) =
-                    VisitsUpdate.updateNewVisit newVisitMsg model.newVisit
-            in
-                ( { model | newVisit = newVisit }, Cmd.map Types.NewVisitMsg cmd )
-
         Types.NewUrl url ->
             ( { model | style = Types.initialStyle }
             , Cmd.batch [ Nav.newUrl url ]
@@ -92,10 +86,17 @@ update msg model =
                         Cmd.map Types.VisitMsg <| People.Requests.get "visits" VD.decodeVisits PU.EntitiesData
 
                     VisitId id ->
-                        Cmd.map Types.VisitMsg <| People.Requests.get ("visits/" ++ toString id) VD.decodeVisits PU.EntitiesData
+                        Cmd.map Types.VisitMsg <| People.Requests.get ("visits/" ++ toString id) VD.decodeVisit PU.EntityData
+
+                    NewVisit ->
+                        Cmd.batch
+                            [ Cmd.map Types.PatientMsg <| People.Requests.get "patients" PD.decodePatients PU.EntitiesData
+                            , Cmd.map Types.DoctorMsg <| People.Requests.get "doctors" PD.decodeDoctors PU.EntitiesData
+                            , Cmd.map Types.NurseMsg <| People.Requests.get "nurses" PD.decodeNurses PU.EntitiesData
+                            ]
 
                     _ ->
-                        Cmd.none
+                        show
                 )
 
         Types.VisitMsg innerMsg ->

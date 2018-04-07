@@ -1,43 +1,66 @@
-const rp = require('request-promise');
-const { location } = require('./config');
+const rxjs = require(`rxjs`);
+const db = require(`./db`);
 
 module.exports = {
-  getEntity: getEntity.bind(null, location),
-  delEntity: delPerson.bind(null, location),
-  newEntity: newEntity.bind(null, location),
+  delEntity,
+  createEntity,
+  getEntities,
 };
 
+function delEntity(req, res, entityName) {
+  rxjs.Observable
+        .fromPromise(
+            db.tx(() =>
+                db.query(`delete from ${entityName} where id = $1 returning person_id`, [req.params.id])
+                  .then(data => db.query(`delete from person where id = $1`, [data[0].person_id])),
+            ),
+        )
+        .subscribe(
+            () => res.send(`OK`),
+            (err) => {
+              console.log(`ERR`, err);
 
-function getEntity(location, pathEnd) {
-  const options = {
-    method: 'GET',
-    uri: `${location}/${pathEnd}`,
-    resolveWithFullResponse: false,
-  };
-
-  return rp.get(options).then(data => JSON.parse(data));
+              res.send(`ERR`);
+            },
+        );
 }
 
-function newEntity(location, endPath, body) {
-  const options = {
-    method: 'POST',
-    uri: `${location}/${endPath}`,
-    body: JSON.stringify(body),
-    headers: {
-      'content-type': 'application/json',
-    },
-  };
+function createEntity(req, res, callback, passedQuery) {
+  const query = `insert into person (email, name, surname, id) values ($1, $2, $3, nextval('person_id_seq')) returning id`;
 
-  return rp(options);
+  rxjs.Observable
+        .fromPromise(
+            db.tx(() => db.query(query, [req.body.email, req.body.name, req.body.surname])
+                           .then(data => passedQuery(data, db)), [],
+            ),
+        )
+        .subscribe(
+            (data) => {
+              console.log(data);
+
+              res.redirect(`/${callback}`);
+            },
+            (err) => {
+              console.log(`ERR`, err);
+
+              res.redirect(`/${callback}`);
+            },
+        );
 }
 
+function getEntities(req, res, entityName, entitiFields = []) {
+  const additionalFields = entitiFields.length ? `, ${entitiFields.map(field => `${entityName}.${field}`).join(`,`)}` : ``;
+  const query = `SELECT ${entityName}.id, json_build_object('name', name, 'surname', surname, 'email', email, 'id', person.id) as personal ${additionalFields} from ${entityName} inner join person on person.id = person_id ${req.params.id ? `where ${entityName}.id = $1` : ``}`;
 
-function delPerson(location, endPath) {
-  const options = {
-    method: 'DELETE',
-    uri: `${location}/${endPath}`,
-    resolveWithFullResponse: true,
-  };
+  return rxjs.Observable
+               .fromPromise(db.query(query, [req.params.id]))
+               .subscribe(
+                   data =>
+                       res.send(req.params.id ? data[0] : data),
+                   (err) => {
+                     console.log(`ERR`, err);
 
-  return rp(options);
+                     res.send(err);
+                   },
+               );
 }

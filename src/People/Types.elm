@@ -57,14 +57,14 @@ defaultPerson =
 
 defaultPatient : Patient
 defaultPatient =
-    { personalData = defaultPerson
+    { personal = defaultPerson
     , id = 0
     }
 
 
 defaultDoctor : Doctor
 defaultDoctor =
-    { personalData = defaultPerson
+    { personal = defaultPerson
     , speciality = "surgeon"
     , id = 0
     }
@@ -72,8 +72,8 @@ defaultDoctor =
 
 defaultNurse : Nurse
 defaultNurse =
-    { personalData = defaultPerson
-    , isDistrictNurse = False
+    { personal = defaultPerson
+    , district = False
     , id = 0
     }
 
@@ -106,21 +106,21 @@ type alias PatientsModel =
 
 
 type alias Patient =
-    { personalData : Person
+    { personal : Person
     , id : Int
     }
 
 
 type alias Doctor =
-    { personalData : Person
+    { personal : Person
     , speciality : String
     , id : Int
     }
 
 
 type alias Nurse =
-    { personalData : Person
-    , isDistrictNurse : Bool
+    { personal : Person
+    , district : Bool
     , id : Int
     }
 
