@@ -9,9 +9,13 @@
     "jsx": false
   },
   "rules": {
-    "quotes": [2, "backtick"],
+    "quotes": [
+      2,
+      "backtick"
+    ],
     "no-use-before-define": "off",
     "no-shadow": "off",
-    "no-console": "off"
+    "no-console": "off",
+    "no-throw-literal": "off"
   }
 }
