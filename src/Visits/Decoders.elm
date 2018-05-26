@@ -7,11 +7,12 @@ import Visits.Types exposing (Visit)
 
 decodeVisit : Decode.Decoder Visit
 decodeVisit =
-    Decode.map5 Visit
+    Decode.map6 Visit
         (Decode.field "patient" PD.decodePatient)
         (Decode.field "doctor" PD.decodeDoctor)
         (Decode.field "nurse" PD.decodeNurse)
         (Decode.field "date" Decode.int)
+        (Decode.field "room" Decode.int)
         (Decode.field "id" Decode.int)
 
 

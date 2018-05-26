@@ -6,13 +6,14 @@ import Visits.Types
         ( Visit
         )
 import Html exposing (Html, div, label, text, li, ul, input, Attribute, tr, td, table, select, option)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, onSubmit)
 import Html.Attributes exposing (style, type_, attribute, required, name, hidden, value)
 import Styles exposing (blockCentered, blockStretched, block)
 import Views
 import People.Types
 import Types
 import Visits.Helpers
+import Visits.Types exposing (NewVisitMsg(..))
 
 
 buttonActions : Visit -> Html (People.Update.Msg e)
@@ -52,24 +53,63 @@ listOf incAction decAction label_ inputName numOf isRequired =
         ]
 
 
-newVisitView : Types.Model -> Html a
+newVisitView : Types.Model -> Html NewVisitMsg
 newVisitView model =
     Html.form
         [ style Styles.form
+        , onSubmit SendNewVisit
         , Html.Attributes.action "/api/visits"
         , Html.Attributes.method "POST"
         ]
         [ div [ style block, style blockCentered, style blockStretched ]
             [ label [] [ text "Patient" ]
-            , select [ required True, style Styles.button, style [ ( "width", "30%" ) ], name "patientID" ] (List.map personToOption model.patients)
+            , select
+                [ onInput SetPatient
+                , required True
+                , style Styles.button
+                , style
+                    [ ( "width", "30%" )
+                    ]
+                , name "patientID"
+                ]
+              <|
+                List.concat [ [ selectTitle ], (List.map personToOption model.patients) ]
             ]
         , div [ style block, style blockCentered, style blockStretched ]
             [ label [] [ text "Nurse" ]
-            , select [ required True, style Styles.button, style [ ( "width", "30%" ) ], name "nurseID" ] (List.map personToOption model.nurses)
+            , select
+                [ required True
+                , onInput SetNurse
+                , style Styles.button
+                , style [ ( "width", "30%" ) ]
+                , name "nurseID"
+                ]
+              <|
+                List.concat [ [ selectTitle ], (List.map personToOption model.nurses) ]
             ]
         , div [ style block, style blockCentered, style blockStretched ]
             [ label [] [ text "Doctor" ]
-            , select [ required True, style Styles.button, style [ ( "width", "30%" ) ], name "doctorID" ] (List.map personToOption model.doctors)
+            , select
+                [ required True
+                , style Styles.button
+                , style [ ( "width", "30%" ) ]
+                , name "doctorID"
+                , onInput SetDoctor
+                ]
+              <|
+                List.concat [ [ selectTitle ], (List.map personToOption model.doctors) ]
+            ]
+        , div [ style block, style blockCentered, style blockStretched ]
+            [ label [] [ text "Room" ]
+            , input
+                [ type_ "number"
+                , required True
+                , style Styles.button
+                , onInput SetRoom
+                , style [ ( "width", "30%" ) ]
+                , name "room"
+                ]
+                []
             ]
         , div [ style block, style blockCentered, style blockStretched ]
             [ label [] [ text "Date" ]
@@ -78,6 +118,8 @@ newVisitView model =
                 , attribute "step" "3600"
                 , name "date"
                 , style Styles.button
+                , required True
+                , onInput SetDate
                 ]
                 []
             ]
@@ -99,9 +141,10 @@ visitView visit =
         ]
         [ tr []
             [ Html.th [ style Styles.th ] [ text "Patient" ]
+            , Html.th [ style Styles.th ] [ text "Doctor" ]
+            , Html.th [ style Styles.th ] [ text "Nurse" ]
             , Html.th [ style Styles.th ] [ text "Date" ]
-            , Html.th [ style Styles.th ] [ text "Nurses" ]
-            , Html.th [ style Styles.th ] [ text "Doctors" ]
+            , Html.th [ style Styles.th ] [ text "Room number" ]
             ]
         , tr []
             [ td []
@@ -116,6 +159,9 @@ visitView visit =
             , td
                 []
                 [ Visits.Helpers.formatDate visit.date |> text ]
+            , td []
+                [ text <| toString visit.room
+                ]
             ]
         ]
 
@@ -155,3 +201,8 @@ personToOption person =
     option
         [ value <| toString <| person.id ]
         [ text <| surnameAndName person ]
+
+
+selectTitle : Html msg
+selectTitle =
+    option [ attribute "value" "", attribute "disabled" "disabled", attribute "selected" "selected" ] [ text "Choose" ]

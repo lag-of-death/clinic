@@ -4,6 +4,7 @@ import Date
 import Task
 import Types
 import Visits.Decoders as VD
+import Visits.Types as VT
 import Navigation as Nav
 import Visits.Update as VisitsUpdate
 import People.Helpers exposing (addPerson)
@@ -11,7 +12,7 @@ import Visits.Helpers exposing (addVisit)
 import People.Requests
 import Animation
 import Routes exposing (Route(PatientId, Patients, Doctors, DoctorId, Nurses, NurseId, Visits, VisitId, NewVisit), parseRoute)
-import Modal.Update exposing (Msg(Do, PrepareErr, Prepare))
+import Modal.Update exposing (Msg(Do, PrepareErr, ShowMsg, Prepare))
 import People.Update as PU
 import People.Decoders as PD
 
@@ -51,8 +52,20 @@ update msg model =
 
         Types.NewUrl url ->
             ( { model | style = Types.initialStyle }
-            , Cmd.batch [ Nav.newUrl url ]
+            , Nav.newUrl url
             )
+
+        Types.NewVisitMsg newVisitMsg ->
+            let
+                ( newVisit, cmd ) =
+                    VisitsUpdate.updateNewVisit newVisitMsg model.newVisit
+            in
+                case newVisitMsg of
+                    VT.NewVisitData (Ok result) ->
+                        prepareModal model (ShowMsg result.msg)
+
+                    _ ->
+                        ( { model | newVisit = newVisit }, Cmd.map Types.NewVisitMsg cmd )
 
         Types.UrlChange location ->
             let

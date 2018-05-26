@@ -12,6 +12,7 @@ const publicDir = `${__dirname}/public`;
 
 express()
     .use(bodyParser.urlencoded({ extended: true }))
+    .use(bodyParser.json())
     .use(nursesRouter)
     .use(doctorsRouter)
     .use(patientsRouter)

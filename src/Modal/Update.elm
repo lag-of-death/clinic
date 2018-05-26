@@ -1,4 +1,4 @@
-module Modal.Update exposing (Msg(Show, Hide, Do, Prepare, PrepareErr), update)
+module Modal.Update exposing (Msg(Show, Hide, Do, Prepare, ShowMsg, PrepareErr), update)
 
 import Task
 import Modal.Types exposing (Modal)
@@ -10,6 +10,7 @@ type Msg msg
     | Do msg
     | Prepare msg
     | PrepareErr
+    | ShowMsg String
 
 
 update : Msg a -> Modal a -> a -> ( Modal a, Cmd a )
@@ -27,6 +28,16 @@ update modalMsg model noOp =
                 , textMsg = "Are you sure?"
                 , withActions = True
                 , shouldShow = True
+              }
+            , Cmd.none
+            )
+
+        ShowMsg text ->
+            ( { model
+                | msg = noOp
+                , textMsg = text
+                , shouldShow = True
+                , withActions = False
               }
             , Cmd.none
             )

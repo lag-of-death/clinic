@@ -10,6 +10,7 @@ module Types
             , NurseMsg
             , VisitMsg
             , UrlChange
+            , NewVisitMsg
             , ModalMsg
             , NoOp
             , Animate
@@ -41,6 +42,7 @@ type alias Model =
     , doctors : PeopleTypes.DoctorsModel
     , nurses : PeopleTypes.NursesModel
     , visits : VisitsTypes.VisitsModel
+    , newVisit : VisitsTypes.NewVisitModel
     , modal : Modal.Types.Modal Msg
     }
 
@@ -53,6 +55,7 @@ init location =
       , doctors = PeopleTypes.initialDoctors
       , nurses = PeopleTypes.initialNurses
       , visits = VisitsTypes.initialVisits
+      , newVisit = VisitsTypes.initialNewVisit
       , modal = Modal.Types.initialModel NoOp
       }
     , Nav.newUrl location.pathname
@@ -66,6 +69,7 @@ type Msg
     | NurseMsg (People.Update.Msg PeopleTypes.Nurse)
     | VisitMsg (People.Update.Msg VisitsTypes.Visit)
     | UrlChange Nav.Location
+    | NewVisitMsg VisitsTypes.NewVisitMsg
     | ModalMsg (Modal.Update.Msg Msg)
     | NoOp
     | Animate Animation.Msg

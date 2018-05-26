@@ -53,21 +53,32 @@ function delVisitHandler(req, res) {
 }
 
 function newVisitHandler(req, res) {
-  const { patientID, doctorID, nurseID, date } = req.body;
+  const { patientID, doctorID, nurseID, date, room } = req.body;
   const queryParams = [
-    Date.parse(date || new Date()),
+    +new Date(date),
     patientID,
     doctorID,
     nurseID,
+    room,
   ];
 
-  const promise = db.query(`insert into visit (id, date, patient_id, doctor_id, nurse_id) values (nextval('visit_id_seq'), $1, $2, $3, $4)`, queryParams);
 
-  rxjs.Observable
-        .fromPromise(promise)
+  const selectAsPromise = db.query(`select count(*) from visit where ((patient_id = $1 or doctor_id = $2 or nurse_id = $3) and date = $5) or (room = $4 and date = $5)`, [patientID, doctorID, nurseID, room, +new Date(date)]);
+  const selectAsStream = rxjs.Observable.fromPromise(selectAsPromise);
+
+  selectAsStream
+        .flatMap((data) => {
+          if (data[0].count >= 1) {
+            throw `We are sorry, date or room for patient/nurse/doctor already reserved.`;
+          } else {
+            const insertAsPromise = db.query(`insert into visit (id, date, patient_id, doctor_id, nurse_id, room) values (nextval('visit_id_seq'), $1, $2, $3, $4, $5)`, queryParams);
+
+            return rxjs.Observable.fromPromise(insertAsPromise);
+          }
+        })
         .subscribe(
-            () => res.redirect(`/visits`),
-            err => res.send(err),
+            () => res.send({ msg: `OK` }),
+            () => res.send({ msg: `NOT OK` }),
         );
 }
 
@@ -76,6 +87,7 @@ function getVisitsHandler(req, res) {
   const promise = db.query(`
   select 
     visit.id, 
+    visit.room,
     date,
     json_build_object('id', patient.id, 'personal', json_build_object('id', pp.id, 'name', pp.name, 'surname', pp.surname, 'email', pp.email)) as patient,
     json_build_object('id', nurse.id, 'personal', json_build_object('id', np.id, 'name', np.name, 'surname', np.surname, 'email', np.email), 'district', nurse.is_district_nurse) as nurse,

@@ -64,7 +64,7 @@ toRouteView model maybeRoute =
                     centerElement <| Html.map Types.VisitMsg (VisitsView.visitView (getVisit id model.visits))
 
                 Routes.NewVisit ->
-                    centerElement <| VisitsView.newVisitView model
+                    centerElement <| Html.map Types.NewVisitMsg (VisitsView.newVisitView model)
 
                 Routes.Patients ->
                     bordered <| Html.map Types.PatientMsg (PeopleView.patientsView model.patients)
