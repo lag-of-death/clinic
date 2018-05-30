@@ -34,7 +34,7 @@ newVisit model =
         Http.send VT.NewVisitData
             (Http.post "/api/visits/"
                 (jsonBody encoder)
-                (Decode.map VT.NewVisitResult (Decode.field "msg" Decode.string))
+                Decode.string
             )
 
 

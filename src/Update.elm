@@ -11,8 +11,10 @@ import People.Helpers exposing (addPerson)
 import Visits.Helpers exposing (addVisit)
 import People.Requests
 import Animation
+import Http
+import Json.Decode as Decode
 import Routes exposing (Route(PatientId, Patients, Doctors, DoctorId, Nurses, NurseId, Visits, VisitId, NewVisit), parseRoute)
-import Modal.Update exposing (Msg(Do, PrepareErr, ShowMsg, Prepare))
+import Modal.Update exposing (Msg(Do, PrepareErr, ShowMsg, Prepare, Hide))
 import People.Update as PU
 import People.Decoders as PD
 
@@ -62,7 +64,20 @@ update msg model =
             in
                 case newVisitMsg of
                     VT.NewVisitData (Ok result) ->
-                        prepareModal model (ShowMsg result.msg)
+                        prepareModal model (ShowMsg result <| (Types.ModalMsg <| Do <| Types.NewUrl "/visits"))
+
+                    VT.NewVisitData (Err result) ->
+                        case result of
+                            Http.BadStatus err ->
+                                case Decode.decodeString Decode.string err.body of
+                                    Ok decodedString ->
+                                        prepareModal model (ShowMsg decodedString (Types.ModalMsg Hide))
+
+                                    _ ->
+                                        ( model, Cmd.none )
+
+                            _ ->
+                                ( model, Cmd.none )
 
                     _ ->
                         ( { model | newVisit = newVisit }, Cmd.map Types.NewVisitMsg cmd )

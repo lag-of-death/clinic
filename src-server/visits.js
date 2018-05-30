@@ -77,8 +77,11 @@ function newVisitHandler(req, res) {
           }
         })
         .subscribe(
-            () => res.send({ msg: `OK` }),
-            () => res.send({ msg: `NOT OK` }),
+            () => res.json(`OK`),
+            () => {
+              res.status(400);
+              res.json(`NOT OK`);
+            },
         );
 }
 

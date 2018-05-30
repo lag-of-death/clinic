@@ -6,7 +6,7 @@ import Navigation as Nav
 import Visits.Helpers
 
 
-updateNewVisit : VT.NewVisitMsg -> VT.NewVisitModel -> ( VT.NewVisitModel, Cmd VT.NewVisitMsg  )
+updateNewVisit : VT.NewVisitMsg -> VT.NewVisitModel -> ( VT.NewVisitModel, Cmd VT.NewVisitMsg )
 updateNewVisit msg model =
     case msg of
         VT.NoNewVisitOp ->
@@ -29,6 +29,13 @@ updateNewVisit msg model =
 
         VT.SendNewVisit ->
             ( model, newVisit model )
+
+        VT.NewVisitData (Err result) ->
+            let
+                error =
+                    Debug.log "NewVisitData Err" result
+            in
+                ( model, Cmd.none )
 
         _ ->
             ( model, Cmd.none )

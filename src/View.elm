@@ -41,6 +41,7 @@ view model =
             model.modal.shouldShow
             model.modal.msg
             model.modal.withActions
+            model.modal.showCloseBtn
         ]
 
 

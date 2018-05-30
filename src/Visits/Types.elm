@@ -49,8 +49,7 @@ type alias VisitsModel =
 
 
 type alias NewVisitResult =
-    { msg : String
-    }
+    String
 
 
 type NewVisitMsg

@@ -47,13 +47,16 @@ yesNoButtonsStyles =
         ]
 
 
-view : msg -> String -> String -> Bool -> msg -> Bool -> Html msg
-view xButtonMsg actionBtnLabel question shouldShow actionMsg withActions =
+view : msg -> String -> String -> Bool -> msg -> Bool -> Bool -> Html msg
+view xButtonMsg actionBtnLabel question shouldShow actionMsg withActions showCloseBtn =
     if shouldShow == True then
         div [ styles ]
-            [ Html.button
-                [ onClick xButtonMsg, buttonsStyles, closeButtonStyles ]
-                [ text "X" ]
+            [ if showCloseBtn then
+                Html.button
+                    [ onClick xButtonMsg, buttonsStyles, closeButtonStyles ]
+                    [ text "X" ]
+              else
+                span [] []
             , div [] [ text question ]
             , if withActions then
                 div
@@ -61,7 +64,10 @@ view xButtonMsg actionBtnLabel question shouldShow actionMsg withActions =
                     [ button
                         [ onClick actionMsg ]
                         [ text actionBtnLabel ]
-                    , button [ onClick xButtonMsg ] [ text "Cancel" ]
+                    , if showCloseBtn then
+                        button [ onClick xButtonMsg ] [ text "Cancel" ]
+                      else
+                        span [] []
                     ]
               else
                 span [] []

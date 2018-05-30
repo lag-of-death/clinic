@@ -10,17 +10,17 @@ type Msg msg
     | Do msg
     | Prepare msg
     | PrepareErr
-    | ShowMsg String
+    | ShowMsg String msg
 
 
 update : Msg a -> Modal a -> a -> ( Modal a, Cmd a )
 update modalMsg model noOp =
     case modalMsg of
         Show ->
-            ( { model | shouldShow = True }, Cmd.none )
+            ( { model | shouldShow = True, showCloseBtn = True }, Cmd.none )
 
         Hide ->
-            ( { model | shouldShow = False }, Cmd.none )
+            ( { model | shouldShow = False, showCloseBtn = True }, Cmd.none )
 
         Prepare msg ->
             ( { model
@@ -28,16 +28,18 @@ update modalMsg model noOp =
                 , textMsg = "Are you sure?"
                 , withActions = True
                 , shouldShow = True
+                , showCloseBtn = True
               }
             , Cmd.none
             )
 
-        ShowMsg text ->
+        ShowMsg text msg ->
             ( { model
-                | msg = noOp
+                | msg = msg
                 , textMsg = text
                 , shouldShow = True
-                , withActions = False
+                , withActions = True
+                , showCloseBtn = False
               }
             , Cmd.none
             )
@@ -48,11 +50,12 @@ update modalMsg model noOp =
                 , textMsg = "ERROR"
                 , shouldShow = True
                 , withActions = False
+                , showCloseBtn = True
               }
             , Cmd.none
             )
 
         Do msg ->
-            ( { model | shouldShow = False, msg = noOp }
+            ( { model | shouldShow = False, msg = noOp, showCloseBtn = True }
             , Task.succeed msg |> Task.perform identity
             )
