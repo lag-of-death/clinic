@@ -1,1 +1,1 @@
-Front-end for "Outpatient-hospital app" written in ELM and JavaScript.
+A tool for scheduling doctor's appointment written in ELM and JavaScript.
