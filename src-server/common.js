@@ -50,7 +50,7 @@ function createEntity(req, res, callback, passedQuery) {
 
 function getEntities(req, res, entityName, entitiFields = []) {
   const additionalFields = entitiFields.length ? `, ${entitiFields.map(field => `${entityName}.${field}`).join(`,`)}` : ``;
-  const query = `SELECT ${entityName}.id, json_build_object('name', name, 'surname', surname, 'email', email, 'id', person.id) as personal ${additionalFields} from ${entityName} inner join person on person.id = person_id ${req.params.id ? `where ${entityName}.id = $1` : ``}`;
+    const query          = `SELECT ${entityName}.id, json_build_object('name', name, 'surname', surname, 'email', email, 'id', person.id) as personal ${additionalFields} from ${entityName} inner join person on person.id = person_id ${req.params.id ? `where ${entityName}.id = $1` : ``} order by surname`;
 
   return rxjs.Observable
                .fromPromise(db.query(query, [req.params.id]))
