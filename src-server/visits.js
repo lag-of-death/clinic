@@ -77,7 +77,7 @@ function newVisitHandler(req, res) {
           }
         })
         .subscribe(
-            () => res.json(`OK`),
+            () => res.json(`Appointment was made.`),
             (err) => {
               res.status(422);
               res.json(err);
