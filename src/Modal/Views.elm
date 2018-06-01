@@ -3,6 +3,7 @@ module Modal.Views exposing (view)
 import Html exposing (Attribute, div, Html, text, button, span)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (style)
+import Styles
 
 
 styles : Attribute msg
@@ -53,7 +54,7 @@ view xButtonMsg actionBtnLabel question shouldShow actionMsg withActions showClo
         div [ styles ]
             [ if showCloseBtn then
                 Html.button
-                    [ onClick xButtonMsg, buttonsStyles, closeButtonStyles ]
+                    [ onClick xButtonMsg, buttonsStyles, style Styles.button, closeButtonStyles ]
                     [ text "X" ]
               else
                 span [] []
@@ -62,10 +63,10 @@ view xButtonMsg actionBtnLabel question shouldShow actionMsg withActions showClo
                 div
                     [ buttonsStyles, yesNoButtonsStyles ]
                     [ button
-                        [ onClick actionMsg ]
+                        [ onClick actionMsg, style Styles.button, style [ ( "margin-right", "4px" ) ] ]
                         [ text actionBtnLabel ]
                     , if showCloseBtn then
-                        button [ onClick xButtonMsg ] [ text "Cancel" ]
+                        button [ onClick xButtonMsg, style Styles.button ] [ text "Cancel" ]
                       else
                         span [] []
                     ]
