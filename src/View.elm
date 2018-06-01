@@ -37,11 +37,7 @@ view model =
         , Modal.Views.view
             (Types.ModalMsg Hide)
             "OK"
-            model.modal.textMsg
-            model.modal.shouldShow
-            model.modal.msg
-            model.modal.withActions
-            model.modal.showCloseBtn
+            model.modal
         ]
 
 

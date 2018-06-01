@@ -149,6 +149,7 @@ newNurseView =
             , [ submitBtn ]
             ]
 
+
 options : List (Html msg)
 options =
     [ option

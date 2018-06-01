@@ -4,6 +4,7 @@ import Html exposing (Attribute, div, Html, text, button, span)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (style)
 import Styles
+import Modal.Types as MT
 
 
 styles : Attribute msg
@@ -48,30 +49,46 @@ yesNoButtonsStyles =
         ]
 
 
-view : msg -> String -> String -> Bool -> msg -> Bool -> Bool -> Html msg
-view xButtonMsg actionBtnLabel question shouldShow actionMsg withActions showCloseBtn =
-    if shouldShow == True then
-        div [ styles ]
-            [ if showCloseBtn then
-                Html.button
-                    [ onClick xButtonMsg, buttonsStyles, style Styles.button, closeButtonStyles ]
-                    [ text "X" ]
-              else
-                span [] []
-            , div [] [ text question ]
-            , if withActions then
-                div
-                    [ buttonsStyles, yesNoButtonsStyles ]
-                    [ button
-                        [ onClick actionMsg, style Styles.button, style [ ( "margin-right", "4px" ) ] ]
-                        [ text actionBtnLabel ]
-                    , if showCloseBtn then
-                        button [ onClick xButtonMsg, style Styles.button ] [ text "Cancel" ]
-                      else
-                        span [] []
-                    ]
-              else
-                span [] []
-            ]
-    else
-        span [] []
+view : msg -> String -> MT.Modal msg -> Html msg
+view xButtonMsg actionBtnLabel model =
+    let
+        question =
+            model.textMsg
+
+        shouldShow =
+            model.shouldShow
+
+        actionMsg =
+            model.msg
+
+        withActions =
+            model.withActions
+
+        showCloseBtn =
+            model.showCloseBtn
+    in
+        if shouldShow == True then
+            div [ styles ]
+                [ if showCloseBtn then
+                    Html.button
+                        [ onClick xButtonMsg, buttonsStyles, style Styles.button, closeButtonStyles ]
+                        [ text "X" ]
+                  else
+                    span [] []
+                , div [] [ text question ]
+                , if withActions then
+                    div
+                        [ buttonsStyles, yesNoButtonsStyles ]
+                        [ button
+                            [ onClick actionMsg, style Styles.button, style [ ( "margin-right", "4px" ) ] ]
+                            [ text actionBtnLabel ]
+                        , if showCloseBtn then
+                            button [ onClick xButtonMsg, style Styles.button ] [ text "Cancel" ]
+                          else
+                            span [] []
+                        ]
+                  else
+                    span [] []
+                ]
+        else
+            span [] []
