@@ -78,9 +78,9 @@ function newVisitHandler(req, res) {
         })
         .subscribe(
             () => res.json(`OK`),
-            () => {
-              res.status(400);
-              res.json(`NOT OK`);
+            (err) => {
+              res.status(422);
+              res.json(err);
             },
         );
 }
