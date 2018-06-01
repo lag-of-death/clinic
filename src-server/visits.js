@@ -108,6 +108,7 @@ function getVisitsHandler(req, res) {
    inner join person np on np.id = nurse.person_id
    
    ${req.params.id ? `where visit.id = $1` : ``}
+   order by date
    `, [req.params.id]);
 
 
