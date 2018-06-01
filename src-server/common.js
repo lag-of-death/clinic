@@ -26,7 +26,9 @@ function delEntity(req, res, entityName) {
 }
 
 function createEntity(req, res, callback, passedQuery) {
-  const query = `insert into person (email, name, surname, id) values ($1, $2, $3, nextval('person_id_seq')) returning id`;
+    const query = `
+    insert into person (email, name, surname, id) 
+    values ($1, $2, $3, nextval('person_id_seq')) returning id`;
 
   rxjs.Observable
         .fromPromise(
@@ -49,8 +51,19 @@ function createEntity(req, res, callback, passedQuery) {
 }
 
 function getEntities(req, res, entityName, entitiFields = []) {
-  const additionalFields = entitiFields.length ? `, ${entitiFields.map(field => `${entityName}.${field}`).join(`,`)}` : ``;
-    const query          = `SELECT ${entityName}.id, json_build_object('name', name, 'surname', surname, 'email', email, 'id', person.id) as personal ${additionalFields} from ${entityName} inner join person on person.id = person_id ${req.params.id ? `where ${entityName}.id = $1` : ``} order by surname`;
+    const additionalFields =
+              entitiFields.length
+                  ? `, ${entitiFields.map( field => `${entityName}.${field}` ).join( `,` )}`
+                  : ``;
+
+    const query = `
+    SELECT 
+        ${entityName}.id, 
+        json_build_object('name', name, 'surname', surname, 'email', email, 'id', person.id) as personal             ${additionalFields} from ${entityName} 
+        inner join person on person.id = person_id 
+        ${req.params.id ? `where ${entityName}.id = $1` : ``} 
+        order by surname`
+    ;
 
   return rxjs.Observable
                .fromPromise(db.query(query, [req.params.id]))
