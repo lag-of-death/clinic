@@ -212,28 +212,33 @@ submitBtn =
         [ text "Add" ]
 
 
+createInput : ( String, String ) -> ( Html msg, String )
+createInput ( name_, type_ ) =
+    ( input [ required True, name <| String.toLower name_, style Styles.button, Html.Attributes.type_ type_ ] [], name_ )
+
+
+addLabel : ( Html msg, String ) -> List (Html msg)
+addLabel ( inputEl, name_ ) =
+    [ label [] [ text name_ ]
+    , inputEl
+    ]
+
+
+wrapWithDiv : List (Html msg) -> Html msg
+wrapWithDiv inputWithLabel =
+    div [ style block, style blockCentered, style blockStretched ] inputWithLabel
+
+
+createFieldRow : ( String, String ) -> Html msg
+createFieldRow =
+    createInput >> addLabel >> wrapWithDiv
+
+
 newPersonFields : List (Html msg)
 newPersonFields =
-    [ div [ style block, style blockCentered, style blockStretched ]
-        [ label [] [ text "Surname" ]
-        , input [ required True, name "surname", style Styles.button ]
-            []
-        ]
-    , div [ style block, style blockCentered, style blockStretched ]
-        [ label [] [ text "Name" ]
-        , input [ required True, name "name", style Styles.button ]
-            []
-        ]
-    , div [ style block, style blockCentered, style blockStretched ]
-        [ label [] [ text "E-mail" ]
-        , input
-            [ Html.Attributes.type_ "email"
-            , required True
-            , name "email"
-            , style Styles.button
-            ]
-            []
-        ]
+    [ createFieldRow ( "Surname", "text" )
+    , createFieldRow ( "Name", "text" )
+    , createFieldRow ( "E-mail", "email" )
     ]
 
 

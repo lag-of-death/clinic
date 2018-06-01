@@ -64,7 +64,7 @@ update msg model =
             in
                 case newVisitMsg of
                     VT.NewVisitData (Ok result) ->
-                        prepareModal model (ShowMsg result <| (Types.ModalMsg <| Do <| Types.NewUrl "/visits"))
+                        prepareModal model (ShowMsg result <| (doModalMsg <| Types.NewUrl "/visits"))
 
                     VT.NewVisitData (Err result) ->
                         case result of
@@ -178,12 +178,17 @@ handleMsg innerMsg model msgFromChild cmd updatedModal outerMsg =
             prepareModal model PrepareErr
 
         PU.DelEntity _ ->
-            prepareModal model (Prepare <| Types.ModalMsg <| Do <| outerMsg msgFromChild)
+            prepareModal model (Prepare <| doModalMsg <| outerMsg msgFromChild)
 
         _ ->
             ( updatedModal
             , Cmd.batch [ show, Cmd.map outerMsg cmd ]
             )
+
+
+doModalMsg : Types.Msg -> Types.Msg
+doModalMsg =
+    Do >> Types.ModalMsg
 
 
 prepareModal : Types.Model -> Modal.Update.Msg Types.Msg -> ( Types.Model, Cmd msg )

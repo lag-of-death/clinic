@@ -32,7 +32,7 @@ function createEntity(req, res, callback, passedQuery) {
 
   rxjs.Observable
         .fromPromise(
-            db.tx(() => db.query(query, [req.body.email, req.body.name, req.body.surname])
+            db.tx( () => db.query( query, [ req.body[ `e-mail` ], req.body.name, req.body.surname ] )
                            .then(data => passedQuery(data, db)), [],
             ),
         )

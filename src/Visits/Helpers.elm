@@ -29,4 +29,5 @@ addVisit model entity =
 
 formatDate : Int -> String
 formatDate dateAsString =
-    Date.fromTime (toFloat dateAsString) |> Date.toFormattedString "EEEE, MMMM d, y 'at' h:mm a"
+    Date.fromTime (toFloat dateAsString)
+        |> Date.toFormattedString "EEEE, MMMM d, y 'at' h:mm a"
