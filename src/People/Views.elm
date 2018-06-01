@@ -161,6 +161,32 @@ options =
     ]
 
 
+doctorSpecialities : List (Html msg)
+doctorSpecialities =
+    [ option
+        [ value "surgeon" ]
+        [ text "surgeon" ]
+    , option
+        [ value "pediatrician" ]
+        [ text "pediatrician" ]
+    , option
+        [ value "laryngologist" ]
+        [ text "laryngologist" ]
+    , option
+        [ value "dentist" ]
+        [ text "dentist" ]
+    , option
+        [ value "gynecologist" ]
+        [ text "gynecologist" ]
+    , option
+        [ value "endocrinologist" ]
+        [ text "endocrinologist" ]
+    , option
+        [ value "gastrologist" ]
+        [ text "gastrologist" ]
+    ]
+
+
 newDoctorView : Html (PU.Msg e)
 newDoctorView =
     formToSubmit "doctors" <|
@@ -168,8 +194,8 @@ newDoctorView =
             [ newPersonFields
             , [ div [ style block, style blockCentered, style blockStretched ]
                     [ label [] [ text "Speciality" ]
-                    , input [ required True, name "speciality", style Styles.button ]
-                        []
+                    , select [ required True, name "speciality", style Styles.button ]
+                        doctorSpecialities
                     ]
               ]
             , [ submitBtn ]
