@@ -11,8 +11,8 @@ module People.Views
         , nurseView
         )
 
-import Html.Attributes exposing (name, style, required, type_)
-import Html exposing (text, Html, div, label, table, td, tr, form, input)
+import Html.Attributes exposing (name, style, required, type_, value)
+import Html exposing (select, text, Html, div, label, table, td, tr, form, input, option)
 import Html.Events exposing (onClick)
 import People.Types as PT
 import Styles exposing (block, blockStretched, blockCentered)
@@ -142,12 +142,22 @@ newNurseView =
             [ newPersonFields
             , [ div [ style block, style blockCentered, style blockStretched ]
                     [ label [] [ text "District nurse" ]
-                    , input [ type_ "checkbox", name "district", style Styles.button ]
-                        []
+                    , select [ name "district", style Styles.button ]
+                        options
                     ]
               ]
             , [ submitBtn ]
             ]
+
+options : List (Html msg)
+options =
+    [ option
+        [ value "yes" ]
+        [ text "YES" ]
+    , option
+        [ value "no" ]
+        [ text "NO" ]
+    ]
 
 
 newDoctorView : Html (PU.Msg e)

@@ -30,7 +30,7 @@ newNurseSubject.subscribe((args) => {
   const [req, res] = args;
   const query = `insert into nurse (id, person_id, is_district_nurse) values (nextval('patient_id_seq'), $1, $2)`;
 
-  createEntity(req, res, `nurses`, (data, db) => db.query(query, [data[0].id, req.body.isDistrictNurse === `on`]));
+  createEntity(req, res, `nurses`, (data, db) => db.query(query, [data[0].id, req.body.district === `yes`]));
 });
 
 module.exports = express.Router()
