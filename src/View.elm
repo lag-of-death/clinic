@@ -36,7 +36,7 @@ view model =
             ]
         , Modal.Views.view
             (Types.ModalMsg Hide)
-            "OK"
+            "YES"
             model.modal
         ]
 
