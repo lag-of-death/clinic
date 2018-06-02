@@ -25,6 +25,52 @@ buttonActions visit =
         )
 
 
+toID : String -> String
+toID name =
+    String.toLower name |> (\name_ -> name_ ++ "ID")
+
+
+createAttrsForSelect : ( String -> msg, String, a ) -> ( List (Attribute msg), String, a )
+createAttrsForSelect ( onInputMsg, fieldName, people ) =
+    ( [ onInput onInputMsg
+      , required True
+      , style Styles.button
+      , style
+            [ ( "width", "30%" )
+            ]
+      , name <| toID fieldName
+      ]
+    , fieldName
+    , people
+    )
+
+
+createSelect :
+    ( List (Attribute b), c, List { a | id : Int, personal : People.Types.Person } )
+    -> ( Html b, c )
+createSelect ( inputEl, fieldName, people ) =
+    ( select inputEl <| List.concat [ [ selectTitle ], (List.map personToOption people) ], fieldName )
+
+
+addLabel : ( Html msg, String ) -> List (Html msg)
+addLabel ( element, text_ ) =
+    [ label [] [ text text_ ], element ]
+
+
+wrapWithDiv : List (Html msg) -> Html msg
+wrapWithDiv elm =
+    div [ style block, style blockCentered, style blockStretched ] elm
+
+
+wrapEl : ( Html msg, String ) -> Html msg
+wrapEl =
+    addLabel >> wrapWithDiv
+
+
+createSelectRow =
+    createAttrsForSelect >> createSelect >> wrapEl
+
+
 newVisitView : Types.Model -> Html NewVisitMsg
 newVisitView model =
     Html.form
@@ -33,47 +79,11 @@ newVisitView model =
         , Html.Attributes.action "/api/visits"
         , Html.Attributes.method "POST"
         ]
-        [ div [ style block, style blockCentered, style blockStretched ]
-            [ label [] [ text "Patient" ]
-            , select
-                [ onInput SetPatient
-                , required True
-                , style Styles.button
-                , style
-                    [ ( "width", "30%" )
-                    ]
-                , name "patientID"
-                ]
-              <|
-                List.concat [ [ selectTitle ], (List.map personToOption model.patients) ]
-            ]
-        , div [ style block, style blockCentered, style blockStretched ]
-            [ label [] [ text "Nurse" ]
-            , select
-                [ required True
-                , onInput SetNurse
-                , style Styles.button
-                , style [ ( "width", "30%" ) ]
-                , name "nurseID"
-                ]
-              <|
-                List.concat [ [ selectTitle ], (List.map personToOption model.nurses) ]
-            ]
-        , div [ style block, style blockCentered, style blockStretched ]
-            [ label [] [ text "Doctor" ]
-            , select
-                [ required True
-                , style Styles.button
-                , style [ ( "width", "30%" ) ]
-                , name "doctorID"
-                , onInput SetDoctor
-                ]
-              <|
-                List.concat [ [ selectTitle ], (List.map personToOption model.doctors) ]
-            ]
-        , div [ style block, style blockCentered, style blockStretched ]
-            [ label [] [ text "Room" ]
-            , input
+        [ createSelectRow ( SetPatient, "Patient", model.patients )
+        , createSelectRow ( SetNurse, "Nurse", model.nurses )
+        , createSelectRow ( SetDoctor, "Doctor", model.doctors )
+        , wrapEl
+            ( input
                 [ type_ "number"
                 , required True
                 , style Styles.button
@@ -82,10 +92,10 @@ newVisitView model =
                 , name "room"
                 ]
                 []
-            ]
-        , div [ style block, style blockCentered, style blockStretched ]
-            [ label [] [ text "Date" ]
-            , input
+            , "Room"
+            )
+        , wrapEl
+            ( input
                 [ type_ "datetime-local"
                 , attribute "step" "3600"
                 , name "date"
@@ -94,7 +104,8 @@ newVisitView model =
                 , onInput SetDate
                 ]
                 []
-            ]
+            , "Date"
+            )
         , Html.button
             [ Html.Attributes.type_ "submit"
             , style Styles.button
