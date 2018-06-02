@@ -25,34 +25,6 @@ buttonActions visit =
         )
 
 
-listOf :
-    Attribute msg
-    -> Attribute msg
-    -> String
-    -> String
-    -> Int
-    -> Bool
-    -> Html msg
-listOf incAction decAction label_ inputName numOf isRequired =
-    div [ style block, style blockCentered, style blockStretched ]
-        [ label [] [ text label_ ]
-        , div [ style block, style blockCentered, style blockStretched ] <|
-            [ ul [ style [ ( "list-style", "none" ), ( "margin", "6px" ) ] ]
-                (List.repeat numOf
-                    (li [ style [ ( "margin", "2px" ) ] ]
-                        [ input [ type_ "number", required isRequired, name inputName, style Styles.button ]
-                            []
-                        ]
-                    )
-                )
-            , Html.button [ type_ "button", decAction, hidden (numOf <= 1) ]
-                [ text "-" ]
-            , Html.button [ type_ "button", incAction ]
-                [ text "+" ]
-            ]
-        ]
-
-
 newVisitView : Types.Model -> Html NewVisitMsg
 newVisitView model =
     Html.form
