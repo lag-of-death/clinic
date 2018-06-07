@@ -155,6 +155,12 @@ update msg model =
             in
                 handleMsg innerMsg model msgFromChild cmd { model | patients = patients } Types.PatientMsg
 
+        Types.ShowStaffList ->
+            ( { model | showStaffList = True }, Cmd.none )
+
+        Types.HideStaffList ->
+            ( { model | showStaffList = False }, Cmd.none )
+
         _ ->
             ( model, Cmd.none )
 

@@ -1,20 +1,50 @@
 module View exposing (view)
 
-import Html exposing (div, main_, text, Html)
+import Html exposing (div, main_, text, Html, span, ul, li)
 import Animation
 import Modal.Views
 import Modal.Update exposing (Msg(Hide))
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onMouseOver, onMouseLeave)
 import People.Helpers exposing (getPerson)
 import Visits.Helpers exposing (getVisit)
 import Views exposing (centerElement, bordered)
 import People.Views as PeopleView
 import Visits.Views as VisitsView
 import People.Types as PeopleTypes
-import Html.Attributes exposing (style)
+import Html.Attributes exposing (style, class)
 import Styles
 import Routes
 import Types
+
+
+toBtnWithList : Bool -> Html Types.Msg
+toBtnWithList showStaffList =
+    div
+        [ onMouseOver Types.ShowStaffList
+        , onMouseLeave Types.HideStaffList
+        , style [ ( "position", "relative" ) ]
+        ]
+        [ Html.button [ style Styles.button ]
+            [ text "staff"
+            ]
+        , if showStaffList then
+            ul
+                [ style
+                    [ ( "z-index", "1" )
+                    , ( "position", "absolute" )
+                    , ( "list-style-type", "none" )
+                    , ( "top", "-2px" )
+                    , ( "left", "-2px" )
+                    , ( "padding", "0" )
+                    , ( "margin", "0" )
+                    ]
+                ]
+                [ li [] [ toBtn [ style Styles.button, style [ ( "width", "100%" ) ] ] "nurses" ]
+                , li [] [ toBtn [ style Styles.button, style [ ( "width", "100%" ) ] ] "doctors" ]
+                ]
+          else
+            span [] []
+        ]
 
 
 view : Types.Model -> Html Types.Msg
@@ -22,7 +52,10 @@ view model =
     Html.body [ style Styles.body ]
         [ div
             [ style Styles.menu ]
-            (List.map toMenuBtn [ "patients", "nurses", "doctors", "visits" ])
+            [ toMenuBtn "patients"
+            , toBtnWithList model.showStaffList
+            , toMenuBtn "visits"
+            ]
         , main_
             (List.concat
                 [ [ style Styles.app ]
@@ -41,9 +74,14 @@ view model =
         ]
 
 
+toBtn : List (Html.Attribute Types.Msg) -> String -> Html Types.Msg
+toBtn styles whatAppPart =
+    Html.button (List.concat [ styles, [ onClick (Types.NewUrl <| "/" ++ whatAppPart ++ "/") ] ]) [ text whatAppPart ]
+
+
 toMenuBtn : String -> Html Types.Msg
-toMenuBtn whatAppPart =
-    Html.button [ style Styles.button, onClick (Types.NewUrl <| "/" ++ whatAppPart ++ "/") ] [ text whatAppPart ]
+toMenuBtn =
+    toBtn [ style Styles.button ]
 
 
 toRouteView : Types.Model -> Maybe Routes.Route -> Html Types.Msg

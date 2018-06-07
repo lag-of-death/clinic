@@ -15,6 +15,8 @@ module Types
             , NoOp
             , Animate
             , Show
+            , ShowStaffList
+            , HideStaffList
             )
         )
 
@@ -44,6 +46,7 @@ type alias Model =
     , visits : VisitsTypes.VisitsModel
     , newVisit : VisitsTypes.NewVisitModel
     , modal : Modal.Types.Modal Msg
+    , showStaffList : Bool
     }
 
 
@@ -57,6 +60,7 @@ init location =
       , visits = VisitsTypes.initialVisits
       , newVisit = VisitsTypes.initialNewVisit
       , modal = Modal.Types.initialModel NoOp
+      , showStaffList = False
       }
     , Nav.newUrl location.pathname
     )
@@ -74,3 +78,5 @@ type Msg
     | NoOp
     | Animate Animation.Msg
     | Show
+    | ShowStaffList
+    | HideStaffList
