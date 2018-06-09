@@ -31,6 +31,7 @@
     "express-spa": "0.0.2",
     "pg": "^7.4.3",
     "pg-promise": "^8.4.3",
+    "request": "^2.87.0",
     "rxjs": "^5.5.8"
   },
   "devDependencies": {
