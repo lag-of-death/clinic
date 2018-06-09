@@ -5,8 +5,8 @@ const request = require(`request`);
 const getStaffSubject = new rxjs.Subject();
 const get = rxjs.Observable.bindNodeCallback(request);
 
-const getNursesStream = get(`http://localhost:5000/api/nurses`);
-const getDoctorsStream = get(`http://localhost:5000/api/doctors`);
+const getNursesStream = get(`${process.env.HOSTNAME}/api/nurses`);
+const getDoctorsStream = get(`${process.env.HOSTNAME}/api/doctors`);
 
 const nursesSteam = getNursesStream.map(data => data[1])
                                    .map(JSON.parse)
