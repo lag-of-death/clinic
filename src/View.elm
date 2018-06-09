@@ -33,13 +33,14 @@ toBtnWithList showStaffList =
                     [ ( "z-index", "1" )
                     , ( "position", "absolute" )
                     , ( "list-style-type", "none" )
-                    , ( "top", "-2px" )
-                    , ( "left", "-2px" )
+                    , ( "top", "35px" )
+                    , ( "left", "0px" )
                     , ( "padding", "0" )
                     , ( "margin", "0" )
                     ]
                 ]
-                [ li [] [ toBtn [ style Styles.button, style [ ( "width", "100%" ) ] ] "nurses" ]
+                [ li [] [ toBtn [ style Styles.button, style [ ( "width", "100%" ) ] ] "all" ]
+                , li [] [ toBtn [ style Styles.button, style [ ( "width", "100%" ) ] ] "nurses" ]
                 , li [] [ toBtn [ style Styles.button, style [ ( "width", "100%" ) ] ] "doctors" ]
                 ]
           else
@@ -92,6 +93,9 @@ toRouteView model maybeRoute =
 
         Just route ->
             case route of
+                Routes.AllStaff ->
+                    bordered <| Html.map Types.StaffMsg (PeopleView.staffView model.staff)
+
                 Routes.Visits ->
                     bordered <| Html.map Types.VisitMsg (VisitsView.view model.visits)
 

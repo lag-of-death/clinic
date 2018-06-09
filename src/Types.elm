@@ -16,6 +16,7 @@ module Types
             , Animate
             , Show
             , ShowStaffList
+            , StaffMsg
             , HideStaffList
             )
         )
@@ -47,6 +48,7 @@ type alias Model =
     , newVisit : VisitsTypes.NewVisitModel
     , modal : Modal.Types.Modal Msg
     , showStaffList : Bool
+    , staff : PeopleTypes.StaffModel
     }
 
 
@@ -55,6 +57,7 @@ init location =
     ( { history = []
       , style = initialStyle
       , patients = PeopleTypes.initialPatients
+      , staff = []
       , doctors = PeopleTypes.initialDoctors
       , nurses = PeopleTypes.initialNurses
       , visits = VisitsTypes.initialVisits
@@ -69,6 +72,7 @@ init location =
 type Msg
     = NewUrl String
     | PatientMsg (People.Update.Msg PeopleTypes.Patient)
+    | StaffMsg (People.Update.Msg PeopleTypes.StaffMember)
     | DoctorMsg (People.Update.Msg PeopleTypes.Doctor)
     | NurseMsg (People.Update.Msg PeopleTypes.Nurse)
     | VisitMsg (People.Update.Msg VisitsTypes.Visit)

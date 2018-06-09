@@ -8,22 +8,11 @@ const getPatientSubject = new rxjs.Subject();
 const newPatientSubject = new rxjs.Subject();
 
 
-// .filter: sprawdzanie formularzy - poprawnosci?
+getPatientsSubject.subscribe((args) => {
+  const [req, res] = args;
 
-getPatientsSubject
-    .do(() => {
-      console.log(`i can do logging here :`);
-    })
-    .filter((req, res) => {
-      console.log(typeof req, typeof res);
-
-      return true;
-    })
-    .subscribe((args) => {
-      const [req, res] = args;
-
-      getEntities(req, res, `patient`);
-    });
+  getEntities(req, res, `patient`);
+});
 
 
 delPatientSubject.subscribe((args) => {

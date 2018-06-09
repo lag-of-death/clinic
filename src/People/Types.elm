@@ -12,6 +12,8 @@ module People.Types
         , initialDoctors
         , defaultDoctor
         , PatientsModel
+        , StaffModel
+        , StaffMember
         , DoctorsModel
         , NursesModel
         , NursesMsg
@@ -103,6 +105,17 @@ type alias NursesModel =
 
 type alias PatientsModel =
     List Patient
+
+
+type alias StaffModel =
+    List StaffMember
+
+
+type alias StaffMember =
+    { personal : Person
+    , id : Int
+    , who : String
+    }
 
 
 type alias Patient =

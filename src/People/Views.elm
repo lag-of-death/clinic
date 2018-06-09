@@ -9,10 +9,11 @@ module People.Views
         , newNurseView
         , nursesView
         , nurseView
+        , staffView
         )
 
 import Html.Attributes exposing (name, style, required, type_, value)
-import Html exposing (select, text, Html, div, label, table, td, tr, form, input, option)
+import Html exposing (select, text, Html, div, label, p, table, td, tr, form, input, option, span)
 import Html.Events exposing (onClick)
 import People.Types as PT
 import Styles exposing (block, blockStretched, blockCentered)
@@ -99,6 +100,24 @@ patientsList patients =
                     patient
             )
             patients
+        )
+
+
+staffView :
+    List { b | personal : { a | name : String, surname : String }, who : String }
+    -> Html msg
+staffView staff =
+    div
+        [ style [ ( "padding", "20px 160px" ), ( "background", "lightblue" ) ] ]
+        (List.map
+            (\staffMember ->
+                div
+                    [ style [ ( "display", "flex" ), ( "justify-content", "space-between" ) ] ]
+                    [ p [ style Styles.button ] [ text <| staffMember.personal.name ++ " " ++ staffMember.personal.surname ]
+                    , p [ style Styles.button ] [ text staffMember.who ]
+                    ]
+            )
+            staff
         )
 
 

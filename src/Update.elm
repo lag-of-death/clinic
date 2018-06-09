@@ -13,7 +13,7 @@ import People.Requests
 import Animation
 import Http
 import Json.Decode as Decode
-import Routes exposing (Route(PatientId, Patients, Doctors, DoctorId, Nurses, NurseId, Visits, VisitId, NewVisit), parseRoute)
+import Routes exposing (Route(AllStaff, PatientId, Patients, Doctors, DoctorId, Nurses, NurseId, Visits, VisitId, NewVisit), parseRoute)
 import Modal.Update exposing (Msg(Do, PrepareErr, ShowMsg, Prepare, Hide))
 import People.Update as PU
 import People.Decoders as PD
@@ -92,6 +92,9 @@ update msg model =
             in
                 ( { model | history = maybeRoute :: model.history }
                 , case route of
+                    AllStaff ->
+                        Cmd.map Types.StaffMsg <| People.Requests.get "staff" PD.decodeStaff PU.EntitiesData
+
                     Patients ->
                         Cmd.map Types.PatientMsg <| People.Requests.get "patients" PD.decodePatients PU.EntitiesData
 
@@ -154,6 +157,13 @@ update msg model =
                     PU.updateEntity innerMsg model.patients "patients" PD.decodePatients addPerson
             in
                 handleMsg innerMsg model msgFromChild cmd { model | patients = patients } Types.PatientMsg
+
+        Types.StaffMsg innerMsg ->
+            let
+                ( staff, cmd, msgFromChild ) =
+                    PU.updateEntity innerMsg model.staff "staff" PD.decodeStaff addPerson
+            in
+                ( { model | staff = staff }, show )
 
         Types.ShowStaffList ->
             ( { model | showStaffList = True }, Cmd.none )

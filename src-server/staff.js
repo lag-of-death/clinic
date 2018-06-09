@@ -32,7 +32,7 @@ getStaffSubject
           const resp = data[lastItemIdx];
           const nursesAndDoctors = data.splice(0, lastItemIdx);
 
-          resp.send(nursesAndDoctors);
+          resp.send(nursesAndDoctors[0].concat(nursesAndDoctors[1]));
         },
     );
 

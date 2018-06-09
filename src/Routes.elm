@@ -13,6 +13,7 @@ module Routes
             , NewVisit
             , NewNurse
             , NewDoctor
+            , AllStaff
             )
         , parseRoute
         )
@@ -39,6 +40,7 @@ type Route
     | NewVisit
     | NewNurse
     | NewDoctor
+    | AllStaff
 
 
 routeParser : UrlParser.Parser (Route -> a) a
@@ -57,4 +59,5 @@ routeParser =
         , UrlParser.map Doctors (UrlParser.s "doctors")
         , UrlParser.map DoctorId (UrlParser.s "doctors" </> int)
         , UrlParser.map NewDoctor (UrlParser.s "doctors" </> UrlParser.s "new")
+        , UrlParser.map AllStaff (UrlParser.s "all")
         ]
