@@ -1,6 +1,6 @@
 const rxjs = require(`rxjs`);
 const router = require(`express`).Router();
-const { delEntity, getEntities, createEntity } = require(`./common`);
+const { delEntity, setUpGetStream, createEntity } = require(`./common`);
 
 const getPatientsSubject = new rxjs.Subject();
 const delPatientSubject = new rxjs.Subject();
@@ -8,11 +8,8 @@ const getPatientSubject = new rxjs.Subject();
 const newPatientSubject = new rxjs.Subject();
 
 
-getPatientsSubject.subscribe((args) => {
-  const [req, res] = args;
-
-  getEntities(req, res, `patient`);
-});
+setUpGetStream(getPatientsSubject, `patient`);
+setUpGetStream(getPatientSubject, `patient`);
 
 
 delPatientSubject.subscribe((args) => {
@@ -21,11 +18,6 @@ delPatientSubject.subscribe((args) => {
   delEntity(req, res, `patient`);
 });
 
-getPatientSubject.subscribe((args) => {
-  const [req, res] = args;
-
-  getEntities(req, res, `patient`);
-});
 
 newPatientSubject.subscribe((args) => {
   const [req, res] = args;

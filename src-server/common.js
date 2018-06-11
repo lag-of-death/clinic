@@ -4,7 +4,7 @@ const db = require(`./db`);
 module.exports = {
   delEntity,
   createEntity,
-  getEntities,
+  setUpGetStream,
 };
 
 function delEntity(req, res, entityName) {
@@ -26,13 +26,13 @@ function delEntity(req, res, entityName) {
 }
 
 function createEntity(req, res, callback, passedQuery) {
-    const query = `
+  const query = `
     insert into person (email, name, surname, id) 
     values ($1, $2, $3, nextval('person_id_seq')) returning id`;
 
   rxjs.Observable
         .fromPromise(
-            db.tx( () => db.query( query, [ req.body[ `e-mail` ], req.body.name, req.body.surname ] )
+            db.tx(() => db.query(query, [req.body[`e-mail`], req.body.name, req.body.surname])
                            .then(data => passedQuery(data, db)), [],
             ),
         )
@@ -50,30 +50,42 @@ function createEntity(req, res, callback, passedQuery) {
         );
 }
 
-function getEntities(req, res, entityName, entitiFields = []) {
-    const additionalFields =
-              entitiFields.length
-                  ? `, ${entitiFields.map( field => `${entityName}.${field}` ).join( `,` )}`
+function getEntities(req, res, entityName, entityFields = []) {
+  const additionalFields =
+              entityFields.length
+                  ? `, ${entityFields.map(field => `${entityName}.${field}`).join(`,`)}`
                   : ``;
 
-    const query = `
+  const query = `
     SELECT 
         ${entityName}.id, 
-        json_build_object('name', name, 'surname', surname, 'email', email, 'id', person.id) as personal             ${additionalFields} from ${entityName} 
+        json_build_object('name', name, 'surname', surname, 'email', email, 'id', person.id) as personal             
+        ${additionalFields} from ${entityName} 
         inner join person on person.id = person_id 
         ${req.params.id ? `where ${entityName}.id = $1` : ``} 
-        order by surname`
-    ;
+        order by surname`;
 
-  return rxjs.Observable
-               .fromPromise(db.query(query, [req.params.id]))
-               .subscribe(
-                   data =>
-                       res.send(req.params.id ? data[0] : data),
-                   (err) => {
-                     console.log(`ERR`, err);
+  const queryObservable = rxjs.Observable.fromPromise(db.query(query, [req.params.id]));
 
-                     res.send(err);
-                   },
-               );
+  return rxjs.Observable.forkJoin(
+        queryObservable,
+        rxjs.Observable.of(res),
+        rxjs.Observable.of(req),
+    );
+}
+
+function setUpGetStream(subject, entityName, optionalAttrs) {
+  return subject.flatMap(([req, res]) => getEntities(req, res, entityName, optionalAttrs))
+                  .subscribe(
+                      (data) => {
+                        const resp = data[1];
+                        const req = data[2];
+                        const people = data[0];
+
+                        resp.send(req.params.id ? people[0] : people);
+                      },
+                      () => {
+                        throw `Should never get here. Add timeout for this.`;
+                      },
+                  );
 }

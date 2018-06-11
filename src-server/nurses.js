@@ -1,4 +1,4 @@
-const { delEntity, createEntity, getEntities } = require(`./common`);
+const { delEntity, createEntity, setUpGetStream } = require(`./common`);
 const express = require(`express`);
 
 const rxjs = require(`rxjs`);
@@ -8,22 +8,14 @@ const delNurseSubject = new rxjs.Subject();
 const getNurseSubject = new rxjs.Subject();
 const newNurseSubject = new rxjs.Subject();
 
-getNursesSubject.subscribe((args) => {
-  const [req, res] = args;
 
-  getEntities(req, res, `nurse`, [`is_district_nurse as district`]);
-});
+setUpGetStream(getNursesSubject, `nurse`, [`is_district_nurse as district`]);
+setUpGetStream(getNurseSubject, `nurse`, [`is_district_nurse as district`]);
 
 delNurseSubject.subscribe((args) => {
   const [req, res] = args;
 
   delEntity(req, res, `nurse`);
-});
-
-getNurseSubject.subscribe((args) => {
-  const [req, res] = args;
-
-  getEntities(req, res, `nurse`, [`is_district_nurse as district`]);
 });
 
 newNurseSubject.subscribe((args) => {
