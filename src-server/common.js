@@ -3,7 +3,7 @@ const db = require(`./db`);
 
 module.exports = {
   setUpDelStream,
-  createEntity,
+  setUpCreateStream,
   setUpGetStream,
 };
 
@@ -23,24 +23,13 @@ function createEntity(req, res, callback, passedQuery) {
     insert into person (email, name, surname, id) 
     values ($1, $2, $3, nextval('person_id_seq')) returning id`;
 
-  rxjs.Observable
-        .fromPromise(
-            db.tx(() => db.query(query, [req.body[`e-mail`], req.body.name, req.body.surname])
-                           .then(data => passedQuery(data, db)), [],
-            ),
-        )
-        .subscribe(
-            (data) => {
-              console.log(data);
-
-              res.redirect(`/${callback}`);
-            },
-            (err) => {
-              console.log(`ERR`, err);
-
-              res.redirect(`/${callback}`);
-            },
-        );
+  return rxjs.Observable
+               .fromPromise(
+                   db.tx(() => db.query(query, [req.body[`e-mail`], req.body.name, req.body.surname])
+                                  .then(data => passedQuery(data, db)), [],
+                   ),
+               )
+               .flatMap(() => rxjs.Observable.of(res));
 }
 
 function getEntities(req, res, entityName, entityFields = []) {
@@ -92,6 +81,16 @@ function setUpDelStream(stream, entityName) {
             },
             () => {
               throw `should never get here`;
+            },
+        );
+}
+
+function setUpCreateStream(stream, url, callback) {
+  return stream
+        .flatMap(([req, res]) => createEntity(req, res, `patients`, callback(req)))
+        .subscribe(
+            (resp) => {
+              resp.redirect(`/${url}`);
             },
         );
 }

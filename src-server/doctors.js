@@ -1,5 +1,6 @@
-const { setUpDelStream, createEntity, setUpGetStream } = require(`./common`);
+const { setUpDelStream, setUpCreateStream, setUpGetStream } = require(`./common`);
 const rxjs = require(`rxjs`);
+const router = require(`express`).Router();
 
 const getDoctorsSubject = new rxjs.Subject();
 const delDoctorSubject = new rxjs.Subject();
@@ -9,15 +10,11 @@ const newDoctorSubject = new rxjs.Subject();
 setUpGetStream(getDoctorsSubject, `doctor`, [`speciality`]);
 setUpGetStream(getDoctorSubject, `doctor`, [`speciality`]);
 setUpDelStream(delDoctorSubject, `doctor`);
-
-newDoctorSubject.subscribe((args) => {
-  const [req, res] = args;
+setUpCreateStream(newDoctorSubject, `doctors`, (req) => {
   const query = `insert into doctor (id, person_id, speciality) values (nextval('doctor_id_seq'), $1, $2)`;
 
-  createEntity(req, res, `doctors`, (data, db) => db.query(query, [data[0].id, req.body.speciality]));
+  return (data, db) => db.query(query, [data[0].id, req.body.speciality]);
 });
-
-const router = require(`express`).Router();
 
 module.exports = router
     .get(`/api/doctors`, (req, res) => getDoctorsSubject.next([req, res]))
