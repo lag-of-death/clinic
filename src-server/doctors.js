@@ -1,4 +1,4 @@
-const { delEntity, createEntity, setUpGetStream } = require(`./common`);
+const { setUpDelStream, createEntity, setUpGetStream } = require(`./common`);
 const rxjs = require(`rxjs`);
 
 const getDoctorsSubject = new rxjs.Subject();
@@ -8,14 +8,7 @@ const newDoctorSubject = new rxjs.Subject();
 
 setUpGetStream(getDoctorsSubject, `doctor`, [`speciality`]);
 setUpGetStream(getDoctorSubject, `doctor`, [`speciality`]);
-
-
-delDoctorSubject.subscribe((args) => {
-  const [req, res] = args;
-
-  delEntity(req, res, `doctor`);
-});
-
+setUpDelStream(delDoctorSubject, `doctor`);
 
 newDoctorSubject.subscribe((args) => {
   const [req, res] = args;

@@ -2,27 +2,20 @@ const rxjs = require(`rxjs`);
 const db = require(`./db`);
 
 module.exports = {
-  delEntity,
+  setUpDelStream,
   createEntity,
   setUpGetStream,
 };
 
 function delEntity(req, res, entityName) {
-  rxjs.Observable
-        .fromPromise(
-            db.tx(() =>
-                db.query(`delete from ${entityName} where id = $1 returning person_id`, [req.params.id])
-                  .then(data => db.query(`delete from person where id = $1`, [data[0].person_id])),
-            ),
-        )
-        .subscribe(
-            () => res.send(`OK`),
-            (err) => {
-              console.log(`ERR`, err);
-
-              res.send(`ERR`);
-            },
-        );
+  return rxjs.Observable
+               .fromPromise(
+                   db.tx(() =>
+                       db.query(`delete from ${entityName} where id = $1 returning person_id`, [req.params.id])
+                         .then(data => db.query(`delete from person where id = $1`, [data[0].person_id])),
+                   ),
+               )
+               .flatMap(() => rxjs.Observable.of(res));
 }
 
 function createEntity(req, res, callback, passedQuery) {
@@ -88,4 +81,17 @@ function setUpGetStream(subject, entityName, optionalAttrs) {
                         throw `Should never get here. Add timeout for this.`;
                       },
                   );
+}
+
+function setUpDelStream(stream, entityName) {
+  return stream
+        .flatMap(([req, res]) => delEntity(req, res, entityName))
+        .subscribe(
+            (resp) => {
+              resp.send(`OK`);
+            },
+            () => {
+              throw `should never get here`;
+            },
+        );
 }

@@ -1,6 +1,6 @@
 const rxjs = require(`rxjs`);
 const router = require(`express`).Router();
-const { delEntity, setUpGetStream, createEntity } = require(`./common`);
+const { setUpGetStream, setUpDelStream, createEntity } = require(`./common`);
 
 const getPatientsSubject = new rxjs.Subject();
 const delPatientSubject = new rxjs.Subject();
@@ -10,13 +10,7 @@ const newPatientSubject = new rxjs.Subject();
 
 setUpGetStream(getPatientsSubject, `patient`);
 setUpGetStream(getPatientSubject, `patient`);
-
-
-delPatientSubject.subscribe((args) => {
-  const [req, res] = args;
-
-  delEntity(req, res, `patient`);
-});
+setUpDelStream(delPatientSubject, `patient`);
 
 
 newPatientSubject.subscribe((args) => {
