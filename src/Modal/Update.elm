@@ -9,7 +9,7 @@ type Msg msg
     | Hide
     | Do msg
     | Prepare msg
-    | PrepareErr
+    | PrepareErr msg
     | ShowMsg String msg
 
 
@@ -26,7 +26,6 @@ update modalMsg model noOp =
             ( { model
                 | msg = msg
                 , textMsg = "Are you sure?"
-                , withActions = True
                 , shouldShow = True
                 , showCloseBtn = True
               }
@@ -38,19 +37,17 @@ update modalMsg model noOp =
                 | msg = msg
                 , textMsg = text
                 , shouldShow = True
-                , withActions = True
                 , showCloseBtn = False
               }
             , Cmd.none
             )
 
-        PrepareErr ->
+        PrepareErr msg ->
             ( { model
-                | msg = noOp
+                | msg = msg
                 , textMsg = "ERROR"
                 , shouldShow = True
-                , withActions = False
-                , showCloseBtn = True
+                , showCloseBtn = False
               }
             , Cmd.none
             )

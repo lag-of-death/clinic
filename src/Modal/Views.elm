@@ -49,8 +49,8 @@ yesNoButtonsStyles =
         ]
 
 
-view : msg -> String -> MT.Modal msg -> Html msg
-view xButtonMsg actionBtnLabel model =
+view : msg -> MT.Modal msg -> Html msg
+view xButtonMsg model =
     let
         question =
             model.textMsg
@@ -61,34 +61,34 @@ view xButtonMsg actionBtnLabel model =
         actionMsg =
             model.msg
 
-        withActions =
-            model.withActions
-
         showCloseBtn =
             model.showCloseBtn
     in
         if shouldShow == True then
-            div [ styles ]
-                [ if showCloseBtn then
-                    Html.button
+            if showCloseBtn then
+                div [ styles ]
+                    [ Html.button
                         [ onClick xButtonMsg, buttonsStyles, style Styles.button, closeButtonStyles ]
                         [ text "X" ]
-                  else
-                    span [] []
-                , div [] [ text question ]
-                , if withActions then
-                    div
+                    , div [ style [ ( "text-align", "center" ) ] ] [ text question ]
+                    , div
                         [ buttonsStyles, yesNoButtonsStyles ]
                         [ button
                             [ onClick actionMsg, style Styles.button, style [ ( "margin-right", "4px" ) ] ]
-                            [ text actionBtnLabel ]
-                        , if showCloseBtn then
-                            button [ onClick xButtonMsg, style Styles.button ] [ text "Cancel" ]
-                          else
-                            span [] []
+                            [ text "YES" ]
+                        , button [ onClick xButtonMsg, style Styles.button ] [ text "Cancel" ]
                         ]
-                  else
-                    span [] []
-                ]
+                    ]
+            else
+                div [ styles, style [ ( "flex-direction", "column" ), ( "justify-content", "space-between" ) ] ]
+                    [ span [] []
+                    , div [ style [ ( "text-align", "center" ) ] ] [ text question ]
+                    , div
+                        [ yesNoButtonsStyles, style [ ( "width", "50%" ) ] ]
+                        [ button
+                            [ onClick actionMsg, style Styles.button, style [ ( "margin-right", "4px" ), ( "width", "100%" ) ] ]
+                            [ text "OK" ]
+                        ]
+                    ]
         else
             span [] []

@@ -191,7 +191,7 @@ handleMsg :
 handleMsg innerMsg model msgFromChild cmd updatedModal outerMsg =
     case innerMsg of
         PU.EntityDeleted (Err _) ->
-            prepareModal model PrepareErr
+            prepareModal model (PrepareErr <| Types.ModalMsg <| Hide)
 
         PU.DelEntity _ ->
             prepareModal model (Prepare <| doModalMsg <| outerMsg msgFromChild)
