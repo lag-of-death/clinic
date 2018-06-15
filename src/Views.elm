@@ -29,20 +29,19 @@ list content =
         )
 
 
-actions : Html.Attribute a -> Html.Attribute a -> List (Html a)
-actions onClick1 onClick2 =
+actions onClick1 onClick2 locals =
     [ div [ style [ ( "display", "flex" ) ] ]
         [ Html.button
             [ style Styles.button
             , onClick1
             ]
-            [ text "Details" ]
+            [ text locals.details ]
         , Html.button
             [ style Styles.button
             , style [ ( "margin-left", "4px" ) ]
             , onClick2
             ]
-            [ text "Delete" ]
+            [ text locals.delete ]
         ]
     ]
 

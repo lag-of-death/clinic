@@ -49,8 +49,7 @@ yesNoButtonsStyles =
         ]
 
 
-view : msg -> MT.Modal msg -> Html msg
-view xButtonMsg model =
+view xButtonMsg model locals =
     let
         question =
             model.textMsg
@@ -75,8 +74,8 @@ view xButtonMsg model =
                         [ buttonsStyles, yesNoButtonsStyles ]
                         [ button
                             [ onClick actionMsg, style Styles.button, style [ ( "margin-right", "4px" ) ] ]
-                            [ text "YES" ]
-                        , button [ onClick xButtonMsg, style Styles.button ] [ text "Cancel" ]
+                            [ text locals.yes ]
+                        , button [ onClick xButtonMsg, style Styles.button ] [ text locals.cancel ]
                         ]
                     ]
             else
@@ -87,7 +86,7 @@ view xButtonMsg model =
                         [ yesNoButtonsStyles, style [ ( "width", "50%" ) ] ]
                         [ button
                             [ onClick actionMsg, style Styles.button, style [ ( "margin-right", "4px" ), ( "width", "100%" ) ] ]
-                            [ text "OK" ]
+                            [ text locals.ok ]
                         ]
                     ]
         else

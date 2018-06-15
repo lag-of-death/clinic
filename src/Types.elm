@@ -3,24 +3,10 @@ module Types
         ( initialStyle
         , init
         , Model
-        , Msg
-            ( NewUrl
-            , PatientMsg
-            , DoctorMsg
-            , NurseMsg
-            , VisitMsg
-            , UrlChange
-            , NewVisitMsg
-            , ModalMsg
-            , NoOp
-            , Animate
-            , Show
-            , ShowStaffList
-            , StaffMsg
-            , HideStaffList
-            )
+        , Msg(..)
         )
 
+import Localization.Types exposing (..)
 import People.Update
 import Modal.Update exposing (Msg)
 import Navigation as Nav
@@ -49,6 +35,8 @@ type alias Model =
     , modal : Modal.Types.Modal Msg
     , showStaffList : Bool
     , staff : PeopleTypes.StaffModel
+    , locals : Localization.Types.Locals
+    , language : Localization.Types.Language
     }
 
 
@@ -62,8 +50,10 @@ init location =
       , nurses = PeopleTypes.initialNurses
       , visits = VisitsTypes.initialVisits
       , newVisit = VisitsTypes.initialNewVisit
-      , modal = Modal.Types.initialModel NoOp
+      , modal = Modal.Types.initialModel polishLocals.areYouSure NoOp
       , showStaffList = False
+      , language = Localization.Types.PL
+      , locals = Localization.Types.polishLocals
       }
     , Nav.newUrl location.pathname
     )
@@ -84,3 +74,4 @@ type Msg
     | Show
     | ShowStaffList
     | HideStaffList
+    | ChangeLanguage Localization.Types.Language

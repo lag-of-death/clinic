@@ -21,58 +21,61 @@ import Views exposing (newEntity, list, actions)
 import People.Update as PU
 
 
-withSpeciality : PT.Doctor -> List (Html msg) -> List (Html msg)
-withSpeciality doctor entryData =
-    List.append entryData [ div [ style [ ( "width", "100px" ) ] ] [ text doctor.speciality ] ]
+withSpeciality doctor entryData locals =
+    List.append entryData
+        [ div
+            [ style [ ( "width", "100px" ) ] ]
+            [ text <| translateSpeciality locals <| doctor.speciality ]
+        ]
 
 
-withIsDistrictInfo : PT.Nurse -> List (Html msg) -> List (Html msg)
-withIsDistrictInfo nurse entryData =
+withIsDistrictInfo nurse entryData districtNurse =
     List.append
         entryData
         [ div [ style [ ( "width", "100px" ) ] ]
             [ text <|
                 if nurse.district then
-                    "district nurse"
+                    districtNurse
                 else
                     ""
             ]
         ]
 
 
-listSingleEntryShell : Html.Attribute a -> Html.Attribute a -> { c | personal : { b | surname : String, name : String } } -> List (Html a)
-listSingleEntryShell onClick1 onClick2 a =
+listSingleEntryShell onClick1 onClick2 entity locals =
     let
         person =
-            a.personal
+            entity.personal
     in
         [ div [ style [ ( "width", "30%" ) ] ] [ text <| person.surname ++ " " ++ person.name ]
         , div []
             (actions
                 onClick1
                 onClick2
+                locals
             )
         ]
 
 
-doctorsList : List PT.Doctor -> Html (PU.Msg e)
-doctorsList doctors =
+doctorsList doctors locals =
     list
         (List.map
             (\doctor ->
-                withSpeciality doctor
+                withSpeciality
+                    doctor
                     (listSingleEntryShell
                         (onClick (PU.NewEntityUrl <| "/doctors/" ++ toString doctor.id))
                         (onClick (PU.DelEntity doctor.id))
                         doctor
+                        locals
                     )
+                    locals
             )
             doctors
         )
 
 
-nursesList : List PT.Nurse -> Html (PU.Msg e)
-nursesList nurses =
+nursesList nurses locals =
     list
         (List.map
             (\nurse ->
@@ -83,14 +86,15 @@ nursesList nurses =
                         )
                         (onClick (PU.DelEntity nurse.id))
                         nurse
+                        locals
                     )
+                    locals.districtNurse
             )
             nurses
         )
 
 
-patientsList : List { a | id : Int, personal : { b | name : String, surname : String } } -> Html (PU.Msg e)
-patientsList patients =
+patientsList patients locals =
     list
         (List.map
             (\patient ->
@@ -98,15 +102,25 @@ patientsList patients =
                     (onClick (PU.NewEntityUrl <| "/patients/" ++ toString patient.id))
                     (onClick (PU.DelEntity patient.id))
                     patient
+                    locals
             )
             patients
         )
 
 
-staffView :
-    List { b | personal : { a | name : String, surname : String }, who : String }
-    -> Html msg
-staffView staff =
+translate locals who =
+    case who of
+        "nurse" ->
+            locals.nurse
+
+        "doctor" ->
+            locals.doctor
+
+        _ ->
+            ""
+
+
+staffView staff locals =
     div
         [ style [ ( "padding", "20px 160px" ), ( "background", "lightblue" ) ] ]
         (List.map
@@ -114,26 +128,23 @@ staffView staff =
                 div
                     [ style [ ( "display", "flex" ), ( "justify-content", "space-between" ) ] ]
                     [ p [ style Styles.button ] [ text <| staffMember.personal.name ++ " " ++ staffMember.personal.surname ]
-                    , p [ style Styles.button ] [ text staffMember.who ]
+                    , p [ style Styles.button ] [ text <| translate locals <| staffMember.who ]
                     ]
             )
             staff
         )
 
 
-patientsView : List { a | id : Int, personal : { b | name : String, surname : String } } -> Html (PU.Msg PT.Patient)
-patientsView patients =
-    view newPatient (patientsList patients)
+patientsView patients locals =
+    view (newPatient locals.newPatient) (patientsList patients locals)
 
 
-newPatient : Html (PU.Msg PT.Patient)
-newPatient =
-    newEntity (onClick (PU.NewEntityUrl <| "/patients/new")) "New patient"
+newPatient newPatientLabel =
+    newEntity (onClick (PU.NewEntityUrl <| "/patients/new")) newPatientLabel
 
 
-doctorsView : List PT.Doctor -> Html (PU.Msg e)
-doctorsView doctors =
-    view newDoctor (doctorsList doctors)
+doctorsView doctors locals =
+    view (newDoctor locals.newDoctor) (doctorsList doctors locals)
 
 
 view : Html msg -> Html msg -> Html msg
@@ -144,96 +155,93 @@ view newEntityBtn people =
         ]
 
 
-newNurse : Html (PU.Msg e)
-newNurse =
-    newEntity (onClick (PU.NewEntityUrl <| "/nurses/new")) "New nurse"
+newNurse newNurse =
+    newEntity (onClick (PU.NewEntityUrl <| "/nurses/new")) newNurse
 
 
-newDoctor : Html (PU.Msg e)
-newDoctor =
-    newEntity (onClick (PU.NewEntityUrl <| "/doctors/new")) "New doctor"
+newDoctor newDoctor =
+    newEntity (onClick (PU.NewEntityUrl <| "/doctors/new")) newDoctor
 
 
-newNurseView : Html (PU.Msg e)
-newNurseView =
+newNurseView locals =
     formToSubmit "nurses" <|
         List.concat
-            [ newPersonFields
+            [ newPersonFields locals
             , [ div [ style block, style blockCentered, style blockStretched ]
-                    [ label [] [ text "District nurse" ]
+                    [ label [] [ text locals.districtNurse ]
                     , select [ name "district", style Styles.button ]
-                        options
+                        (options locals)
                     ]
               ]
-            , [ submitBtn ]
+            , [ submitBtn locals.add ]
             ]
 
 
-options : List (Html msg)
-options =
+options locals =
     [ option
         [ value "yes" ]
-        [ text "YES" ]
+        [ text locals.yes ]
     , option
         [ value "no" ]
-        [ text "NO" ]
+        [ text locals.no ]
     ]
 
 
-doctorSpecialities : List (Html msg)
-doctorSpecialities =
+doctorSpecialities locals =
     [ option
         [ value "surgeon" ]
-        [ text "surgeon" ]
+        [ text locals.surgeon ]
     , option
         [ value "pediatrician" ]
-        [ text "pediatrician" ]
+        [ text locals.pediatrician ]
     , option
         [ value "laryngologist" ]
-        [ text "laryngologist" ]
+        [ text locals.laryngologist ]
     , option
         [ value "dentist" ]
-        [ text "dentist" ]
-    , option
-        [ value "gynecologist" ]
-        [ text "gynecologist" ]
+        [ text locals.dentist ]
     , option
         [ value "endocrinologist" ]
-        [ text "endocrinologist" ]
+        [ text locals.endocrinologist ]
     , option
         [ value "gastrologist" ]
-        [ text "gastrologist" ]
+        [ text locals.gastrologist ]
     ]
 
 
-newDoctorView : Html (PU.Msg e)
-newDoctorView =
+newDoctorView locals =
     formToSubmit "doctors" <|
         List.concat
-            [ newPersonFields
+            [ newPersonFields locals
             , [ div [ style block, style blockCentered, style blockStretched ]
-                    [ label [] [ text "Speciality" ]
+                    [ label [] [ text locals.speciality ]
                     , select [ required True, name "speciality", style Styles.button ]
-                        doctorSpecialities
+                        (doctorSpecialities locals)
                     ]
               ]
-            , [ submitBtn ]
+            , [ submitBtn locals.add ]
             ]
 
 
-submitBtn : Html msg
-submitBtn =
+submitBtn add =
     Html.button
         [ Html.Attributes.type_ "submit"
         , style Styles.button
         , style Styles.submit
         ]
-        [ text "Add" ]
+        [ text add ]
 
 
-createInput : ( String, String ) -> ( Html msg, String )
-createInput ( name_, type_ ) =
-    ( input [ required True, name <| String.toLower name_, style Styles.button, Html.Attributes.type_ type_ ] [], name_ )
+createInput ( name_, label_, type_ ) =
+    ( input
+        [ required True
+        , name name_
+        , style Styles.button
+        , Html.Attributes.type_ type_
+        ]
+        []
+    , label_
+    )
 
 
 addLabel : ( Html msg, String ) -> List (Html msg)
@@ -248,16 +256,14 @@ wrapWithDiv inputWithLabel =
     div [ style block, style blockCentered, style blockStretched ] inputWithLabel
 
 
-createFieldRow : ( String, String ) -> Html msg
 createFieldRow =
     createInput >> addLabel >> wrapWithDiv
 
 
-newPersonFields : List (Html msg)
-newPersonFields =
-    [ createFieldRow ( "Surname", "text" )
-    , createFieldRow ( "Name", "text" )
-    , createFieldRow ( "E-mail", "email" )
+newPersonFields locals =
+    [ createFieldRow ( "surname", locals.surname, "text" )
+    , createFieldRow ( "name", locals.name, "text" )
+    , createFieldRow ( "e-mail", locals.email, "email" )
     ]
 
 
@@ -270,105 +276,108 @@ formToSubmit endpoint =
         ]
 
 
-newPatientView : Html msg
-newPatientView =
-    formToSubmit "patients" <| List.concat [ newPersonFields, [ submitBtn ] ]
+newPatientView locals =
+    formToSubmit "patients" <| List.concat [ newPersonFields locals, [ submitBtn locals.add ] ]
 
 
-patientView :
-    { c
-        | personal :
-            { b | email : String, name : String, surname : String }
-        , id : a
-    }
-    -> Html msg
-patientView patient =
-    table [] (restTr patient)
+patientView patient locals =
+    table [ personDetailsView ] (restTr patient locals)
 
 
-restTr :
-    { c
-        | id : a
-        , personal : { b | email : String, name : String, surname : String }
-    }
-    -> List (Html msg)
-restTr person =
+rightAligned =
+    style [ ( "text-align", "right" ) ]
+
+
+recordStyle =
+    style [ ( "padding", "10px" ) ]
+
+
+restTr person locals =
     [ tr []
-        [ td []
-            [ text "Surname:" ]
-        , td []
+        [ td [ style Styles.button, recordStyle ]
+            [ text <| locals.surname ]
+        , td [ rightAligned, style Styles.button, recordStyle ]
             [ text person.personal.surname ]
         ]
     , tr []
-        [ td []
-            [ text "Name:" ]
-        , td []
+        [ td [ style Styles.button, recordStyle ]
+            [ text <| locals.name ]
+        , td [ rightAligned, style Styles.button, recordStyle ]
             [ text person.personal.name ]
         ]
     , tr []
-        [ td []
-            [ text "E-mail:" ]
-        , td []
+        [ td [ style Styles.button, recordStyle ]
+            [ text <| locals.email ]
+        , td [ rightAligned, style Styles.button, recordStyle ]
             [ text person.personal.email ]
         ]
     , tr []
-        [ td []
-            [ text "ID:" ]
-        , td []
+        [ td [ style Styles.button, recordStyle ]
+            [ text <| locals.id ]
+        , td [ rightAligned, style Styles.button, recordStyle ]
             [ text <| toString <| person.id ]
         ]
     ]
 
 
-specialityTr : String -> Html msg
-specialityTr speciality =
+translateSpeciality locals speciality =
+    case speciality of
+        "surgeon" ->
+            locals.surgeon
+
+        "pediatrician" ->
+            locals.pediatrician
+
+        "laryngologist" ->
+            locals.laryngologist
+
+        "dentist" ->
+            locals.dentist
+
+        "endocrinologist" ->
+            locals.endocrinologist
+
+        "gastrologist" ->
+            locals.gastrologist
+
+        notTranslated ->
+            notTranslated
+
+
+specialityTr speciality locals =
     tr []
-        [ td []
-            [ text "Speciality:" ]
-        , td []
-            [ text speciality ]
+        [ td [ style Styles.button ]
+            [ text locals.speciality ]
+        , td [ rightAligned, style Styles.button ]
+            [ text <| translateSpeciality locals <| speciality ]
         ]
 
 
-districtNurseTr : Bool -> Html msg
-districtNurseTr isDistrict =
+districtNurseTr isDistrict locals =
     tr []
-        [ td []
-            [ text "District nurse:" ]
-        , td []
+        [ td [ style Styles.button ]
+            [ text locals.districtNurse ]
+        , td [ rightAligned, style Styles.button ]
             [ text <|
                 if isDistrict then
-                    "yes"
+                    locals.yes
                 else
-                    "no"
+                    locals.no
             ]
         ]
 
 
-doctorView :
-    { c
-        | personal :
-            { b | email : String, name : String, surname : String }
-        , speciality : String
-        , id : a
-    }
-    -> Html (PU.Msg e)
-doctorView doctor =
-    table [] (List.concat [ restTr doctor, [ specialityTr doctor.speciality ] ])
+personDetailsView =
+    style [ ( "background", "lightblue" ), ( "border", "2px solid black" ) ]
 
 
-nurseView :
-    { c
-        | district : Bool
-        , id : a
-        , personal :
-            { b | email : String, name : String, surname : String }
-    }
-    -> Html (PU.Msg e)
-nurseView nurse =
-    table [] (List.concat [ restTr nurse, [ districtNurseTr nurse.district ] ])
+doctorView doctor locals =
+    table [ personDetailsView ] (List.concat [ restTr doctor locals, [ specialityTr doctor.speciality locals ] ])
 
 
-nursesView : List PT.Nurse -> Html (PU.Msg e)
-nursesView nurses =
-    view newNurse (nursesList nurses)
+nurseView nurse locals =
+    table [ personDetailsView ] (List.concat [ restTr nurse locals, [ districtNurseTr nurse.district locals ] ])
+
+
+nursesView nurses locals =
+    view (newNurse locals.newNurse) (nursesList nurses locals)

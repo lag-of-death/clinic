@@ -1,10 +1,9 @@
 module Modal.Types exposing (initialModel, Modal)
 
 
-initialModel : a -> { msg : a, shouldShow : Bool, textMsg : String, showCloseBtn : Bool }
-initialModel msg =
+initialModel areYouSure msg =
     { shouldShow = False
-    , textMsg = "Are you sure?"
+    , textMsg = areYouSure
     , msg = msg
     , showCloseBtn = True
     }

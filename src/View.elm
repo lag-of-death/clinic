@@ -15,17 +15,17 @@ import Html.Attributes exposing (style, class)
 import Styles
 import Routes
 import Types
+import Localization.Types as LT
 
 
-toBtnWithList : Bool -> Html Types.Msg
-toBtnWithList showStaffList =
+toBtnWithList showStaffList locals =
     div
         [ onMouseOver Types.ShowStaffList
         , onMouseLeave Types.HideStaffList
         , style [ ( "position", "relative" ) ]
         ]
         [ Html.button [ style Styles.button ]
-            [ text "staff"
+            [ text locals.staff
             ]
         , if showStaffList then
             ul
@@ -39,9 +39,9 @@ toBtnWithList showStaffList =
                     , ( "margin", "0" )
                     ]
                 ]
-                [ li [] [ toBtn [ style Styles.button, style [ ( "width", "100%" ) ] ] "all" ]
-                , li [] [ toBtn [ style Styles.button, style [ ( "width", "100%" ) ] ] "nurses" ]
-                , li [] [ toBtn [ style Styles.button, style [ ( "width", "100%" ) ] ] "doctors" ]
+                [ li [] [ toBtn [ style Styles.button, style [ ( "width", "100%" ) ] ] "all" locals.all ]
+                , li [] [ toBtn [ style Styles.button, style [ ( "width", "100%" ) ] ] "nurses" locals.nurses ]
+                , li [] [ toBtn [ style Styles.button, style [ ( "width", "100%" ) ] ] "doctors" locals.doctors ]
                 ]
           else
             span [] []
@@ -53,9 +53,13 @@ view model =
     Html.body [ style Styles.body ]
         [ div
             [ style Styles.menu ]
-            [ toMenuBtn "patients"
-            , toBtnWithList model.showStaffList
-            , toMenuBtn "visits"
+            [ toMenuBtn "patients" model.locals.patients
+            , toBtnWithList model.showStaffList model.locals
+            , toMenuBtn "visits" model.locals.visits
+            , div []
+                [ Html.button [ style Styles.button, onClick (Types.ChangeLanguage LT.EN) ] [ text "EN" ]
+                , Html.button [ style Styles.button, onClick (Types.ChangeLanguage LT.PL) ] [ text "PL" ]
+                ]
             ]
         , main_
             (List.concat
@@ -71,15 +75,16 @@ view model =
         , Modal.Views.view
             (Types.ModalMsg Hide)
             model.modal
+            model.locals
         ]
 
 
-toBtn : List (Html.Attribute Types.Msg) -> String -> Html Types.Msg
-toBtn styles whatAppPart =
-    Html.button (List.concat [ styles, [ onClick (Types.NewUrl <| "/" ++ whatAppPart ++ "/") ] ]) [ text whatAppPart ]
+toBtn : List (Html.Attribute Types.Msg) -> String -> String -> Html Types.Msg
+toBtn styles whatAppPart label =
+    Html.button (List.concat [ styles, [ onClick (Types.NewUrl <| "/" ++ whatAppPart ++ "/") ] ]) [ text label ]
 
 
-toMenuBtn : String -> Html Types.Msg
+toMenuBtn : String -> String -> Html Types.Msg
 toMenuBtn =
     toBtn [ style Styles.button ]
 
@@ -93,40 +98,40 @@ toRouteView model maybeRoute =
         Just route ->
             case route of
                 Routes.AllStaff ->
-                    bordered <| Html.map Types.StaffMsg (PeopleView.staffView model.staff)
+                    bordered <| Html.map Types.StaffMsg (PeopleView.staffView model.staff model.locals)
 
                 Routes.Visits ->
-                    bordered <| Html.map Types.VisitMsg (VisitsView.view model.visits)
+                    bordered <| Html.map Types.VisitMsg (VisitsView.view model.visits model.locals)
 
                 Routes.VisitId id ->
-                    centerElement <| Html.map Types.VisitMsg (VisitsView.visitView (getVisit id model.visits))
+                    centerElement <| Html.map Types.VisitMsg (VisitsView.visitView (getVisit id model.visits) model.locals)
 
                 Routes.NewVisit ->
                     centerElement <| Html.map Types.NewVisitMsg (VisitsView.newVisitView model)
 
                 Routes.Patients ->
-                    bordered <| Html.map Types.PatientMsg (PeopleView.patientsView model.patients)
+                    bordered <| Html.map Types.PatientMsg (PeopleView.patientsView model.patients model.locals)
 
                 Routes.PatientId id ->
-                    centerElement <| Html.map Types.PatientMsg (PeopleView.patientView (getPerson id model.patients PeopleTypes.defaultPatient))
+                    centerElement <| Html.map Types.PatientMsg (PeopleView.patientView (getPerson id model.patients PeopleTypes.defaultPatient) model.locals)
 
                 Routes.NewPatient ->
-                    centerElement <| Html.map Types.PatientMsg PeopleView.newPatientView
+                    centerElement <| Html.map Types.PatientMsg (PeopleView.newPatientView model.locals)
 
                 Routes.Doctors ->
-                    bordered <| Html.map Types.DoctorMsg (PeopleView.doctorsView model.doctors)
+                    bordered <| Html.map Types.DoctorMsg (PeopleView.doctorsView model.doctors model.locals)
 
                 Routes.DoctorId id ->
-                    centerElement <| Html.map Types.DoctorMsg (PeopleView.doctorView (getPerson id model.doctors PeopleTypes.defaultDoctor))
+                    centerElement <| Html.map Types.DoctorMsg (PeopleView.doctorView (getPerson id model.doctors PeopleTypes.defaultDoctor) model.locals)
 
                 Routes.NewDoctor ->
-                    centerElement <| Html.map Types.DoctorMsg PeopleView.newDoctorView
+                    centerElement <| Html.map Types.DoctorMsg (PeopleView.newDoctorView model.locals)
 
                 Routes.Nurses ->
-                    bordered <| Html.map Types.NurseMsg (PeopleView.nursesView model.nurses)
+                    bordered <| Html.map Types.NurseMsg (PeopleView.nursesView model.nurses model.locals)
 
                 Routes.NurseId id ->
-                    centerElement <| Html.map Types.NurseMsg (PeopleView.nurseView (getPerson id model.nurses PeopleTypes.defaultNurse))
+                    centerElement <| Html.map Types.NurseMsg (PeopleView.nurseView (getPerson id model.nurses PeopleTypes.defaultNurse) model.locals)
 
                 Routes.NewNurse ->
-                    centerElement <| Html.map Types.NurseMsg PeopleView.newNurseView
+                    centerElement <| Html.map Types.NurseMsg (PeopleView.newNurseView model.locals)

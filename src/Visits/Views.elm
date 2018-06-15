@@ -16,12 +16,12 @@ import Visits.Helpers
 import Visits.Types exposing (NewVisitMsg(..))
 
 
-buttonActions : Visit -> Html (People.Update.Msg e)
-buttonActions visit =
+buttonActions visit locals =
     div []
         (Views.actions
             (onClick (People.Update.NewEntityUrl <| "/visits/" ++ toString visit.id))
             (onClick (People.Update.DelEntity visit.id))
+            locals
         )
 
 
@@ -30,8 +30,7 @@ toID name =
     String.toLower name |> (\name_ -> name_ ++ "ID")
 
 
-createAttrsForSelect : ( String -> msg, String, a ) -> ( List (Attribute msg), String, a )
-createAttrsForSelect ( onInputMsg, fieldName, people ) =
+createAttrsForSelect ( choose, onInputMsg, fieldName, label, people ) =
     ( [ onInput onInputMsg
       , required True
       , style Styles.button
@@ -40,21 +39,18 @@ createAttrsForSelect ( onInputMsg, fieldName, people ) =
             ]
       , name <| toID fieldName
       ]
-    , fieldName
+    , label
+    , choose
     , people
     )
 
 
-createSelect :
-    ( List (Attribute b), c, List { a | id : Int, personal : People.Types.Person } )
-    -> ( Html b, c )
-createSelect ( inputEl, fieldName, people ) =
-    ( select inputEl <| List.concat [ [ selectTitle ], (List.map personToOption people) ], fieldName )
+createSelect ( inputEl, label, choose, people ) =
+    ( select inputEl <| List.concat [ [ selectTitle choose ], (List.map personToOption people) ], label )
 
 
-addLabel : ( Html msg, String ) -> List (Html msg)
-addLabel ( element, text_ ) =
-    [ label [] [ text text_ ], element ]
+addLabel ( element, label_ ) =
+    [ label [] [ text label_ ], element ]
 
 
 wrapWithDiv : List (Html msg) -> Html msg
@@ -62,7 +58,6 @@ wrapWithDiv elm =
     div [ style block, style blockCentered, style blockStretched ] elm
 
 
-wrapEl : ( Html msg, String ) -> Html msg
 wrapEl =
     addLabel >> wrapWithDiv
 
@@ -79,9 +74,9 @@ newVisitView model =
         , Html.Attributes.action "/api/visits"
         , Html.Attributes.method "POST"
         ]
-        [ createSelectRow ( SetPatient, "Patient", model.patients )
-        , createSelectRow ( SetNurse, "Nurse", model.nurses )
-        , createSelectRow ( SetDoctor, "Doctor", model.doctors )
+        [ createSelectRow ( model.locals.choose, SetPatient, "Patient", model.locals.patient, model.patients )
+        , createSelectRow ( model.locals.choose, SetNurse, "Nurse", model.locals.nurse, model.nurses )
+        , createSelectRow ( model.locals.choose, SetDoctor, "Doctor", model.locals.doctors, model.doctors )
         , wrapEl
             ( input
                 [ type_ "number"
@@ -92,7 +87,7 @@ newVisitView model =
                 , name "room"
                 ]
                 []
-            , "Room"
+            , model.locals.room
             )
         , wrapEl
             ( input
@@ -104,30 +99,29 @@ newVisitView model =
                 , onInput SetDate
                 ]
                 []
-            , "Date"
+            , model.locals.date
             )
         , Html.button
             [ Html.Attributes.type_ "submit"
             , style Styles.button
             , style Styles.submit
             ]
-            [ text "Add" ]
+            [ text model.locals.add ]
         ]
 
 
-visitView : Visit -> Html a
-visitView visit =
+visitView visit locals =
     table
         [ attribute "border" "1"
         , attribute "cellpadding" "10"
         , style [ ( "border", "2px solid black" ), ( "border-collapse", "collapse" ) ]
         ]
         [ tr []
-            [ Html.th [ style Styles.th ] [ text "Patient" ]
-            , Html.th [ style Styles.th ] [ text "Doctor" ]
-            , Html.th [ style Styles.th ] [ text "Nurse" ]
-            , Html.th [ style Styles.th ] [ text "Date" ]
-            , Html.th [ style Styles.th ] [ text "Room number" ]
+            [ Html.th [ style Styles.th ] [ text locals.patient ]
+            , Html.th [ style Styles.th ] [ text locals.doctor ]
+            , Html.th [ style Styles.th ] [ text locals.nurse ]
+            , Html.th [ style Styles.th ] [ text locals.date ]
+            , Html.th [ style Styles.th ] [ text locals.roomNumber ]
             ]
         , tr []
             [ td []
@@ -154,8 +148,7 @@ toCommaSeparated list =
     List.map (\entity -> surnameAndName entity) list |> String.join ", "
 
 
-view : List Visit -> Html (People.Update.Msg e)
-view visits =
+view visits locals =
     div [ style block ]
         [ Views.list
             (List.map
@@ -165,12 +158,12 @@ view visits =
                         ]
                     , div [ style [ ( "width", "40%" ) ] ]
                         [ Visits.Helpers.formatDate visit.date |> text ]
-                    , buttonActions visit
+                    , buttonActions visit locals
                     ]
                 )
                 visits
             )
-        , Views.newEntity (onClick (People.Update.NewEntityUrl <| "/visits/new")) "New visit"
+        , Views.newEntity (onClick (People.Update.NewEntityUrl <| "/visits/new")) locals.newVisit
         ]
 
 
@@ -186,6 +179,5 @@ personToOption person =
         [ text <| surnameAndName person ]
 
 
-selectTitle : Html msg
-selectTitle =
-    option [ attribute "value" "", attribute "disabled" "disabled", attribute "selected" "selected" ] [ text "Choose" ]
+selectTitle choose =
+    option [ attribute "value" "", attribute "disabled" "disabled", attribute "selected" "selected" ] [ text choose ]

@@ -13,8 +13,7 @@ type Msg msg
     | ShowMsg String msg
 
 
-update : Msg a -> Modal a -> a -> ( Modal a, Cmd a )
-update modalMsg model noOp =
+update modalMsg model noOp locals =
     case modalMsg of
         Show ->
             ( { model | shouldShow = True, showCloseBtn = True }, Cmd.none )
@@ -25,7 +24,7 @@ update modalMsg model noOp =
         Prepare msg ->
             ( { model
                 | msg = msg
-                , textMsg = "Are you sure?"
+                , textMsg = locals.areYouSure
                 , shouldShow = True
                 , showCloseBtn = True
               }
@@ -45,7 +44,7 @@ update modalMsg model noOp =
         PrepareErr msg ->
             ( { model
                 | msg = msg
-                , textMsg = "ERROR"
+                , textMsg = locals.error
                 , shouldShow = True
                 , showCloseBtn = False
               }

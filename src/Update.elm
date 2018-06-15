@@ -17,6 +17,7 @@ import Routes exposing (Route(AllStaff, PatientId, Patients, Doctors, DoctorId, 
 import Modal.Update exposing (Msg(Do, PrepareErr, ShowMsg, Prepare, Hide))
 import People.Update as PU
 import People.Decoders as PD
+import Localization.Types as LT exposing (..)
 
 
 update : Types.Msg -> Types.Model -> ( Types.Model, Cmd Types.Msg )
@@ -48,7 +49,7 @@ update msg model =
         Types.ModalMsg modalMsg ->
             let
                 ( newModal, cmd ) =
-                    Modal.Update.update modalMsg model.modal Types.NoOp
+                    Modal.Update.update modalMsg model.modal Types.NoOp model.locals
             in
                 ( { model | modal = newModal }, cmd )
 
@@ -63,18 +64,13 @@ update msg model =
                     VisitsUpdate.updateNewVisit newVisitMsg model.newVisit
             in
                 case newVisitMsg of
-                    VT.NewVisitData (Ok result) ->
-                        prepareModal model (ShowMsg result <| (doModalMsg <| Types.NewUrl "/visits"))
+                    VT.NewVisitData (Ok _) ->
+                        prepareModal model (ShowMsg model.locals.newVisitOk <| (doModalMsg <| Types.NewUrl "/visits"))
 
                     VT.NewVisitData (Err result) ->
                         case result of
                             Http.BadStatus err ->
-                                case Decode.decodeString Decode.string err.body of
-                                    Ok decodedString ->
-                                        prepareModal model (ShowMsg decodedString (Types.ModalMsg Hide))
-
-                                    _ ->
-                                        ( model, Cmd.none )
+                                prepareModal model (ShowMsg model.locals.newVisitErr (Types.ModalMsg Hide))
 
                             _ ->
                                 ( model, Cmd.none )
@@ -171,6 +167,14 @@ update msg model =
         Types.HideStaffList ->
             ( { model | showStaffList = False }, Cmd.none )
 
+        Types.ChangeLanguage lang ->
+            case lang of
+                LT.EN ->
+                    ( { model | locals = LT.englishLocals }, Cmd.none )
+
+                LT.PL ->
+                    ( { model | locals = LT.polishLocals }, Cmd.none )
+
         _ ->
             ( model, Cmd.none )
 
@@ -215,6 +219,7 @@ prepareModal model msg =
                 msg
                 model.modal
                 Types.NoOp
+                model.locals
     in
         ( { model | modal = modalModel }
         , Cmd.none
