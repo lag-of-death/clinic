@@ -29,8 +29,12 @@ type alias NewVisitModel =
     { patientID : String
     , doctorID : String
     , nurseID : String
+    , daysInMonth : Int
     , room : String
     , date : String
+    , month : String
+    , day : String
+    , hour : String
     }
 
 
@@ -39,8 +43,12 @@ initialNewVisit =
     { patientID = "0"
     , doctorID = "0"
     , nurseID = "0"
+    , daysInMonth = 0
     , room = "0"
     , date = "0"
+    , month = "january"
+    , day = "1"
+    , hour = "9"
     }
 
 
@@ -57,8 +65,11 @@ type NewVisitMsg
     | SetPatient String
     | SetDoctor String
     | SetNurse String
-    | SetDate String
     | SetRoom String
+    | SetMonth String
+    | SetDay String
+    | SetHour String
+    | SetMonthDays Int
     | SendNewVisit
     | NewVisitData (Result Http.Error NewVisitResult)
 

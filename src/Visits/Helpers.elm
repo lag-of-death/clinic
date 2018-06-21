@@ -1,5 +1,6 @@
 module Visits.Helpers exposing (formatDate, addVisit, getVisit)
 
+import Localization.Types exposing (..)
 import Visits.Types exposing (Visit, defaultVisit)
 import Date
 import Date.Extra as Date
@@ -27,7 +28,42 @@ addVisit model entity =
             model
 
 
-formatDate : Int -> String
-formatDate dateAsString =
-    Date.fromTime (toFloat dateAsString)
-        |> Date.toFormattedString "EEEE, MMMM d, y 'at' h:mm a"
+formatDate : Language -> Int -> String
+formatDate language timestamp =
+    let
+        date =
+            Date.fromTime (toFloat timestamp)
+
+        year =
+            Date.year date
+
+        day =
+            Date.day date
+
+        month =
+            Date.month date
+
+        hour =
+            Date.hour date
+
+        dateAsString =
+            if language == EN then
+                Date.toFormattedString "M/d/y, h:mm a" date
+            else
+                toString day
+                    ++ "."
+                    ++ (toMonthString <| Date.monthNumber date)
+                    ++ "."
+                    ++ toString year
+                    ++ ", "
+                    ++ (toString hour)
+                    ++ ":00"
+    in
+        dateAsString
+
+
+toMonthString month =
+    if month < 10 then
+        ("0" ++ toString month)
+    else
+        (toString month)

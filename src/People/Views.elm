@@ -368,7 +368,7 @@ districtNurseTr isDistrict locals =
 
 
 personDetailsView =
-    style [ ( "background", "lightblue" ), ( "border", "2px solid black" ) ]
+    style [ ( "background", "lightblue" ), ( "border", "2px solid black" ), ( "padding", "3px" ) ]
 
 
 doctorView doctor locals =

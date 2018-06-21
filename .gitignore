@@ -3,5 +3,5 @@ node_modules/
 *.xml
 *.iml
 .idea/
-public/
+public/index.js
 .history/

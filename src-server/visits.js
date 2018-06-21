@@ -27,10 +27,13 @@ function delVisitHandler(req, res) {
 }
 
 function newVisitHandler(req, res) {
-  const { patientID, doctorID, nurseID, date, room } = req.body;
+  const { patientID, doctorID, nurseID, room, day, month, hour } = req.body;
+
+  const unifiedHour = parseInt(hour.split(`:`)[0], 10);
+  const date        = +new Date(2018, month - 1, day, unifiedHour, 0, 0);
 
   const queryParams = [
-    +new Date(date),
+    date,
     patientID,
     doctorID,
     nurseID,
@@ -45,7 +48,7 @@ function newVisitHandler(req, res) {
     or (room = $4 and date = $5)
     `;
 
-  const selectAsPromise = db.query(select, [patientID, doctorID, nurseID, room, +new Date(date)]);
+  const selectAsPromise = db.query(select, [patientID, doctorID, nurseID, room, date]);
   const selectAsStream  = fromPromise(selectAsPromise);
 
   return selectAsStream

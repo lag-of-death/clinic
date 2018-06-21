@@ -50,15 +50,32 @@ toBtnWithList showStaffList locals =
 
 view : Types.Model -> Html Types.Msg
 view model =
-    Html.body [ style Styles.body ]
+    div [ style Styles.body ]
         [ div
             [ style Styles.menu ]
             [ toMenuBtn "patients" model.locals.patients
             , toBtnWithList model.showStaffList model.locals
             , toMenuBtn "visits" model.locals.visits
             , div []
-                [ Html.button [ style Styles.button, onClick (Types.ChangeLanguage LT.EN) ] [ text "EN" ]
-                , Html.button [ style Styles.button, onClick (Types.ChangeLanguage LT.PL) ] [ text "PL" ]
+                [ Html.button
+                    [ style Styles.button
+                    , style [ ( "margin-right", "10px" ) ]
+                    , if model.language == LT.EN then
+                        style [ ( "color", "lightblue" ) ]
+                      else
+                        style []
+                    , onClick (Types.ChangeLanguage LT.EN)
+                    ]
+                    [ text "EN" ]
+                , Html.button
+                    [ style Styles.button
+                    , if model.language == LT.PL then
+                        style [ ( "color", "lightblue" ) ]
+                      else
+                        style []
+                    , onClick (Types.ChangeLanguage LT.PL)
+                    ]
+                    [ text "PL" ]
                 ]
             ]
         , main_
@@ -101,10 +118,10 @@ toRouteView model maybeRoute =
                     bordered <| Html.map Types.StaffMsg (PeopleView.staffView model.staff model.locals)
 
                 Routes.Visits ->
-                    bordered <| Html.map Types.VisitMsg (VisitsView.view model.visits model.locals)
+                    bordered <| Html.map Types.VisitMsg (VisitsView.view model.visits model.locals model.language)
 
                 Routes.VisitId id ->
-                    centerElement <| Html.map Types.VisitMsg (VisitsView.visitView (getVisit id model.visits) model.locals)
+                    centerElement <| Html.map Types.VisitMsg (VisitsView.visitView (getVisit id model.visits) model.locals model.language)
 
                 Routes.NewVisit ->
                     centerElement <| Html.map Types.NewVisitMsg (VisitsView.newVisitView model)

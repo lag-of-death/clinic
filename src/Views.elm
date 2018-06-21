@@ -60,5 +60,5 @@ centerElement el =
 bordered : Html msg -> Html msg
 bordered el =
     div
-        [ style [ ( "border", "2px solid black" ) ] ]
+        [ style [ ( "border", "2px solid black" ), ( "padding", "2px" ) ] ]
         [ el ]

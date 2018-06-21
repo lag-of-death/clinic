@@ -7,13 +7,15 @@ import Visits.Types
         )
 import Html exposing (Html, div, label, text, li, ul, input, Attribute, tr, td, table, select, option)
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Html.Attributes exposing (style, type_, attribute, required, name, hidden, value)
+import Html.Attributes exposing (style, type_, attribute, required, name, class, hidden, value)
 import Styles exposing (blockCentered, blockStretched, block)
 import Views
 import People.Types
 import Types
 import Visits.Helpers
 import Visits.Types exposing (NewVisitMsg(..))
+import Dict
+import Localization.Types exposing (..)
 
 
 buttonActions visit locals =
@@ -35,7 +37,7 @@ createAttrsForSelect ( choose, onInputMsg, fieldName, label, people ) =
       , required True
       , style Styles.button
       , style
-            [ ( "width", "30%" )
+            [ ( "width", "160px" )
             ]
       , name <| toID fieldName
       ]
@@ -70,6 +72,7 @@ newVisitView : Types.Model -> Html NewVisitMsg
 newVisitView model =
     Html.form
         [ style Styles.form
+        , style [ ( "padding", "2px" ) ]
         , onSubmit SendNewVisit
         , Html.Attributes.action "/api/visits"
         , Html.Attributes.method "POST"
@@ -83,24 +86,37 @@ newVisitView model =
                 , required True
                 , style Styles.button
                 , onInput SetRoom
-                , style [ ( "width", "30%" ) ]
+                , style [ ( "width", "148px" ) ]
                 , name "room"
                 ]
                 []
             , model.locals.room
             )
         , wrapEl
-            ( input
-                [ type_ "datetime-local"
-                , attribute "step" "3600"
-                , name "date"
-                , style Styles.button
-                , required True
-                , onInput SetDate
-                ]
-                []
-            , model.locals.date
+            ( select
+                [ onInput SetMonth, style Styles.button, style [ ( "width", "160px" ) ], required True, name "month" ]
+              <|
+                List.concat
+                    [ [ selectTitle model.locals.choose ]
+                    , List.map (toMonthAsOption) <|
+                        Dict.toList <|
+                            filterMonths (months model.locals.months) model.currentMonth
+                    ]
+            , model.locals.month
             )
+        , wrapEl
+            ( select
+                [ onInput SetDay
+                , style Styles.button
+                , name "day"
+                , style [ ( "width", "160px" ) ]
+                , required True
+                ]
+              <|
+                List.map toDayAsOption (List.range 1 model.newVisit.daysInMonth)
+            , model.locals.day
+            )
+        , wrapEl ( whichDay model.language, model.locals.hour )
         , Html.button
             [ Html.Attributes.type_ "submit"
             , style Styles.button
@@ -110,10 +126,49 @@ newVisitView model =
         ]
 
 
-visitView visit locals =
+whichDay lang =
+    case lang of
+        PL ->
+            input
+                [ required True
+                , onInput SetHour
+                , style Styles.button
+                , style [ ( "width", "148px" ) ]
+                , type_ "number"
+                , attribute "min" "9"
+                , attribute "max" "17"
+                , name "hour"
+                ]
+                []
+
+        EN ->
+            input
+                [ required True
+                , onInput SetHour
+                , type_ "time"
+                , style Styles.button
+                , attribute "step" "3600"
+                , style [ ( "width", "148px" ) ]
+                , attribute "min" "09:00:00"
+                , attribute "max" "17:00:00"
+                , name "hour_en"
+                ]
+                []
+
+
+toDayAsOption dayAsInt =
+    option [ value <| toString dayAsInt ] [ text <| toString dayAsInt ]
+
+
+toMonthAsOption ( monthAsInt, monthName ) =
+    option [ value <| toString monthAsInt ] [ text monthName ]
+
+
+visitView visit locals language =
     table
         [ attribute "border" "1"
         , attribute "cellpadding" "10"
+        , class "visits"
         , style [ ( "border", "2px solid black" ), ( "border-collapse", "collapse" ) ]
         ]
         [ tr []
@@ -135,7 +190,7 @@ visitView visit locals =
                 ]
             , td
                 []
-                [ Visits.Helpers.formatDate visit.date |> text ]
+                [ Visits.Helpers.formatDate language visit.date |> text ]
             , td []
                 [ text <| toString visit.room
                 ]
@@ -148,7 +203,7 @@ toCommaSeparated list =
     List.map (\entity -> surnameAndName entity) list |> String.join ", "
 
 
-view visits locals =
+view visits locals language =
     div [ style block ]
         [ Views.list
             (List.map
@@ -157,7 +212,7 @@ view visits locals =
                         [ text <| surnameAndName visit.patient
                         ]
                     , div [ style [ ( "width", "40%" ) ] ]
-                        [ Visits.Helpers.formatDate visit.date |> text ]
+                        [ Visits.Helpers.formatDate language visit.date |> text ]
                     , buttonActions visit locals
                     ]
                 )
@@ -181,3 +236,24 @@ personToOption person =
 
 selectTitle choose =
     option [ attribute "value" "", attribute "disabled" "disabled", attribute "selected" "selected" ] [ text choose ]
+
+
+filterMonths monthsDict chosenMonthIdx =
+    Dict.filter (\idx val -> idx >= chosenMonthIdx) monthsDict
+
+
+months months =
+    Dict.fromList
+        [ ( 1, months.january )
+        , ( 2, months.february )
+        , ( 3, months.march )
+        , ( 4, months.april )
+        , ( 5, months.may )
+        , ( 6, months.june )
+        , ( 7, months.july )
+        , ( 8, months.august )
+        , ( 9, months.september )
+        , ( 10, months.october )
+        , ( 11, months.november )
+        , ( 12, months.december )
+        ]

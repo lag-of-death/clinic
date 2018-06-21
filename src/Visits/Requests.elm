@@ -29,6 +29,9 @@ newVisit model =
                 , ( "doctorID", Encode.string model.doctorID )
                 , ( "nurseID", Encode.string model.nurseID )
                 , ( "date", Encode.string model.date )
+                , ( "month", Encode.string model.month )
+                , ( "day", Encode.string model.day )
+                , ( "hour", Encode.string model.hour )
                 ]
     in
         Http.send VT.NewVisitData

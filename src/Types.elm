@@ -4,6 +4,7 @@ module Types
         , init
         , Model
         , Msg(..)
+        , Flags
         )
 
 import Localization.Types exposing (..)
@@ -37,11 +38,18 @@ type alias Model =
     , staff : PeopleTypes.StaffModel
     , locals : Localization.Types.Locals
     , language : Localization.Types.Language
+    , month : Int
+    , currentMonth : Int
     }
 
 
-init : Nav.Location -> ( Model, Cmd Msg )
-init location =
+type alias Flags =
+    { month : Int
+    }
+
+
+init : Flags -> Nav.Location -> ( Model, Cmd Msg )
+init a location =
     ( { history = []
       , style = initialStyle
       , patients = PeopleTypes.initialPatients
@@ -54,6 +62,8 @@ init location =
       , showStaffList = False
       , language = Localization.Types.PL
       , locals = Localization.Types.polishLocals
+      , month = 0
+      , currentMonth = a.month
       }
     , Nav.newUrl location.pathname
     )

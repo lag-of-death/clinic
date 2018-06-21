@@ -43,6 +43,23 @@ type alias Locals =
     , endocrinologist : String
     , gastrologist : String
     , newNurse : String
+    , day : String
+    , hour : String
+    , month : String
+    , months :
+        { january : String
+        , february : String
+        , march : String
+        , april : String
+        , may : String
+        , june : String
+        , july : String
+        , august : String
+        , september : String
+        , october : String
+        , november : String
+        , december : String
+        }
     }
 
 
@@ -88,6 +105,23 @@ polishLocals =
     , laryngologist = "laryngolog"
     , pediatrician = "pediatra"
     , surgeon = "chirurg"
+    , day = "dzien"
+    , hour = "godzina"
+    , month = "miesiąc"
+    , months =
+        { january = "styczeń"
+        , february = "luty"
+        , march = "marzec"
+        , april = "kwiecień"
+        , may = "maj"
+        , june = "czerwiec"
+        , july = "lipiec"
+        , august = "sierpień"
+        , september = "wrzesień"
+        , october = "październik"
+        , november = "listopad"
+        , december = "grudzień"
+        }
     }
 
 
@@ -133,6 +167,23 @@ englishLocals =
     , laryngologist = "laryngologist"
     , pediatrician = "pediatrician"
     , surgeon = "surgeon"
+    , day = "day"
+    , month = "month"
+    , hour = "hour"
+    , months =
+        { january = "january"
+        , february = "february"
+        , march = "march"
+        , april = "april"
+        , may = "may"
+        , june = "june"
+        , july = "july"
+        , august = "august"
+        , september = "september"
+        , october = "october"
+        , november = "november"
+        , december = "december"
+        }
     }
 
 

@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+    <style>
+        button:hover {
+            cursor: pointer;
+        }
+        button {
+            box-shadow: 1px 1px #000;
+        }
+        table.visits td {
+            text-align: center;
+        }
+    </style>
+</head>
+<body style="margin: 0">
+<div id="main"></div>
+<script src="./index.js"></script>
+<script>
+    const node = document.getElementById( 'main' );
+    const app  = Elm.Main.embed( node, {
+        month : (new Date().getMonth()) + 1
+    } );
+
+    app.ports.check.subscribe( function ( month ) {
+        const daysInMonth = new Date(new Date().getFullYear(), month, 0).getDate();
+
+        app.ports.suggestions.send( daysInMonth );
+    } );
+</script>
+</body>
+</html>

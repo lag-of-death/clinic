@@ -170,10 +170,10 @@ update msg model =
         Types.ChangeLanguage lang ->
             case lang of
                 LT.EN ->
-                    ( { model | locals = LT.englishLocals }, Cmd.none )
+                    ( { model | locals = LT.englishLocals, language = lang }, Cmd.none )
 
                 LT.PL ->
-                    ( { model | locals = LT.polishLocals }, Cmd.none )
+                    ( { model | locals = LT.polishLocals, language = lang }, Cmd.none )
 
         _ ->
             ( model, Cmd.none )

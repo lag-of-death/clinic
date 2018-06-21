@@ -1,4 +1,4 @@
-module Visits.Update exposing (updateVisits, updateNewVisit)
+port module Visits.Update exposing (updateVisits, updateNewVisit, subs)
 
 import Visits.Requests exposing (getVisits, newVisit, deleteVisit)
 import Visits.Types as VT
@@ -24,8 +24,8 @@ updateNewVisit msg model =
         VT.SetRoom room ->
             ( { model | room = room }, Cmd.none )
 
-        VT.SetDate date ->
-            ( { model | date = date }, Cmd.none )
+        VT.SetMonthDays days ->
+            ( { model | daysInMonth = days }, Cmd.none )
 
         VT.SendNewVisit ->
             ( model, newVisit model )
@@ -36,6 +36,15 @@ updateNewVisit msg model =
                     Debug.log "NewVisitData Err" result
             in
                 ( model, Cmd.none )
+
+        VT.SetMonth month ->
+            ( { model | month = month }, check month )
+
+        VT.SetDay day ->
+            ( { model | day = day }, Cmd.none )
+
+        VT.SetHour hour ->
+            ( { model | hour = hour }, Cmd.none )
 
         _ ->
             ( model, Cmd.none )
@@ -76,3 +85,13 @@ updateVisits msg model =
 
         VT.ReallyDelVisit id ->
             ( model, deleteVisit id, VT.NoVisitsOp )
+
+
+port check : String -> Cmd msg
+
+
+port suggestions : (Int -> msg) -> Sub msg
+
+
+subs =
+    suggestions VT.SetMonthDays
