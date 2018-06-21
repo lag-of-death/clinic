@@ -85,46 +85,50 @@ update msg model =
 
                 route =
                     Maybe.withDefault Patients maybeRoute
+
+                newModel =
+                    { model | history = maybeRoute :: model.history }
+
+                cmds =
+                    case route of
+                        AllStaff ->
+                            Cmd.map Types.StaffMsg <| People.Requests.get "staff" PD.decodeStaff PU.EntitiesData
+
+                        Patients ->
+                            Cmd.map Types.PatientMsg <| People.Requests.get "patients" PD.decodePatients PU.EntitiesData
+
+                        PatientId id ->
+                            Cmd.map Types.PatientMsg <| People.Requests.get ("patients/" ++ toString id) PD.decodePatient PU.EntityData
+
+                        DoctorId id ->
+                            Cmd.map Types.DoctorMsg <| People.Requests.get ("doctors/" ++ toString id) PD.decodeDoctor PU.EntityData
+
+                        Doctors ->
+                            Cmd.map Types.DoctorMsg <| People.Requests.get "doctors" PD.decodeDoctors PU.EntitiesData
+
+                        Nurses ->
+                            Cmd.map Types.NurseMsg <| People.Requests.get "nurses" PD.decodeNurses PU.EntitiesData
+
+                        NurseId id ->
+                            Cmd.map Types.NurseMsg <| People.Requests.get ("nurses/" ++ toString id) PD.decodeNurse PU.EntityData
+
+                        Visits ->
+                            Cmd.map Types.VisitMsg <| People.Requests.get "visits" VD.decodeVisits PU.EntitiesData
+
+                        VisitId id ->
+                            Cmd.map Types.VisitMsg <| People.Requests.get ("visits/" ++ toString id) VD.decodeVisit PU.EntityData
+
+                        NewVisit ->
+                            Cmd.batch
+                                [ Cmd.map Types.PatientMsg <| People.Requests.get "patients" PD.decodePatients PU.EntitiesData
+                                , Cmd.map Types.DoctorMsg <| People.Requests.get "doctors" PD.decodeDoctors PU.EntitiesData
+                                , Cmd.map Types.NurseMsg <| People.Requests.get "nurses" PD.decodeNurses PU.EntitiesData
+                                ]
+
+                        _ ->
+                            show
             in
-                ( { model | history = maybeRoute :: model.history }
-                , case route of
-                    AllStaff ->
-                        Cmd.map Types.StaffMsg <| People.Requests.get "staff" PD.decodeStaff PU.EntitiesData
-
-                    Patients ->
-                        Cmd.map Types.PatientMsg <| People.Requests.get "patients" PD.decodePatients PU.EntitiesData
-
-                    PatientId id ->
-                        Cmd.map Types.PatientMsg <| People.Requests.get ("patients/" ++ toString id) PD.decodePatient PU.EntityData
-
-                    DoctorId id ->
-                        Cmd.map Types.DoctorMsg <| People.Requests.get ("doctors/" ++ toString id) PD.decodeDoctor PU.EntityData
-
-                    Doctors ->
-                        Cmd.map Types.DoctorMsg <| People.Requests.get "doctors" PD.decodeDoctors PU.EntitiesData
-
-                    Nurses ->
-                        Cmd.map Types.NurseMsg <| People.Requests.get "nurses" PD.decodeNurses PU.EntitiesData
-
-                    NurseId id ->
-                        Cmd.map Types.NurseMsg <| People.Requests.get ("nurses/" ++ toString id) PD.decodeNurse PU.EntityData
-
-                    Visits ->
-                        Cmd.map Types.VisitMsg <| People.Requests.get "visits" VD.decodeVisits PU.EntitiesData
-
-                    VisitId id ->
-                        Cmd.map Types.VisitMsg <| People.Requests.get ("visits/" ++ toString id) VD.decodeVisit PU.EntityData
-
-                    NewVisit ->
-                        Cmd.batch
-                            [ Cmd.map Types.PatientMsg <| People.Requests.get "patients" PD.decodePatients PU.EntitiesData
-                            , Cmd.map Types.DoctorMsg <| People.Requests.get "doctors" PD.decodeDoctors PU.EntitiesData
-                            , Cmd.map Types.NurseMsg <| People.Requests.get "nurses" PD.decodeNurses PU.EntitiesData
-                            ]
-
-                    _ ->
-                        show
-                )
+                ( newModel, Cmd.batch [ cmds, Task.perform (\_ -> Types.ModalMsg Hide) <| Task.succeed () ] )
 
         Types.VisitMsg innerMsg ->
             let
