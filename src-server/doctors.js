@@ -1,11 +1,11 @@
 const { setUpDelStream, setUpCreateStream, setUpGetStream } = require(`./common`);
-const rxjs = require(`rxjs`);
-const router = require(`express`).Router();
+const rxjs                                                  = require(`rxjs`);
+const router                                                = require(`express`).Router();
 
 const getDoctorsSubject = new rxjs.Subject();
-const delDoctorSubject = new rxjs.Subject();
-const getDoctorSubject = new rxjs.Subject();
-const newDoctorSubject = new rxjs.Subject();
+const delDoctorSubject  = new rxjs.Subject();
+const getDoctorSubject  = new rxjs.Subject();
+const newDoctorSubject  = new rxjs.Subject();
 
 setUpGetStream(getDoctorsSubject, `doctor`, [`speciality`]);
 setUpGetStream(getDoctorSubject, `doctor`, [`speciality`]);

@@ -22,10 +22,8 @@ express()
     .use(express.static(publicDir))
     .use(spa(`${publicDir}/index.html`))
     .get(`*`, (req, res) => {
-      if (req.url.split(`.`)[1] === `css`) {
-        res.sendFile(`${publicDir}/styles.css`);
-      } else {
-        res.sendFile(`${publicDir}/index.js`);
-      }
+      const fileName = req.url.split(`/`).reverse()[0];
+
+      res.sendFile(`${publicDir}/${fileName}`);
     })
     .listen(port, () => console.log(`Node app is running on port`, port));

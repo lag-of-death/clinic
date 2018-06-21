@@ -1,5 +1,5 @@
 const rxjs = require(`rxjs`);
-const db = require(`./db`);
+const db   = require(`./db`);
 
 module.exports = {
   setUpDelStream,
@@ -60,8 +60,8 @@ function setUpGetStream(subject, entityName, optionalAttrs) {
   return subject.flatMap(([req, res]) => getEntities(req, res, entityName, optionalAttrs))
                   .subscribe(
                       (data) => {
-                        const resp = data[1];
-                        const req = data[2];
+                        const resp   = data[1];
+                        const req    = data[2];
                         const people = data[0];
 
                         resp.send(req.params.id ? people[0] : people);

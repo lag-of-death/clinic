@@ -1,11 +1,11 @@
 const { setUpDelStream, setUpCreateStream, setUpGetStream } = require(`./common`);
-const express = require(`express`);
-const rxjs = require(`rxjs`);
+const express                                               = require(`express`);
+const rxjs                                                  = require(`rxjs`);
 
 const getNursesSubject = new rxjs.Subject();
-const delNurseSubject = new rxjs.Subject();
-const getNurseSubject = new rxjs.Subject();
-const newNurseSubject = new rxjs.Subject();
+const delNurseSubject  = new rxjs.Subject();
+const getNurseSubject  = new rxjs.Subject();
+const newNurseSubject  = new rxjs.Subject();
 
 setUpGetStream(getNursesSubject, `nurse`, [`is_district_nurse as district`]);
 setUpGetStream(getNurseSubject, `nurse`, [`is_district_nurse as district`]);
