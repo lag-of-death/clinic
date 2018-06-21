@@ -30,7 +30,8 @@ function newVisitHandler(req, res) {
   const { patientID, doctorID, nurseID, room, day, month, hour } = req.body;
 
   const unifiedHour = parseInt(hour.split(`:`)[0], 10);
-  const date        = +new Date(2018, month - 1, day, unifiedHour, 0, 0);
+  const year        = new Date().getFullYear();
+  const date        = +new Date(year, month - 1, day, unifiedHour, 0, 0);
 
   const queryParams = [
     date,
