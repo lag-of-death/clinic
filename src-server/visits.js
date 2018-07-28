@@ -107,8 +107,8 @@ function getVisitsHandler(req, res) {
   ]);
 }
 
-function setUpGetStream(stream) {
-  return stream
+function setUpGetStream(subject) {
+  return subject
         .flatMap(([req, res]) => getVisitsHandler(req, res))
         .subscribe(
             (data) => {
@@ -125,8 +125,8 @@ function setUpGetStream(stream) {
         );
 }
 
-function setUpDelStream(stream) {
-  return stream
+function setUpDelStream(subject) {
+  return subject
         .flatMap(([req, res]) => delVisitHandler(req, res))
         .subscribe(
             ({ res, err }) => {
@@ -139,8 +139,8 @@ function setUpDelStream(stream) {
         );
 }
 
-function setUpCreateStream(stream) {
-  return stream
+function setUpCreateStream(subject) {
+  return subject
         .flatMap(([req, res]) => newVisitHandler(req, res))
         .subscribe(
             ({ res, err }) => {
