@@ -148,7 +148,8 @@ function setUpCreateStream(subject) {
                 res.json(`Appointment was made.`);
               } else {
                 res.status(422);
-                res.json(`We are sorry, date or room for patient/nurse/doctor already reserved.`);
+                res.json(`We are sorry, date or room 
+                          for patient/nurse/doctor already reserved.`);
               }
             },
         );

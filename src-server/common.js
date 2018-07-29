@@ -25,8 +25,11 @@ function createEntity(req, res, callback, passedQuery) {
 
   return rxjs.Observable
                .fromPromise(
-                   db.tx(() => db.query(query, [req.body[`e-mail`], req.body.name, req.body.surname])
-                                  .then(data => passedQuery(data, db)), [],
+                   db.tx(() =>
+                       db.query(
+                           query,
+                           [req.body[`e-mail`], req.body.name, req.body.surname])
+                         .then(data => passedQuery(data, db)), [],
                    ),
                )
                .flatMap(() => rxjs.Observable.of(res));
