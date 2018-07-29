@@ -72,8 +72,8 @@ function setUpGetStream(subject, entityName, optionalAttrs) {
                   );
 }
 
-function setUpDelStream(stream, entityName) {
-  return stream
+function setUpDelStream(subject, entityName) {
+  return subject
         .flatMap(([req, res]) => delEntity(req, res, entityName))
         .subscribe(
             (resp) => {
@@ -85,8 +85,8 @@ function setUpDelStream(stream, entityName) {
         );
 }
 
-function setUpCreateStream(stream, url, callback) {
-  return stream
+function setUpCreateStream(subject, url, callback) {
+  return subject
         .flatMap(([req, res]) => createEntity(req, res, `patients`, callback(req)))
         .subscribe(
             (resp) => {
