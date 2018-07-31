@@ -23,8 +23,12 @@ const doctorsStream = () => getDoctorsStream().map(data => data[1])
 getStaffSubject
     .flatMap(res =>
         rxjs.Observable
-            .forkJoin(nursesSteam(), doctorsStream(), rxjs.Observable.of(res))
-            .catch(() => rxjs.Observable.of([`no data`, `no data`, res])),
+            .forkJoin(
+                nursesSteam(),
+                doctorsStream(),
+                rxjs.Observable.of(res))
+            .catch(() =>
+                rxjs.Observable.of([`no data`, `no data`, res])),
     )
     .subscribe(
         (data) => {
