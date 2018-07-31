@@ -1,5 +1,6 @@
 module Visits.Views exposing (newVisitView, visitView, view)
 
+import Array
 import People.Update
 import Visits.Types
     exposing
@@ -98,9 +99,13 @@ newVisitView model =
               <|
                 List.concat
                     [ [ selectTitle model.locals.choose ]
-                    , List.map (toMonthAsOption) <|
-                        Dict.toList <|
-                            filterMonths (months model.locals.months) model.currentMonth
+                    , List.map
+                        toMonthAsOption
+                        (Dict.toList <|
+                            filterMonths
+                                (Dict.fromList <| attachIndicesToWords (toMonthsAsStrings model.locals.months) (Array.empty) 1)
+                                model.currentMonth
+                        )
                     ]
             , model.locals.month
             )
@@ -257,3 +262,41 @@ months months =
         , ( 11, months.november )
         , ( 12, months.december )
         ]
+
+
+toMonthsAsStrings m =
+    Array.fromList
+        [ m.january
+        , m.february
+        , m.march
+        , m.april
+        , m.may
+        , m.june
+        , m.july
+        , m.august
+        , m.september
+        , m.october
+        , m.november
+        , m.december
+        ]
+
+
+tail array =
+    Array.slice 1 (Array.length array) array
+
+
+attachIndicesToWords arrayOfStrings arrayOfTuples counter =
+    if (Array.isEmpty arrayOfStrings) then
+        Array.toList arrayOfTuples
+    else
+        let
+            firstItem =
+                Array.get 0 arrayOfStrings
+
+            nextTuple =
+                ( counter, Maybe.withDefault "?" firstItem )
+
+            updatedArrayOfTuples =
+                Array.push nextTuple arrayOfTuples
+        in
+            attachIndicesToWords (tail arrayOfStrings) updatedArrayOfTuples (counter + 1)
