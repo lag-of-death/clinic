@@ -25,21 +25,21 @@
   },
   "homepage": "https://github.com/lag-of-death/clinic#readme",
   "dependencies": {
-    "body-parser": "^1.17.1",
+    "body-parser": "^1.18.3",
     "elm": "^0.18.0",
     "express": "^4.15.2",
     "express-spa": "0.0.2",
     "pg": "^7.4.3",
-    "pg-promise": "^8.4.3",
+    "pg-promise": "^8.4.5",
     "request": "^2.87.0",
-    "rxjs": "^5.5.8"
+    "rxjs": "^5.5.11"
   },
   "devDependencies": {
-    "elm-analyse": "^0.9.3",
+    "elm-analyse": "^0.14.2",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
-    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-jsx-a11y": "^5.0.3",
-    "eslint-plugin-react": "^7.0.1"
+    "eslint-plugin-react": "^7.10.0"
   }
 }
