@@ -299,4 +299,7 @@ attachIndicesToWords arrayOfStrings arrayOfTuples counter =
             updatedArrayOfTuples =
                 Array.push nextTuple arrayOfTuples
         in
-            attachIndicesToWords (tail arrayOfStrings) updatedArrayOfTuples (counter + 1)
+            attachIndicesToWords
+                (tail arrayOfStrings)
+                updatedArrayOfTuples
+                (counter + 1)
