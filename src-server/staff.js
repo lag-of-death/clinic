@@ -8,7 +8,7 @@ const get             = rxjs.Observable.bindNodeCallback(request);
 const getNursesStream  = () => get(`${process.env.HOSTNAME}/api/nurses`);
 const getDoctorsStream = () => get(`${process.env.HOSTNAME}/api/doctors`);
 
-const nursesSteam = () => getNursesStream().map(data => data[1])
+const nursesStream = () => getNursesStream().map(data => data[1])
                                            .map(JSON.parse)
                                            .map(data => data.map(toPerson.bind(null, `nurse`)))
                                            .timeout(5000)
@@ -24,7 +24,7 @@ getStaffSubject
     .flatMap(res =>
         rxjs.Observable
             .forkJoin(
-                nursesSteam(),
+                nursesStream(),
                 doctorsStream(),
                 rxjs.Observable.of(res))
             .catch(() =>
