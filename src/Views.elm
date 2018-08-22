@@ -7,10 +7,10 @@ import Styles exposing (block, blockStretched, blockCentered)
 
 newEntity : Html.Attribute a -> String -> Html a
 newEntity onClick label =
-    div [ style [ ( "width", "15%" ) ] ]
+    div [ style [ ( "width", "20%" ) ] ]
         [ Html.button
             [ style Styles.button
-            , style [ ( "width", "100%" ), ( "word-break", "break-all" ) ]
+            , style [ ( "width", "100%" ) ]
             , onClick
             ]
             [ text label ]
@@ -19,7 +19,7 @@ newEntity onClick label =
 
 list : List (List (Html msg)) -> Html msg
 list content =
-    ul [ style [ ( "width", "80%" ), ( "padding", "0" ) ] ]
+    ul [ style [ ( "width", "70%" ), ( "padding", "0" ) ] ]
         (List.map
             (\element ->
                 li [ style block, style blockCentered, style blockStretched ]
