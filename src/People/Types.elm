@@ -1,49 +1,24 @@
-module People.Types
-    exposing
-        ( Person
-        , Nurse
-        , Doctor
-        , Patient
-        , defaultPerson
-        , defaultNurse
-        , defaultPatient
-        , initialNurses
-        , initialPatients
-        , initialDoctors
-        , defaultDoctor
-        , PatientsModel
-        , StaffModel
-        , StaffMember
-        , DoctorsModel
-        , NursesModel
-        , NursesMsg
-            ( DelNurse
-            , NursesData
-            , NurseData
-            , NurseDeleted
-            , NewNursesUrl
-            , NoNursesOp
-            , ReallyDeleteNurse
-            )
-        , DoctorsMsg
-            ( NewDoctorsUrl
-            , DelDoctor
-            , DoctorsData
-            , DoctorData
-            , DoctorDeleted
-            , NoDoctorsOp
-            , ReallyDeleteDoctor
-            )
-        , PatientsMsg
-            ( NewPatientsUrl
-            , PatientsData
-            , PatientData
-            , DelPatient
-            , ReallyDeletePatient
-            , PatientDeleted
-            , NoPatientsOp
-            )
-        )
+module People.Types exposing
+    ( Doctor
+    , DoctorsModel
+    , DoctorsMsg(..)
+    , Nurse
+    , NursesModel
+    , NursesMsg(..)
+    , Patient
+    , PatientsModel
+    , PatientsMsg(..)
+    , Person
+    , StaffMember
+    , StaffModel
+    , defaultDoctor
+    , defaultNurse
+    , defaultPatient
+    , defaultPerson
+    , initialDoctors
+    , initialNurses
+    , initialPatients
+    )
 
 import Http
 

@@ -1,28 +1,28 @@
-module Visits.Views exposing (newVisitView, visitView, view)
+module Visits.Views exposing (newVisitView, view, visitView)
 
 import Array
+import Dict
+import Html exposing (Attribute, Html, div, input, label, li, option, select, table, td, text, tr, ul)
+import Html.Attributes exposing (attribute, class, hidden, name, required, style, type_, value)
+import Html.Events exposing (onClick, onInput, onSubmit)
+import Localization.Types exposing (..)
+import People.Types
 import People.Update
+import Styles exposing (block, blockCentered, blockStretched)
+import Types
+import Views
+import Visits.Helpers
 import Visits.Types
     exposing
-        ( Visit
+        ( NewVisitMsg(..)
+        , Visit
         )
-import Html exposing (Html, div, label, text, li, ul, input, Attribute, tr, td, table, select, option)
-import Html.Events exposing (onClick, onInput, onSubmit)
-import Html.Attributes exposing (style, type_, attribute, required, name, class, hidden, value)
-import Styles exposing (blockCentered, blockStretched, block)
-import Views
-import People.Types
-import Types
-import Visits.Helpers
-import Visits.Types exposing (NewVisitMsg(..))
-import Dict
-import Localization.Types exposing (..)
 
 
 buttonActions visit locals =
     div []
         (Views.actions
-            (onClick (People.Update.NewEntityUrl <| "/visits/" ++ toString visit.id))
+            (onClick (People.Update.NewEntityUrl <| "/visits/" ++ String.fromInt visit.id))
             (onClick (People.Update.DelEntity visit.id))
             locals
         )
@@ -33,23 +33,21 @@ toID name =
     String.toLower name |> (\name_ -> name_ ++ "ID")
 
 
-createAttrsForSelect ( choose, onInputMsg, fieldName, label, people ) =
-    ( [ onInput onInputMsg
-      , required True
-      , style Styles.button
-      , style
-            [ ( "width", "160px" )
-            ]
-      , name <| toID fieldName
-      ]
-    , label
-    , choose
-    , people
-    )
+createAttrsForSelect x =
+    { inputEl =
+        [ onInput x.onInputMsg
+        , required True
+        , style "width" "160px"
+        , name <| toID x.fieldName
+        ]
+    , label = x.label
+    , choose = x.choose
+    , people = x.people
+    }
 
 
-createSelect ( inputEl, label, choose, people ) =
-    ( select inputEl <| List.concat [ [ selectTitle choose ], (List.map personToOption people) ], label )
+createSelect x =
+    ( select x.inputEl <| List.concat [ [ selectTitle x.choose ], List.map personToOption x.people ], x.label )
 
 
 addLabel ( element, label_ ) =
@@ -58,7 +56,7 @@ addLabel ( element, label_ ) =
 
 wrapWithDiv : List (Html msg) -> Html msg
 wrapWithDiv elm =
-    div [ style block, style blockCentered, style blockStretched ] elm
+    div [] elm
 
 
 wrapEl =
@@ -72,22 +70,20 @@ createSelectRow =
 newVisitView : Types.Model -> Html NewVisitMsg
 newVisitView model =
     Html.form
-        [ style Styles.form
-        , style [ ( "padding", "2px" ) ]
+        [ style "padding" "2px"
         , onSubmit SendNewVisit
         , Html.Attributes.action "/api/visits"
         , Html.Attributes.method "POST"
         ]
-        [ createSelectRow ( model.locals.choose, SetPatient, "Patient", model.locals.patient, model.patients )
-        , createSelectRow ( model.locals.choose, SetNurse, "Nurse", model.locals.nurse, model.nurses )
-        , createSelectRow ( model.locals.choose, SetDoctor, "Doctor", model.locals.doctors, model.doctors )
+        [ createSelectRow { choose = model.locals.choose, onInputMsg = SetPatient, fieldName = "Patient", label = model.locals.patient, people = model.patients }
+        , createSelectRow { choose = model.locals.choose, onInputMsg = SetNurse, fieldName = "Nurse", label = model.locals.nurse, people = model.nurses }
+        , createSelectRow { choose = model.locals.choose, onInputMsg = SetDoctor, fieldName = "Doctor", label = model.locals.doctors, people = model.doctors }
         , wrapEl
             ( input
                 [ type_ "number"
                 , required True
-                , style Styles.button
                 , onInput SetRoom
-                , style [ ( "width", "148px" ) ]
+                , style "width" "148px"
                 , name "room"
                 ]
                 []
@@ -95,7 +91,7 @@ newVisitView model =
             )
         , wrapEl
             ( select
-                [ onInput SetMonth, style Styles.button, style [ ( "width", "160px" ) ], required True, name "month" ]
+                [ onInput SetMonth, style "width" "160px", required True, name "month" ]
               <|
                 List.concat
                     [ [ selectTitle model.locals.choose ]
@@ -103,7 +99,7 @@ newVisitView model =
                         toMonthAsOption
                         (Dict.toList <|
                             filterMonths
-                                (Dict.fromList <| attachIndicesToWords (toMonthsAsStrings model.locals.months) (Array.empty) 1)
+                                (Dict.fromList <| attachIndicesToWords (toMonthsAsStrings model.locals.months) Array.empty 1)
                                 model.currentMonth
                         )
                     ]
@@ -112,9 +108,8 @@ newVisitView model =
         , wrapEl
             ( select
                 [ onInput SetDay
-                , style Styles.button
                 , name "day"
-                , style [ ( "width", "160px" ) ]
+                , style "width" "160px"
                 , required True
                 ]
               <|
@@ -124,8 +119,6 @@ newVisitView model =
         , wrapEl ( whichDay model.language, model.locals.hour )
         , Html.button
             [ Html.Attributes.type_ "submit"
-            , style Styles.button
-            , style Styles.submit
             ]
             [ text model.locals.add ]
         ]
@@ -137,8 +130,7 @@ whichDay lang =
             input
                 [ required True
                 , onInput SetHour
-                , style Styles.button
-                , style [ ( "width", "148px" ) ]
+                , style "width" "148px"
                 , type_ "number"
                 , attribute "min" "9"
                 , attribute "max" "17"
@@ -151,9 +143,8 @@ whichDay lang =
                 [ required True
                 , onInput SetHour
                 , type_ "time"
-                , style Styles.button
                 , attribute "step" "3600"
-                , style [ ( "width", "148px" ) ]
+                , style "width" "148px"
                 , attribute "min" "09:00:00"
                 , attribute "max" "17:00:00"
                 , name "hour_en"
@@ -162,11 +153,11 @@ whichDay lang =
 
 
 toDayAsOption dayAsInt =
-    option [ value <| toString dayAsInt ] [ text <| toString dayAsInt ]
+    option [ value <| String.fromInt dayAsInt ] [ text <| String.fromInt dayAsInt ]
 
 
 toMonthAsOption ( monthAsInt, monthName ) =
-    option [ value <| toString monthAsInt ] [ text monthName ]
+    option [ value <| String.fromInt monthAsInt ] [ text monthName ]
 
 
 visitView visit locals language =
@@ -174,14 +165,15 @@ visitView visit locals language =
         [ attribute "border" "1"
         , attribute "cellpadding" "10"
         , class "visits"
-        , style [ ( "border", "2px solid black" ), ( "border-collapse", "collapse" ) ]
+        , style "border" "2px solid black"
+        , style "border-collapse" "collapse"
         ]
         [ tr []
-            [ Html.th [ style Styles.th ] [ text locals.patient ]
-            , Html.th [ style Styles.th ] [ text locals.doctor ]
-            , Html.th [ style Styles.th ] [ text locals.nurse ]
-            , Html.th [ style Styles.th ] [ text locals.date ]
-            , Html.th [ style Styles.th ] [ text locals.roomNumber ]
+            [ Html.th [] [ text locals.patient ]
+            , Html.th [] [ text locals.doctor ]
+            , Html.th [] [ text locals.nurse ]
+            , Html.th [] [ text locals.date ]
+            , Html.th [] [ text locals.roomNumber ]
             ]
         , tr []
             [ td []
@@ -197,7 +189,7 @@ visitView visit locals language =
                 []
                 [ Visits.Helpers.formatDate language visit.date |> text ]
             , td []
-                [ text <| toString visit.room
+                [ text <| String.fromInt visit.room
                 ]
             ]
         ]
@@ -209,14 +201,14 @@ toCommaSeparated list =
 
 
 view visits locals language =
-    div [ style block ]
+    div []
         [ Views.list
             (List.map
                 (\visit ->
-                    [ div [ style [ ( "width", "30%" ) ] ]
+                    [ div [ style "width" "30%" ]
                         [ text <| surnameAndName visit.patient
                         ]
-                    , div [ style [ ( "width", "40%" ) ] ]
+                    , div [ style "width" "40%" ]
                         [ Visits.Helpers.formatDate language visit.date |> text ]
                     , buttonActions visit locals
                     ]
@@ -235,7 +227,7 @@ surnameAndName entity =
 personToOption : { a | personal : People.Types.Person, id : Int } -> Html b
 personToOption person =
     option
-        [ value <| toString <| person.id ]
+        [ value <| String.fromInt <| person.id ]
         [ text <| surnameAndName person ]
 
 
@@ -247,20 +239,20 @@ filterMonths monthsDict chosenMonthIdx =
     Dict.filter (\idx val -> idx >= chosenMonthIdx) monthsDict
 
 
-months months =
+months monthsVar =
     Dict.fromList
-        [ ( 1, months.january )
-        , ( 2, months.february )
-        , ( 3, months.march )
-        , ( 4, months.april )
-        , ( 5, months.may )
-        , ( 6, months.june )
-        , ( 7, months.july )
-        , ( 8, months.august )
-        , ( 9, months.september )
-        , ( 10, months.october )
-        , ( 11, months.november )
-        , ( 12, months.december )
+        [ ( 1, monthsVar.january )
+        , ( 2, monthsVar.february )
+        , ( 3, monthsVar.march )
+        , ( 4, monthsVar.april )
+        , ( 5, monthsVar.may )
+        , ( 6, monthsVar.june )
+        , ( 7, monthsVar.july )
+        , ( 8, monthsVar.august )
+        , ( 9, monthsVar.september )
+        , ( 10, monthsVar.october )
+        , ( 11, monthsVar.november )
+        , ( 12, monthsVar.december )
         ]
 
 
@@ -286,8 +278,9 @@ tail array =
 
 
 attachIndicesToWords arrayOfStrings arrayOfTuples counter =
-    if (Array.isEmpty arrayOfStrings) then
+    if Array.isEmpty arrayOfStrings then
         Array.toList arrayOfTuples
+
     else
         let
             firstItem =
@@ -299,7 +292,7 @@ attachIndicesToWords arrayOfStrings arrayOfTuples counter =
             updatedArrayOfTuples =
                 Array.push nextTuple arrayOfTuples
         in
-            attachIndicesToWords
-                (tail arrayOfStrings)
-                updatedArrayOfTuples
-                (counter + 1)
+        attachIndicesToWords
+            (tail arrayOfStrings)
+            updatedArrayOfTuples
+            (counter + 1)

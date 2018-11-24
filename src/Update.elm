@@ -1,23 +1,24 @@
 module Update exposing (update)
 
-import Date
-import Task
-import Types
-import Visits.Decoders as VD
-import Visits.Types as VT
-import Navigation as Nav
-import Visits.Update as VisitsUpdate
-import People.Helpers exposing (addPerson)
-import Visits.Helpers exposing (addVisit)
-import People.Requests
 import Animation
+import Browser
+import Browser.Navigation as Nav
 import Http
 import Json.Decode as Decode
-import Routes exposing (Route(AllStaff, PatientId, Patients, Doctors, DoctorId, Nurses, NurseId, Visits, VisitId, NewVisit), parseRoute)
-import Modal.Update exposing (Msg(Do, PrepareErr, ShowMsg, Prepare, Hide))
-import People.Update as PU
-import People.Decoders as PD
 import Localization.Types as LT exposing (..)
+import Modal.Update exposing (Msg(..))
+import People.Decoders as PD
+import People.Helpers exposing (addPerson)
+import People.Requests
+import People.Update as PU
+import Routes exposing (Route(..), parseRoute)
+import Task
+import Time
+import Types
+import Visits.Decoders as VD
+import Visits.Helpers exposing (addVisit)
+import Visits.Types as VT
+import Visits.Update as VisitsUpdate
 
 
 update : Types.Msg -> Types.Model -> ( Types.Model, Cmd Types.Msg )
@@ -40,22 +41,22 @@ update msg model =
                         ]
                         model.style
             in
-                ( { model
-                    | style = newStyle
-                  }
-                , Cmd.none
-                )
+            ( { model
+                | style = newStyle
+              }
+            , Cmd.none
+            )
 
         Types.ModalMsg modalMsg ->
             let
                 ( newModal, cmd ) =
                     Modal.Update.update modalMsg model.modal Types.NoOp model.locals
             in
-                ( { model | modal = newModal }, cmd )
+            ( { model | modal = newModal }, cmd )
 
         Types.NewUrl url ->
             ( { model | style = Types.initialStyle }
-            , Nav.newUrl url
+            , Nav.pushUrl model.key url
             )
 
         Types.NewVisitMsg newVisitMsg ->
@@ -63,20 +64,20 @@ update msg model =
                 ( newVisit, cmd ) =
                     VisitsUpdate.updateNewVisit newVisitMsg model.newVisit
             in
-                case newVisitMsg of
-                    VT.NewVisitData (Ok _) ->
-                        prepareModal model (ShowMsg model.locals.newVisitOk <| (doModalMsg <| Types.NewUrl "/visits"))
+            case newVisitMsg of
+                VT.NewVisitData (Ok _) ->
+                    prepareModal model (ShowMsg model.locals.newVisitOk <| (doModalMsg <| Types.NewUrl "/visits"))
 
-                    VT.NewVisitData (Err result) ->
-                        case result of
-                            Http.BadStatus err ->
-                                prepareModal model (ShowMsg model.locals.newVisitErr (Types.ModalMsg Hide))
+                VT.NewVisitData (Err result) ->
+                    case result of
+                        Http.BadStatus err ->
+                            prepareModal model (ShowMsg model.locals.newVisitErr (Types.ModalMsg Hide))
 
-                            _ ->
-                                ( model, Cmd.none )
+                        _ ->
+                            ( model, Cmd.none )
 
-                    _ ->
-                        ( { model | newVisit = newVisit }, Cmd.map Types.NewVisitMsg cmd )
+                _ ->
+                    ( { model | newVisit = newVisit }, Cmd.map Types.NewVisitMsg cmd )
 
         Types.UrlChange location ->
             let
@@ -98,10 +99,10 @@ update msg model =
                             Cmd.map Types.PatientMsg <| People.Requests.get "patients" PD.decodePatients PU.EntitiesData
 
                         PatientId id ->
-                            Cmd.map Types.PatientMsg <| People.Requests.get ("patients/" ++ toString id) PD.decodePatient PU.EntityData
+                            Cmd.map Types.PatientMsg <| People.Requests.get ("patients/" ++ String.fromInt id) PD.decodePatient PU.EntityData
 
                         DoctorId id ->
-                            Cmd.map Types.DoctorMsg <| People.Requests.get ("doctors/" ++ toString id) PD.decodeDoctor PU.EntityData
+                            Cmd.map Types.DoctorMsg <| People.Requests.get ("doctors/" ++ String.fromInt id) PD.decodeDoctor PU.EntityData
 
                         Doctors ->
                             Cmd.map Types.DoctorMsg <| People.Requests.get "doctors" PD.decodeDoctors PU.EntitiesData
@@ -110,13 +111,13 @@ update msg model =
                             Cmd.map Types.NurseMsg <| People.Requests.get "nurses" PD.decodeNurses PU.EntitiesData
 
                         NurseId id ->
-                            Cmd.map Types.NurseMsg <| People.Requests.get ("nurses/" ++ toString id) PD.decodeNurse PU.EntityData
+                            Cmd.map Types.NurseMsg <| People.Requests.get ("nurses/" ++ String.fromInt id) PD.decodeNurse PU.EntityData
 
                         Visits ->
                             Cmd.map Types.VisitMsg <| People.Requests.get "visits" VD.decodeVisits PU.EntitiesData
 
                         VisitId id ->
-                            Cmd.map Types.VisitMsg <| People.Requests.get ("visits/" ++ toString id) VD.decodeVisit PU.EntityData
+                            Cmd.map Types.VisitMsg <| People.Requests.get ("visits/" ++ String.fromInt id) VD.decodeVisit PU.EntityData
 
                         NewVisit ->
                             Cmd.batch
@@ -128,42 +129,42 @@ update msg model =
                         _ ->
                             show
             in
-                ( newModel, Cmd.batch [ cmds, Task.perform (\_ -> Types.ModalMsg Hide) <| Task.succeed () ] )
+            ( newModel, Cmd.batch [ cmds, Task.perform (\_ -> Types.ModalMsg Hide) <| Task.succeed () ] )
 
         Types.VisitMsg innerMsg ->
             let
                 ( visits, cmd, msgFromChild ) =
-                    PU.updateEntity innerMsg model.visits "visits" VD.decodeVisits addVisit
+                    PU.updateEntity model.key innerMsg model.visits "visits" VD.decodeVisits addVisit
             in
-                handleMsg innerMsg model msgFromChild cmd { model | visits = visits } Types.VisitMsg
+            handleMsg innerMsg model msgFromChild cmd { model | visits = visits } Types.VisitMsg
 
         Types.DoctorMsg innerMsg ->
             let
                 ( doctors, cmd, msgFromChild ) =
-                    PU.updateEntity innerMsg model.doctors "doctors" PD.decodeDoctors addPerson
+                    PU.updateEntity model.key innerMsg model.doctors "doctors" PD.decodeDoctors addPerson
             in
-                handleMsg innerMsg model msgFromChild cmd { model | doctors = doctors } Types.DoctorMsg
+            handleMsg innerMsg model msgFromChild cmd { model | doctors = doctors } Types.DoctorMsg
 
         Types.NurseMsg innerMsg ->
             let
                 ( nurses, cmd, msgFromChild ) =
-                    PU.updateEntity innerMsg model.nurses "nurses" PD.decodeNurses addPerson
+                    PU.updateEntity model.key innerMsg model.nurses "nurses" PD.decodeNurses addPerson
             in
-                handleMsg innerMsg model msgFromChild cmd { model | nurses = nurses } Types.NurseMsg
+            handleMsg innerMsg model msgFromChild cmd { model | nurses = nurses } Types.NurseMsg
 
         Types.PatientMsg innerMsg ->
             let
                 ( patients, cmd, msgFromChild ) =
-                    PU.updateEntity innerMsg model.patients "patients" PD.decodePatients addPerson
+                    PU.updateEntity model.key innerMsg model.patients "patients" PD.decodePatients addPerson
             in
-                handleMsg innerMsg model msgFromChild cmd { model | patients = patients } Types.PatientMsg
+            handleMsg innerMsg model msgFromChild cmd { model | patients = patients } Types.PatientMsg
 
         Types.StaffMsg innerMsg ->
             let
                 ( staff, cmd, msgFromChild ) =
-                    PU.updateEntity innerMsg model.staff "staff" PD.decodeStaff addPerson
+                    PU.updateEntity model.key innerMsg model.staff "staff" PD.decodeStaff addPerson
             in
-                ( { model | staff = staff }, show )
+            ( { model | staff = staff }, show )
 
         Types.ShowStaffList ->
             ( { model | showStaffList = True }, Cmd.none )
@@ -225,6 +226,6 @@ prepareModal model msg =
                 Types.NoOp
                 model.locals
     in
-        ( { model | modal = modalModel }
-        , Cmd.none
-        )
+    ( { model | modal = modalModel }
+    , Cmd.none
+    )

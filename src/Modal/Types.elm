@@ -1,4 +1,4 @@
-module Modal.Types exposing (initialModel, Modal)
+module Modal.Types exposing (Modal, initialModel)
 
 
 initialModel areYouSure msg =

@@ -6,7 +6,7 @@
   "scripts": {
     "elm-analyse": "cd src && elm-analyse -s",
     "build-and-start": "npm run build && npm start",
-    "build": "cd src && elm make --yes Main.elm --output=../public/index.js",
+    "build": "cd src && elm make Main.elm --output=../public/index.js",
     "start": "node index.js",
     "heroku-postbuild": "npm run build",
     "elm-test": "cd src && elm-test"

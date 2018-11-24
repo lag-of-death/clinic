@@ -1,21 +1,13 @@
-module People.Update
-    exposing
-        ( updateEntity
-        , Msg
-            ( NewEntityUrl
-            , EntitiesData
-            , EntityData
-            , DelEntity
-            , ReallyDeleteEntity
-            , EntityDeleted
-            , NoOp
-            )
-        )
+module People.Update exposing
+    ( Msg(..)
+    , updateEntity
+    )
 
-import People.Requests exposing (get, del)
-import Navigation as Nav
-import Json.Decode
+import Browser
+import Browser.Navigation as Nav
 import Http
+import Json.Decode
+import People.Requests exposing (del, get)
 
 
 type Msg e
@@ -28,20 +20,24 @@ type Msg e
     | NoOp
 
 
-updateEntity :
-    Msg a
-    -> List a
-    -> String
-    -> Json.Decode.Decoder (List e)
-    -> (List a -> a -> List a)
-    -> ( List a, Cmd (Msg e), Msg e1 )
-updateEntity msg model entitiesName decodeEntities doSth =
+
+--updateEntity :
+--    Msg a
+--    -> List a
+--    -> String
+--    -> Json.Decode.Decoder (List e)
+--    -> (List a -> a -> List a)
+--    -> ( List a, Cmd (Msg e), Msg e1 )
+
+
+updateEntity key msg model entitiesName decodeEntities doSth =
     case msg of
         NoOp ->
             ( model, Cmd.none, NoOp )
 
         NewEntityUrl url ->
-            ( model, Nav.newUrl url, NoOp )
+            ----------------
+            ( model, Nav.pushUrl key url, NoOp )
 
         EntityDeleted _ ->
             ( model, get entitiesName decodeEntities EntitiesData, NoOp )

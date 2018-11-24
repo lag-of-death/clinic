@@ -69,8 +69,8 @@ function setUpGetStream(subject, entityName, optionalAttrs) {
 
                         resp.send(req.params.id ? people[0] : people);
                       },
-                      () => {
-                        throw `Should never get here. Add timeout for this.`;
+                      (err) => {
+                        throw `Should never get here. Add timeout for this. ${err}`;
                       },
                   );
 }

@@ -1,16 +1,15 @@
-module Views exposing (centerElement, list, actions, newEntity, bordered)
+module Views exposing (actions, bordered, centerElement, list, newEntity)
 
-import Html exposing (div, Html, text, ul, li)
+import Html exposing (Html, div, li, text, ul)
 import Html.Attributes exposing (style)
-import Styles exposing (block, blockStretched, blockCentered)
+import Styles exposing (block, blockCentered, blockStretched)
 
 
 newEntity : Html.Attribute a -> String -> Html a
 newEntity onClick label =
-    div [ style [ ( "width", "20%" ) ] ]
+    div [ style "width" "20%" ]
         [ Html.button
-            [ style Styles.button
-            , style [ ( "width", "100%" ) ]
+            [ style "width" "100%"
             , onClick
             ]
             [ text label ]
@@ -19,10 +18,10 @@ newEntity onClick label =
 
 list : List (List (Html msg)) -> Html msg
 list content =
-    ul [ style [ ( "width", "70%" ), ( "padding", "0" ) ] ]
+    ul [ style "width" "70%", style "padding" "0" ]
         (List.map
             (\element ->
-                li [ style block, style blockCentered, style blockStretched ]
+                li []
                     element
             )
             content
@@ -30,15 +29,13 @@ list content =
 
 
 actions onClick1 onClick2 locals =
-    [ div [ style [ ( "display", "flex" ) ] ]
+    [ div [ style "display" "flex" ]
         [ Html.button
-            [ style Styles.button
-            , onClick1
+            [ onClick1
             ]
             [ text locals.details ]
         , Html.button
-            [ style Styles.button
-            , style [ ( "margin-left", "4px" ) ]
+            [ style "margin-left" "4px"
             , onClick2
             ]
             [ text locals.delete ]
@@ -49,10 +46,8 @@ actions onClick1 onClick2 locals =
 centerElement : Html msg -> Html msg
 centerElement el =
     div
-        [ style
-            [ ( "display", "flex" )
-            , ( "justify-content", "center" )
-            ]
+        [ style "display" "flex"
+        , style "justify-content" "center"
         ]
         [ el ]
 
@@ -60,5 +55,5 @@ centerElement el =
 bordered : Html msg -> Html msg
 bordered el =
     div
-        [ style [ ( "border", "2px solid black" ), ( "padding", "2px" ) ] ]
+        [ style "border" "2px solid black", style "padding" "2px" ]
         [ el ]

@@ -1,4 +1,4 @@
-module People.Requests exposing (get, del)
+module People.Requests exposing (del, get)
 
 import Http
 import Json.Decode
@@ -10,7 +10,7 @@ get endpoint decoder msg =
     Http.send msg (Http.get ("/api/" ++ endpoint) decoder)
 
 
-del : a -> (Result Http.Error () -> msg) -> String -> Cmd msg
+del : Int -> (Result Http.Error () -> msg) -> String -> Cmd msg
 del id msg enities =
     Http.send msg
         (delete enities id)

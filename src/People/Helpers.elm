@@ -12,11 +12,13 @@ addPerson : List { a | personal : { b | id : Int } } -> { a | personal : { b | i
 addPerson model entity =
     if List.isEmpty model then
         [ entity ]
+
     else
         List.map
             (\oldEntity ->
                 if oldEntity.personal.id == entity.personal.id then
                     entity
+
                 else
                     oldEntity
             )

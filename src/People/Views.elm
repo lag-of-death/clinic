@@ -1,30 +1,29 @@
-module People.Views
-    exposing
-        ( patientsView
-        , patientView
-        , newPatientView
-        , doctorsView
-        , doctorView
-        , newDoctorView
-        , newNurseView
-        , nursesView
-        , nurseView
-        , staffView
-        )
+module People.Views exposing
+    ( doctorView
+    , doctorsView
+    , newDoctorView
+    , newNurseView
+    , newPatientView
+    , nurseView
+    , nursesView
+    , patientView
+    , patientsView
+    , staffView
+    )
 
-import Html.Attributes exposing (name, style, required, type_, value)
-import Html exposing (select, text, Html, div, label, p, table, td, tr, form, input, option, span)
+import Html exposing (Html, div, form, input, label, option, p, select, span, table, td, text, tr)
+import Html.Attributes exposing (name, required, style, type_, value)
 import Html.Events exposing (onClick)
 import People.Types as PT
-import Styles exposing (block, blockStretched, blockCentered)
-import Views exposing (newEntity, list, actions)
 import People.Update as PU
+import Styles exposing (block, blockCentered, blockStretched)
+import Views exposing (actions, list, newEntity)
 
 
 withSpeciality doctor entryData locals =
     List.append entryData
         [ div
-            [ style [ ( "width", "100px" ) ] ]
+            [ style "width" "100px" ]
             [ text <| translateSpeciality locals <| doctor.speciality ]
         ]
 
@@ -32,10 +31,11 @@ withSpeciality doctor entryData locals =
 withIsDistrictInfo nurse entryData districtNurse =
     List.append
         entryData
-        [ div [ style [ ( "width", "100px" ) ] ]
+        [ div [ style "width" "100px" ]
             [ text <|
                 if nurse.district then
                     districtNurse
+
                 else
                     ""
             ]
@@ -47,14 +47,14 @@ listSingleEntryShell onClick1 onClick2 entity locals =
         person =
             entity.personal
     in
-        [ div [ style [ ( "width", "30%" ) ] ] [ text <| person.surname ++ " " ++ person.name ]
-        , div []
-            (actions
-                onClick1
-                onClick2
-                locals
-            )
-        ]
+    [ div [ style "width" "30%" ] [ text <| person.surname ++ " " ++ person.name ]
+    , div []
+        (actions
+            onClick1
+            onClick2
+            locals
+        )
+    ]
 
 
 doctorsList doctors locals =
@@ -64,7 +64,7 @@ doctorsList doctors locals =
                 withSpeciality
                     doctor
                     (listSingleEntryShell
-                        (onClick (PU.NewEntityUrl <| "/doctors/" ++ toString doctor.id))
+                        (onClick (PU.NewEntityUrl <| "/doctors/" ++ String.fromInt doctor.id))
                         (onClick (PU.DelEntity doctor.id))
                         doctor
                         locals
@@ -82,7 +82,7 @@ nursesList nurses locals =
                 withIsDistrictInfo nurse
                     (listSingleEntryShell
                         (onClick
-                            (PU.NewEntityUrl <| "/nurses/" ++ toString nurse.id)
+                            (PU.NewEntityUrl <| "/nurses/" ++ String.fromInt nurse.id)
                         )
                         (onClick (PU.DelEntity nurse.id))
                         nurse
@@ -99,7 +99,7 @@ patientsList patients locals =
         (List.map
             (\patient ->
                 listSingleEntryShell
-                    (onClick (PU.NewEntityUrl <| "/patients/" ++ toString patient.id))
+                    (onClick (PU.NewEntityUrl <| "/patients/" ++ String.fromInt patient.id))
                     (onClick (PU.DelEntity patient.id))
                     patient
                     locals
@@ -122,13 +122,13 @@ translate locals who =
 
 staffView staff locals =
     div
-        [ style [ ( "padding", "20px 160px" ), ( "background", "lightblue" ) ] ]
+        [ style "padding" "20px 160px", style "background" "lightblue" ]
         (List.map
             (\staffMember ->
                 div
-                    [ style [ ( "display", "flex" ), ( "justify-content", "space-between" ) ] ]
-                    [ p [ style Styles.button ] [ text <| staffMember.personal.name ++ " " ++ staffMember.personal.surname ]
-                    , p [ style Styles.button ] [ text <| translate locals <| staffMember.who ]
+                    [ style "display" "flex", style "justify-content" "space-between" ]
+                    [ p [] [ text <| staffMember.personal.name ++ " " ++ staffMember.personal.surname ]
+                    , p [] [ text <| translate locals <| staffMember.who ]
                     ]
             )
             staff
@@ -149,27 +149,27 @@ doctorsView doctors locals =
 
 view : Html msg -> Html msg -> Html msg
 view newEntityBtn people =
-    div [ style block ]
+    div []
         [ people
         , newEntityBtn
         ]
 
 
-newNurse newNurse =
-    newEntity (onClick (PU.NewEntityUrl <| "/nurses/new")) newNurse
+newNurse newNurseVar =
+    newEntity (onClick (PU.NewEntityUrl <| "/nurses/new")) newNurseVar
 
 
-newDoctor newDoctor =
-    newEntity (onClick (PU.NewEntityUrl <| "/doctors/new")) newDoctor
+newDoctor newDoctorVar =
+    newEntity (onClick (PU.NewEntityUrl <| "/doctors/new")) newDoctorVar
 
 
 newNurseView locals =
     formToSubmit "nurses" <|
         List.concat
             [ newPersonFields locals
-            , [ div [ style block, style blockCentered, style blockStretched ]
+            , [ div []
                     [ label [] [ text locals.districtNurse ]
-                    , select [ name "district", style Styles.button ]
+                    , select [ name "district" ]
                         (options locals)
                     ]
               ]
@@ -213,9 +213,9 @@ newDoctorView locals =
     formToSubmit "doctors" <|
         List.concat
             [ newPersonFields locals
-            , [ div [ style block, style blockCentered, style blockStretched ]
+            , [ div []
                     [ label [] [ text locals.speciality ]
-                    , select [ required True, name "speciality", style Styles.button ]
+                    , select [ required True, name "speciality" ]
                         (doctorSpecialities locals)
                     ]
               ]
@@ -226,8 +226,6 @@ newDoctorView locals =
 submitBtn add =
     Html.button
         [ Html.Attributes.type_ "submit"
-        , style Styles.button
-        , style Styles.submit
         ]
         [ text add ]
 
@@ -236,7 +234,6 @@ createInput ( name_, label_, type_ ) =
     ( input
         [ required True
         , name name_
-        , style Styles.button
         , Html.Attributes.type_ type_
         ]
         []
@@ -253,7 +250,7 @@ addLabel ( inputEl, name_ ) =
 
 wrapWithDiv : List (Html msg) -> Html msg
 wrapWithDiv inputWithLabel =
-    div [ style block, style blockCentered, style blockStretched ] inputWithLabel
+    div [] inputWithLabel
 
 
 createFieldRow =
@@ -270,8 +267,7 @@ newPersonFields locals =
 formToSubmit : String -> List (Html msg) -> Html msg
 formToSubmit endpoint =
     form
-        [ style Styles.form
-        , Html.Attributes.action ("/api/" ++ endpoint)
+        [ Html.Attributes.action ("/api/" ++ endpoint)
         , Html.Attributes.method "POST"
         ]
 
@@ -281,41 +277,41 @@ newPatientView locals =
 
 
 patientView patient locals =
-    table [ personDetailsView ] (restTr patient locals)
+    table [] (restTr patient locals)
 
 
 rightAligned =
-    style [ ( "text-align", "right" ) ]
+    style "text-align" "right"
 
 
 recordStyle =
-    style [ ( "padding", "10px" ) ]
+    style "padding" "10px"
 
 
 restTr person locals =
     [ tr []
-        [ td [ style Styles.button, recordStyle ]
+        [ td [ recordStyle ]
             [ text <| locals.surname ]
-        , td [ rightAligned, style Styles.button, recordStyle ]
+        , td [ rightAligned, recordStyle ]
             [ text person.personal.surname ]
         ]
     , tr []
-        [ td [ style Styles.button, recordStyle ]
+        [ td [ recordStyle ]
             [ text <| locals.name ]
-        , td [ rightAligned, style Styles.button, recordStyle ]
+        , td [ rightAligned, recordStyle ]
             [ text person.personal.name ]
         ]
     , tr []
-        [ td [ style Styles.button, recordStyle ]
+        [ td [ recordStyle ]
             [ text <| locals.email ]
-        , td [ rightAligned, style Styles.button, recordStyle ]
+        , td [ rightAligned, recordStyle ]
             [ text person.personal.email ]
         ]
     , tr []
-        [ td [ style Styles.button, recordStyle ]
+        [ td [ recordStyle ]
             [ text <| locals.id ]
-        , td [ rightAligned, style Styles.button, recordStyle ]
-            [ text <| toString <| person.id ]
+        , td [ rightAligned, recordStyle ]
+            [ text <| String.fromInt <| person.id ]
         ]
     ]
 
@@ -346,37 +342,34 @@ translateSpeciality locals speciality =
 
 specialityTr speciality locals =
     tr []
-        [ td [ style Styles.button ]
+        [ td []
             [ text locals.speciality ]
-        , td [ rightAligned, style Styles.button ]
+        , td [ rightAligned ]
             [ text <| translateSpeciality locals <| speciality ]
         ]
 
 
 districtNurseTr isDistrict locals =
     tr []
-        [ td [ style Styles.button ]
+        [ td []
             [ text locals.districtNurse ]
-        , td [ rightAligned, style Styles.button ]
+        , td [ rightAligned ]
             [ text <|
                 if isDistrict then
                     locals.yes
+
                 else
                     locals.no
             ]
         ]
 
 
-personDetailsView =
-    style [ ( "background", "lightblue" ), ( "border", "2px solid black" ), ( "padding", "3px" ) ]
-
-
 doctorView doctor locals =
-    table [ personDetailsView ] (List.concat [ restTr doctor locals, [ specialityTr doctor.speciality locals ] ])
+    table [] (List.concat [ restTr doctor locals, [ specialityTr doctor.speciality locals ] ])
 
 
 nurseView nurse locals =
-    table [ personDetailsView ] (List.concat [ restTr nurse locals, [ districtNurseTr nurse.district locals ] ])
+    table [] (List.concat [ restTr nurse locals, [ districtNurseTr nurse.district locals ] ])
 
 
 nursesView nurses locals =

@@ -1,7 +1,7 @@
-module Modal.Update exposing (Msg(Show, Hide, Do, Prepare, ShowMsg, PrepareErr), update)
+module Modal.Update exposing (Msg(..), update)
 
-import Task
 import Modal.Types exposing (Modal)
+import Task
 
 
 type Msg msg

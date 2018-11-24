@@ -1,99 +1,105 @@
 module View exposing (view)
 
-import Html exposing (div, main_, text, Html, span, ul, li)
 import Animation
-import Modal.Views
-import Modal.Update exposing (Msg(Hide))
-import Html.Events exposing (onClick, onMouseOver, onMouseLeave)
-import People.Helpers exposing (getPerson)
-import Visits.Helpers exposing (getVisit)
-import Views exposing (centerElement, bordered)
-import People.Views as PeopleView
-import Visits.Views as VisitsView
-import People.Types as PeopleTypes
-import Html.Attributes exposing (style, class)
-import Styles
-import Routes
-import Types
+import Html exposing (Html, div, li, main_, span, text, ul)
+import Html.Attributes exposing (class, style)
+import Html.Events exposing (onClick, onMouseLeave, onMouseOver)
 import Localization.Types as LT
+import Modal.Update exposing (Msg(..))
+import Modal.Views
+import People.Helpers exposing (getPerson)
+import People.Types as PeopleTypes
+import People.Views as PeopleView
+import Routes
+import Styles
+import Types
+import Views exposing (bordered, centerElement)
+import Visits.Helpers exposing (getVisit)
+import Visits.Views as VisitsView
 
 
 toBtnWithList showStaffList locals =
     div
         [ onMouseOver Types.ShowStaffList
         , onMouseLeave Types.HideStaffList
-        , style [ ( "position", "relative" ) ]
+        , style "position" "relative"
         ]
-        [ Html.button [ style Styles.button ]
+        [ Html.button []
             [ text locals.staff
             ]
         , if showStaffList then
             ul
-                [ style
-                    [ ( "z-index", "1" )
-                    , ( "position", "absolute" )
-                    , ( "list-style-type", "none" )
-                    , ( "top", "35px" )
-                    , ( "left", "0px" )
-                    , ( "padding", "0" )
-                    , ( "margin", "0" )
-                    ]
+                [ style "z-index" "1"
+                , style "position" "absolute"
+                , style "list-style-type" "none"
+                , style "top" "35px"
+                , style "left" "0px"
+                , style "padding" "0"
+                , style "margin" "0"
                 ]
-                [ li [] [ toBtn [ style Styles.button, style [ ( "width", "100%" ) ] ] "all" locals.all ]
-                , li [] [ toBtn [ style Styles.button, style [ ( "width", "100%" ) ] ] "nurses" locals.nurses ]
-                , li [] [ toBtn [ style Styles.button, style [ ( "width", "100%" ) ] ] "doctors" locals.doctors ]
+                [ li [] [ toBtn [ style "width" "100%" ] "all" locals.all ]
+                , li [] [ toBtn [ style "width" "100%" ] "nurses" locals.nurses ]
+                , li [] [ toBtn [ style "width" "100%" ] "doctors" locals.doctors ]
                 ]
+
           else
             span [] []
         ]
 
 
-view : Types.Model -> Html Types.Msg
+
+--view : Types.Model -> Html Types.Msg
+
+
 view model =
-    div [ style Styles.body ]
-        [ div
-            [ style Styles.menu ]
-            [ toMenuBtn "patients" model.locals.patients
-            , toBtnWithList model.showStaffList model.locals
-            , toMenuBtn "visits" model.locals.visits
-            , div []
-                [ Html.button
-                    [ style Styles.button
-                    , style [ ( "margin-right", "10px" ) ]
-                    , if model.language == LT.EN then
-                        style [ ( "color", "lightblue" ) ]
-                      else
-                        style []
-                    , onClick (Types.ChangeLanguage LT.EN)
+    { title = "URL Interceptor"
+    , body =
+        [ div []
+            [ div
+                []
+                [ toMenuBtn "patients" model.locals.patients
+                , toBtnWithList model.showStaffList model.locals
+                , toMenuBtn "visits" model.locals.visits
+                , div []
+                    [ Html.button
+                        [ style "margin-right" "10px"
+                        , if model.language == LT.EN then
+                            style "color" "lightblue"
+
+                          else
+                            style "" ""
+                        , onClick (Types.ChangeLanguage LT.EN)
+                        ]
+                        [ text "EN" ]
+                    , Html.button
+                        [ if model.language == LT.PL then
+                            style "color" "lightblue"
+
+                          else
+                            style "" ""
+                        , onClick (Types.ChangeLanguage LT.PL)
+                        ]
+                        [ text "PL" ]
                     ]
-                    [ text "EN" ]
-                , Html.button
-                    [ style Styles.button
-                    , if model.language == LT.PL then
-                        style [ ( "color", "lightblue" ) ]
-                      else
-                        style []
-                    , onClick (Types.ChangeLanguage LT.PL)
+                ]
+            , main_
+                (List.concat
+                    [ []
+                    , Animation.render model.style
                     ]
-                    [ text "PL" ]
+                )
+                [ model.history
+                    |> List.head
+                    |> Maybe.withDefault (Just Routes.Patients)
+                    |> toRouteView model
                 ]
+            , Modal.Views.view
+                (Types.ModalMsg Hide)
+                model.modal
+                model.locals
             ]
-        , main_
-            (List.concat
-                [ [ style Styles.app ]
-                , Animation.render model.style
-                ]
-            )
-            [ model.history
-                |> List.head
-                |> Maybe.withDefault (Just Routes.Patients)
-                |> toRouteView model
-            ]
-        , Modal.Views.view
-            (Types.ModalMsg Hide)
-            model.modal
-            model.locals
         ]
+    }
 
 
 toBtn : List (Html.Attribute Types.Msg) -> String -> String -> Html Types.Msg
@@ -103,14 +109,14 @@ toBtn styles whatAppPart label =
 
 toMenuBtn : String -> String -> Html Types.Msg
 toMenuBtn =
-    toBtn [ style Styles.button ]
+    toBtn []
 
 
 toRouteView : Types.Model -> Maybe Routes.Route -> Html Types.Msg
 toRouteView model maybeRoute =
     case maybeRoute of
         Nothing ->
-            div [ style [ ( "border", "2px solid red" ) ] ] [ text "no route matched" ]
+            div [ style "border" "2px solid red" ] [ text "no route matched" ]
 
         Just route ->
             case route of

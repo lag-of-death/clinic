@@ -1,20 +1,22 @@
 module Main exposing (main)
 
-import View exposing (view)
-import Update exposing (update)
-import Types exposing (Flags, init, Model, Msg(Animate, UrlChange))
-import Navigation
 import Animation
+import Browser
+import Types exposing (Flags, Model, Msg(..), init)
+import Update exposing (update)
+import View exposing (view)
 import Visits.Update exposing (subs)
 
 
 main : Program Types.Flags Model Msg
 main =
-    Navigation.programWithFlags UrlChange
+    Browser.application
         { init = init
         , view = view
         , update = update
         , subscriptions = subscriptions
+        , onUrlChange = UrlChange
+        , onUrlRequest = LinkClicked
         }
 
 

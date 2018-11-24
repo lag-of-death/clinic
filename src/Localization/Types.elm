@@ -1,4 +1,4 @@
-module Localization.Types exposing (..)
+module Localization.Types exposing (Language(..), Locals, englishLocals, polishLocals)
 
 
 type alias Locals =
@@ -17,7 +17,6 @@ type alias Locals =
     , staff : String
     , details : String
     , delete : String
-    , date : String
     , roomNumber : String
     , districtNurse : String
     , surname : String

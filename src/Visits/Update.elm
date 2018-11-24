@@ -1,9 +1,9 @@
-port module Visits.Update exposing (updateVisits, updateNewVisit, subs)
+port module Visits.Update exposing (subs, updateNewVisit)
 
-import Visits.Requests exposing (getVisits, newVisit, deleteVisit)
-import Visits.Types as VT
-import Navigation as Nav
+import Browser.Navigation as Nav
 import Visits.Helpers
+import Visits.Requests exposing (deleteVisit, getVisits, newVisit)
+import Visits.Types as VT
 
 
 updateNewVisit : VT.NewVisitMsg -> VT.NewVisitModel -> ( VT.NewVisitModel, Cmd VT.NewVisitMsg )
@@ -35,7 +35,7 @@ updateNewVisit msg model =
                 error =
                     Debug.log "NewVisitData Err" result
             in
-                ( model, Cmd.none )
+            ( model, Cmd.none )
 
         VT.SetMonth month ->
             ( { model | month = month }, check month )
@@ -50,41 +50,42 @@ updateNewVisit msg model =
             ( model, Cmd.none )
 
 
-updateVisits : VT.VisitsMsg -> List VT.Visit -> ( List VT.Visit, Cmd VT.VisitsMsg, VT.VisitsMsg )
-updateVisits msg model =
-    case msg of
-        VT.NoVisitsOp ->
-            ( model, Cmd.none, VT.NoVisitsOp )
 
-        VT.NewVisitsUrl url ->
-            ( model, Nav.newUrl url, VT.NoVisitsOp )
-
-        VT.VisitsData (Ok visits) ->
-            ( visits
-            , Cmd.none
-            , VT.NoVisitsOp
-            )
-
-        VT.VisitData (Err _) ->
-            ( model, Cmd.none, VT.NoVisitsOp )
-
-        VT.VisitData (Ok visit) ->
-            ( Visits.Helpers.addVisit model visit
-            , Cmd.none
-            , VT.NoVisitsOp
-            )
-
-        VT.VisitDeleted _ ->
-            ( model, getVisits, VT.NoVisitsOp )
-
-        VT.VisitsData (Err _) ->
-            ( model, Cmd.none, VT.NoVisitsOp )
-
-        VT.DelVisit id ->
-            ( model, Cmd.none, VT.ReallyDelVisit id )
-
-        VT.ReallyDelVisit id ->
-            ( model, deleteVisit id, VT.NoVisitsOp )
+--updateVisits : VT.VisitsMsg -> List VT.Visit -> ( List VT.Visit, Cmd VT.VisitsMsg, VT.VisitsMsg )
+--updateVisits msg model =
+--    case msg of
+--        VT.NoVisitsOp ->
+--            ( model, Cmd.none, VT.NoVisitsOp )
+--
+--        VT.NewVisitsUrl url -> -------------------------
+--            ( model, Cmd.none, VT.NoVisitsOp )
+--
+--        VT.VisitsData (Ok visits) ->
+--            ( visits
+--            , Cmd.none
+--            , VT.NoVisitsOp
+--            )
+--
+--        VT.VisitData (Err _) ->
+--            ( model, Cmd.none, VT.NoVisitsOp )
+--
+--        VT.VisitData (Ok visit) ->
+--            ( Visits.Helpers.addVisit model visit
+--            , Cmd.none
+--            , VT.NoVisitsOp
+--            )
+--
+--        VT.VisitDeleted _ ->
+--            ( model, getVisits, VT.NoVisitsOp )
+--
+--        VT.VisitsData (Err _) ->
+--            ( model, Cmd.none, VT.NoVisitsOp )
+--
+--        VT.DelVisit id ->
+--            ( model, Cmd.none, VT.ReallyDelVisit id )
+--
+--        VT.ReallyDelVisit id ->
+--            ( model, deleteVisit id, VT.NoVisitsOp )
 
 
 port check : String -> Cmd msg

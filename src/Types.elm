@@ -1,20 +1,21 @@
-module Types
-    exposing
-        ( initialStyle
-        , init
-        , Model
-        , Msg(..)
-        , Flags
-        )
+module Types exposing
+    ( Flags
+    , Model
+    , Msg(..)
+    , init
+    , initialStyle
+    )
 
-import Localization.Types exposing (..)
-import People.Update
-import Modal.Update exposing (Msg)
-import Navigation as Nav
 import Animation
-import Routes
-import People.Types as PeopleTypes
+import Browser
+import Browser.Navigation as Nav
+import Localization.Types exposing (..)
 import Modal.Types
+import Modal.Update exposing (Msg)
+import People.Types as PeopleTypes
+import People.Update
+import Routes
+import Url
 import Visits.Types as VisitsTypes
 
 
@@ -40,6 +41,7 @@ type alias Model =
     , language : Localization.Types.Language
     , month : Int
     , currentMonth : Int
+    , key : Nav.Key
     }
 
 
@@ -48,8 +50,11 @@ type alias Flags =
     }
 
 
-init : Flags -> Nav.Location -> ( Model, Cmd Msg )
-init a location =
+
+--init : Flags -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+
+
+init a location key =
     ( { history = []
       , style = initialStyle
       , patients = PeopleTypes.initialPatients
@@ -64,8 +69,9 @@ init a location =
       , locals = Localization.Types.polishLocals
       , month = 0
       , currentMonth = a.month
+      , key = key
       }
-    , Nav.newUrl location.pathname
+    , Nav.pushUrl key location.path
     )
 
 
@@ -76,7 +82,8 @@ type Msg
     | DoctorMsg (People.Update.Msg PeopleTypes.Doctor)
     | NurseMsg (People.Update.Msg PeopleTypes.Nurse)
     | VisitMsg (People.Update.Msg VisitsTypes.Visit)
-    | UrlChange Nav.Location
+    | UrlChange Url.Url
+    | LinkClicked Browser.UrlRequest
     | NewVisitMsg VisitsTypes.NewVisitMsg
     | ModalMsg (Modal.Update.Msg Msg)
     | NoOp

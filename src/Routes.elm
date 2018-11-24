@@ -1,30 +1,15 @@
-module Routes
-    exposing
-        ( Route
-            ( PatientId
-            , Patients
-            , NewPatient
-            , Doctors
-            , DoctorId
-            , Nurses
-            , NurseId
-            , Visits
-            , VisitId
-            , NewVisit
-            , NewNurse
-            , NewDoctor
-            , AllStaff
-            )
-        , parseRoute
-        )
+module Routes exposing
+    ( Route(..)
+    , parseRoute
+    )
 
-import Navigation exposing (Location)
-import UrlParser exposing (int, top, (</>))
+import Url exposing (Url)
+import Url.Parser exposing ((</>), int, top)
 
 
-parseRoute : Location -> Maybe Route
+parseRoute : Url -> Maybe Route
 parseRoute location =
-    UrlParser.parsePath routeParser location
+    Url.Parser.parse routeParser location
 
 
 type Route
@@ -43,21 +28,21 @@ type Route
     | AllStaff
 
 
-routeParser : UrlParser.Parser (Route -> a) a
+routeParser : Url.Parser.Parser (Route -> a) a
 routeParser =
-    UrlParser.oneOf
-        [ UrlParser.map Patients top
-        , UrlParser.map Patients (UrlParser.s "patients")
-        , UrlParser.map PatientId (UrlParser.s "patients" </> int)
-        , UrlParser.map NewPatient (UrlParser.s "patients" </> UrlParser.s "new")
-        , UrlParser.map Visits (UrlParser.s "visits")
-        , UrlParser.map VisitId (UrlParser.s "visits" </> int)
-        , UrlParser.map NewVisit (UrlParser.s "visits" </> UrlParser.s "new")
-        , UrlParser.map Nurses (UrlParser.s "nurses")
-        , UrlParser.map NurseId (UrlParser.s "nurses" </> int)
-        , UrlParser.map NewNurse (UrlParser.s "nurses" </> UrlParser.s "new")
-        , UrlParser.map Doctors (UrlParser.s "doctors")
-        , UrlParser.map DoctorId (UrlParser.s "doctors" </> int)
-        , UrlParser.map NewDoctor (UrlParser.s "doctors" </> UrlParser.s "new")
-        , UrlParser.map AllStaff (UrlParser.s "all")
+    Url.Parser.oneOf
+        [ Url.Parser.map Patients top
+        , Url.Parser.map Patients (Url.Parser.s "patients")
+        , Url.Parser.map PatientId (Url.Parser.s "patients" </> int)
+        , Url.Parser.map NewPatient (Url.Parser.s "patients" </> Url.Parser.s "new")
+        , Url.Parser.map Visits (Url.Parser.s "visits")
+        , Url.Parser.map VisitId (Url.Parser.s "visits" </> int)
+        , Url.Parser.map NewVisit (Url.Parser.s "visits" </> Url.Parser.s "new")
+        , Url.Parser.map Nurses (Url.Parser.s "nurses")
+        , Url.Parser.map NurseId (Url.Parser.s "nurses" </> int)
+        , Url.Parser.map NewNurse (Url.Parser.s "nurses" </> Url.Parser.s "new")
+        , Url.Parser.map Doctors (Url.Parser.s "doctors")
+        , Url.Parser.map DoctorId (Url.Parser.s "doctors" </> int)
+        , Url.Parser.map NewDoctor (Url.Parser.s "doctors" </> Url.Parser.s "new")
+        , Url.Parser.map AllStaff (Url.Parser.s "all")
         ]

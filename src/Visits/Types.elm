@@ -1,15 +1,14 @@
-module Visits.Types
-    exposing
-        ( Visit
-        , VisitsMsg(NewVisitsUrl, DelVisit, VisitsData, VisitData, VisitDeleted, NoVisitsOp, ReallyDelVisit)
-        , defaultVisit
-        , initialVisits
-        , NewVisitMsg(..)
-        , VisitsModel
-        , NewVisitModel
-        , initialNewVisit
-        , NewVisitResult
-        )
+module Visits.Types exposing
+    ( NewVisitModel
+    , NewVisitMsg(..)
+    , NewVisitResult
+    , Visit
+    , VisitsModel
+    , VisitsMsg(..)
+    , defaultVisit
+    , initialNewVisit
+    , initialVisits
+    )
 
 import Http
 import People.Types as PT

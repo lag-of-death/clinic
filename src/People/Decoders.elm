@@ -1,16 +1,15 @@
-module People.Decoders
-    exposing
-        ( decodeDoctor
-        , decodeNurses
-        , decodeDoctors
-        , decodePatients
-        , decodeNurse
-        , decodePatient
-        , decodeStaff
-        )
+module People.Decoders exposing
+    ( decodeDoctor
+    , decodeDoctors
+    , decodeNurse
+    , decodeNurses
+    , decodePatient
+    , decodePatients
+    , decodeStaff
+    )
 
 import Json.Decode as Decode
-import People.Types exposing (StaffMember, Person, Patient, Doctor, Nurse)
+import People.Types exposing (Doctor, Nurse, Patient, Person, StaffMember)
 
 
 decodePerson : Decode.Decoder Person

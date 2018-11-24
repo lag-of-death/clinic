@@ -1,11 +1,11 @@
-module Visits.Requests exposing (getVisits, deleteVisit, getVisit, newVisit)
+module Visits.Requests exposing (deleteVisit, getVisit, getVisits, newVisit)
 
+import Http exposing (..)
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode exposing (..)
-import Visits.Types as VT
-import Visits.Decoders exposing (decodeVisit, decodeVisits)
-import Http exposing (..)
 import Requests exposing (delete)
+import Visits.Decoders exposing (decodeVisit, decodeVisits)
+import Visits.Types as VT
 
 
 deleteVisit : Int -> Cmd VT.VisitsMsg
@@ -16,7 +16,7 @@ deleteVisit id =
 
 getVisit : Int -> Cmd VT.VisitsMsg
 getVisit id =
-    Http.send VT.VisitData (Http.get ("/api/visits/" ++ toString id) decodeVisit)
+    Http.send VT.VisitData (Http.get ("/api/visits/" ++ String.fromInt id) decodeVisit)
 
 
 newVisit : VT.NewVisitModel -> Cmd VT.NewVisitMsg
@@ -34,11 +34,11 @@ newVisit model =
                 , ( "hour", Encode.string model.hour )
                 ]
     in
-        Http.send VT.NewVisitData
-            (Http.post "/api/visits/"
-                (jsonBody encoder)
-                Decode.string
-            )
+    Http.send VT.NewVisitData
+        (Http.post "/api/visits/"
+            (jsonBody encoder)
+            Decode.string
+        )
 
 
 getVisits : Cmd VT.VisitsMsg
